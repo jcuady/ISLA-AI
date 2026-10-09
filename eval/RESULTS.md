@@ -36,7 +36,7 @@ Overall precision **100.00%**, recall **100.00%**, F1 **1.0000**
 | REMITTANCE_REF | 2 | 100.00% | 100.00% | 1.0000 |
 | SALARY | 3 | 100.00% | 100.00% | 1.0000 |
 
-Latency p50 **0.2 ms**, p95 **0.7 ms**
+Latency p50 **0.2 ms**, p95 **0.5 ms**
 
 ## DPA Copilot (retrieval + citation enforcement)
 
@@ -48,24 +48,24 @@ Latency p50 **0.2 ms**, p95 **0.7 ms**
 | Citation accuracy | >= 0.95 | 100.00% | PASS |
 | Correct source document | >= 0.80 | 80.00% | PASS |
 | Correct-refusal rate | >= 0.90 | 100.00% | PASS |
-| Copilot latency p50 | < 4000 ms | 8 ms | PASS |
+| Copilot latency p50 | < 4000 ms | 7 ms | PASS |
 
 ### Per-question detail
 
 | Question | Refused | Cited | Source correct | Conf | ms |
 |---|---|---|---|---|---|
-| Ilang oras dapat ko i-report ang data breach? | no | yes | yes | 0.72 | 32 |
-| Pwede ba ipasa ang CDR ng customer ko sa vendo | no | yes | yes | 0.71 | 9 |
-| Can our call center use AI to score our agents | no | yes | yes | 0.70 | 7 |
-| Ano ang fine kapag hindi na-notify ang NPC? | no | yes | yes | 0.74 | 6 |
-| Kailangan ba mag-register ng AI credit scoring | no | yes | no | 0.69 | 8 |
+| Ilang oras dapat ko i-report ang data breach? | no | yes | yes | 0.78 | 12 |
+| Pwede ba ipasa ang CDR ng customer ko sa vendo | no | yes | yes | 0.78 | 9 |
+| Can our call center use AI to score our agents | no | yes | yes | 0.75 | 7 |
+| Ano ang fine kapag hindi na-notify ang NPC? | no | yes | yes | 0.77 | 6 |
+| Kailangan ba mag-register ng AI credit scoring | no | yes | no | 0.74 | 7 |
 
 ### Refusal behaviour (out of domain)
 
 | Question | Refused | Confidence |
 |---|---|---|
-| Ano ang stock price ng BDO ngayong araw? | yes | 0.47 |
-| Who won the 2025 FIFA World Cup? | yes | 0.77 |
-| What is the capital of Kenya? | yes | 0.69 |
-| How do I cook adobo? | yes | 0.70 |
-| Magkano ang Porsche 911? | yes | 0.46 |
+| Ano ang stock price ng BDO ngayong araw? | yes | 0.52 |
+| Who won the 2025 FIFA World Cup? | yes | 0.84 |
+| What is the capital of Kenya? | yes | 0.78 |
+| How do I cook adobo? | yes | 0.77 |
+| Magkano ang Porsche 911? | yes | 0.53 |

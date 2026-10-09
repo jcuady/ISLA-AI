@@ -279,6 +279,7 @@ class HybridIndex:
             import onnxruntime as ort
             from transformers import AutoTokenizer
 
+            from services.copilot import embeddings
             from services.copilot.embeddings import Embedder
 
             embedder = Embedder()
@@ -286,16 +287,16 @@ class HybridIndex:
                 print("[index] dense leg unavailable:", embedder.reason)
                 return False
 
-            emb_path = PROCESSED / "embeddings.npy"
+            emb_path = PROCESSED / f"embeddings.{embeddings.POOLING}.npy"
             if emb_path.exists():
                 self._embeddings = np.load(emb_path)
-                print(f"[index] dense leg on: cached {self._embeddings.shape}")
+                print(f"[index] dense leg on: cached {self._embeddings.shape} ({embeddings.POOLING})")
             else:
-                print("[index] encoding corpus with e5-small...")
+                print(f"[index] encoding corpus with e5-small ({embeddings.POOLING} pooling)...")
                 matrix = embedder.encode_chunks([c["text"] for c in self.chunks])
                 np.save(emb_path, matrix)
                 self._embeddings = matrix
-                print(f"[index] cached embeddings {matrix.shape}")
+                print(f"[index] cached embeddings {matrix.shape} -> {emb_path.name}")
 
             self._embedder = embedder
             return True

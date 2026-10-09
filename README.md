@@ -8,7 +8,7 @@
 *Walang datos na lumalabas.*
 
 [![Local AI](https://img.shields.io/badge/inference-100%25%20local-ef233c?style=flat-square)](https://github.com/jcuady/Kalix-AI---App-Builders-PH-HACKATHON)
-[![Tests](https://img.shields.io/badge/tests-73%20passed-2fbf87?style=flat-square)](https://github.com/jcuady/Kalix-AI---App-Builders-PH-HACKATHON)
+[![Tests](https://img.shields.io/badge/tests-101%20passed-2fbf87?style=flat-square)](https://github.com/jcuady/Kalix-AI---App-Builders-PH-HACKATHON)
 [![No cloud calls](https://img.shields.io/badge/cloud%20API%20calls-0-a78bfa?style=flat-square)](https://github.com/jcuady/Kalix-AI---App-Builders-PH-HACKATHON)
 
 **AppBuilders PH Hackathon 2026 · Local AI track · Finance vertical**
@@ -183,7 +183,7 @@ to 5 when a previously-unscored question was scored against verified ground trut
 ### Test suite
 
 ```
-73 passed
+101 passed
 ```
 
 ---
@@ -221,13 +221,18 @@ Open <http://127.0.0.1:8765> for the landing page, or go straight to the console
 ### Verify it yourself
 
 ```powershell
-# 73 Python tests + 95 UI tests
+# 101 Python tests + 95 UI tests
 .venv\Scripts\python.exe -m pytest tests/ -q
 npm --prefix apps\web test
 npm --prefix apps\web run typecheck
 
 # Regenerate the scoreboard from the committed datasets
 .venv\Scripts\python.exe eval\run_eval.py
+
+# What the local neural leg actually contributes (needs the ONNX weights).
+# This is the measurement behind the "is local AI fundamental?" answer, and it
+# is what caught the mean-pooling bug.
+.venv\Scripts\python.exe eval\retrieval_ablation.py
 
 # The no-weights path — proves the copilot works with no model weights at all
 pip install -r requirements-verify.txt
@@ -293,7 +298,7 @@ kalix/
 │  └─ core/          app.py · airgap.py · ledger.py · llm.py     API + proof
 ├─ corpus/           fetch_corpus.py · chunk_corpus.py           7 instruments → 223 chunks
 ├─ eval/             run_eval.py · datasets/ · RESULTS.md        the scoreboard
-├─ tests/            73 Python + 95 UI tests
+├─ tests/            101 Python + 95 UI tests
 ├─ models/           download_models.py · registry.yaml
 ├─ apps/web/         React console + landing page + verify-ui.mjs
 ├─ branding/         kalix-mark.svg (vector master) · brand.md
@@ -382,6 +387,8 @@ Full transparency, because the failures are the most useful part of this project
 | **The audit ledger was flooded by its own health check** | The console re-probes the network every 20 s so the air-gap claim can be falsified live, and every probe wrote a ledger entry — about **4,300 identical entries a day**, burying the `pii_redaction` and `copilot_answer` records the trail exists to prove | The probe still runs on every call; the ledger now records a **change** in outbound reachability, not each poll. An unchanged state is not an auditable event. Covered by `tests/test_audit_events.py`. |
 | **Two status tones shared one icon** | `refuse` and `neutral` both rendered `HelpCircle`, so desaturating the UI made two different states identical — quietly breaking the four-channel status guarantee | Caught by a test that asserts every tone has a distinct glyph. `neutral` now uses `CircleDashed`. The test, not the component, was the arbiter. |
 | **`?view=egress` was a dead link** | Navigation lived only in React state, so a shared URL always reopened the Copilot and Back did nothing | The active control now lives in the URL, with an unknown value falling back to the Copilot instead of rendering a blank screen. |
+| **We were mean-pooling an e5 model** | `intfloat/multilingual-e5-small` requires **CLS pooling** per its model card. With BERT-style mean pooling the dense leg scored *below* a lexical-only baseline — it was actively hurting retrieval, and no headline metric noticed | Added `eval/retrieval_ablation.py`, which ranks the correct instrument per question with and without the model. It failed first: paraphrase MRR 0.552 vs 0.572. Fixed to CLS pooling, re-encoded, re-measured: 0.578 vs 0.572. Published metrics were unchanged throughout — which is exactly why the ablation was needed. |
+| **We claimed we open no socket at all** | `/api/airgap` opens a real TCP connection to fixed public resolvers on every probe, because a judge must be able to falsify the badge by pulling the cable | Restated the claim accurately in seven documents and enforced it: `tests/test_airgap_claims.py` fails if any runtime module outside the probe gains a network primitive. |
 
 **Judgement calls we made against our own convenience:** we did not tune BM25 until the one failing
 evaluation case went green. It is a corpus coverage gap, and we would rather publish a red number

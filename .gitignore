@@ -9,6 +9,9 @@ models/llamacpp/
 corpus/raw/*.pdf
 corpus/raw/*.html
 corpus/processed/embeddings.npy
+# Pooling-mode-scoped embedding caches (embeddings.cls.npy, ...). Regenerated
+# from the corpus whenever the encoder or pooling changes.
+corpus/processed/embeddings.*.npy
 
 # --- runtime state ---
 data/

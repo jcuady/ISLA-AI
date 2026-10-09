@@ -36,6 +36,36 @@ TOKENIZER_DIR = _ASSET_DIR
 
 MAX_LEN = 512
 
+# CLS is what multilingual-e5 requires for retrieval. Overridable only so the
+# ablation can reproduce the old behaviour deliberately, never by accident.
+POOLING = "cls"
+
+
+def pool(vecs, mask, mode: str = "cls"):
+    """Reduce token vectors to one L2-normalised sentence vector.
+
+    `intfloat/multilingual-e5-small` requires **CLS pooling** - the first token
+    embedding - for retrieval, per its model card. Mean pooling is the BERT
+    convention and silently produces vectors in the wrong space: the ablation in
+    `eval/retrieval_ablation.py` measured the dense leg scoring *below* a
+    lexical-only baseline while mean pooling was in use.
+
+    `mode` exists so the regression cannot be reintroduced silently: an
+    unrecognised value raises rather than defaulting to something plausible.
+    """
+    import numpy as np
+
+    if mode == "cls":
+        pooled = np.asarray(vecs)[:, 0, :]
+    elif mode == "mean":
+        m = np.asarray(mask)[..., None].astype("float32")
+        pooled = (np.asarray(vecs) * m).sum(axis=1) / np.clip(m.sum(axis=1), 1e-9, None)
+    else:
+        raise ValueError(f"unknown pooling mode: {mode!r} (expected 'cls' or 'mean')")
+
+    norms = np.clip(np.linalg.norm(pooled, axis=1, keepdims=True), 1e-9, None)
+    return (pooled / norms).astype("float32")
+
 
 class Embedder:
     """Lazy ONNX embedder. Never raises at import time - the copilot degrades to
@@ -88,15 +118,8 @@ class Embedder:
         feed = {k: v for k, v in feed.items() if k in required}
 
         outputs = self._session.run(None, feed)
-        vecs = outputs[0]
-        # Mean-pool over the attention mask, then L2-normalise so the dot product
-        # in retrieval.py is a cosine similarity.
-        mask = inputs["attention_mask"][..., None].astype("float32")
-        summed = (vecs * mask).sum(axis=1)
-        counts = np.clip(mask.sum(axis=1), 1e-9, None)
-        pooled = summed / counts
-        norms = np.clip(np.linalg.norm(pooled, axis=1, keepdims=True), 1e-9, None)
-        return (pooled / norms).astype("float32")
+        # e5 requires CLS pooling, not the BERT-style mean. See `pool()`.
+        return pool(outputs[0], inputs["attention_mask"], mode=POOLING)
 
     def encode_queries(self, texts: list[str]):
         return self._run(texts, "query: ")
