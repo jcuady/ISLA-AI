@@ -87,8 +87,9 @@ def run_probe(bind_host: str = "127.0.0.1") -> ProbeResult:
         )
     elif outbound_blocked:
         note = (
-            "Outbound TCP is blocked but DNS still resolves. No data is leaving - "
-            "KALIX never opens an outbound socket - but the host is not fully air-gapped."
+            "Outbound TCP is blocked but DNS still resolves. KALIX transmits no "
+            "data - the only connections it opens are the empty TCP handshakes "
+            "this probe just made - but the host is not fully air-gapped."
         )
     else:
         note = (

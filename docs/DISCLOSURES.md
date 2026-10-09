@@ -26,8 +26,12 @@ cloud AI API.
 | lawphil.net | **No** (build time only) | Public text of RA 10173 |
 | Google Fonts / CDN / analytics | **No** | The UI ships as static assets; **no telemetry, no analytics, no crash reporting, no update pings** |
 
-The running application opens **zero outbound sockets**. The `/api/airgap` route actively probes
-outbound connectivity and reports the observed result — see [`AIRGAP_VERIFICATION.md`](AIRGAP_VERIFICATION.md).
+The running application transmits no data to any third party and calls no external service.
+Stated precisely, because the stronger-sounding version of this claim was not true: `/api/airgap`
+does open a real TCP connection to fixed public resolvers on every probe. It sends a handshake and
+no payload, and it exists so the air-gap claim can be falsified by pulling the cable.
+`tests/test_airgap_claims.py` enforces that no other runtime module gains a network primitive —
+see [`AIRGAP_VERIFICATION.md`](AIRGAP_VERIFICATION.md).
 
 > **What requires internet:** the *first* build only — downloading model weights and public legal
 > documents. After that, KALIX runs fully offline, and that is demonstrated live in the demo.

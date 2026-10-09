@@ -23,7 +23,7 @@ operator owns the key.
                             │
 ┌─ TRUSTED CORE ────────────▼───────────────────────────────────┐
 │  FastAPI process · PII engine · retrieval · ledger            │
-│  No outbound socket by construction                          │
+│  No data leaves; no cloud call on the request path                │
 └──────────────────────────────────────────────────────────────┘
 ```
 

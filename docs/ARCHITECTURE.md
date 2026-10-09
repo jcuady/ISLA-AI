@@ -34,7 +34,7 @@ together and why.
                  │  └──────────────────────────────────────┘  │
                  └───────────────────────────────────────────┘
                                       │
-                        no outbound socket, ever
+                        no data leaves the trusted core
 ```
 
 The browser is a client, not a dependency. Everything is loopback. `assert_loopback()` runs at import

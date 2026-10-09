@@ -1,7 +1,9 @@
 # Verifying the air-gap claim yourself
 
-KALIX claims it opens no outbound socket. This document is how you check that claim rather than take
-it on faith. Every step is a falsifiable check.
+KALIX claims that no customer data leaves the machine and that no cloud service is called. It does
+**not** claim it opens no socket — section 1 below explains why that would be a dishonest claim.
+This document is how you check the real claim rather than take it on faith. Every step is a
+falsifiable check, and one of them is a test that fails the build.
 
 ---
 
@@ -136,7 +138,11 @@ Expected and acceptable:
   reachability and transmits no payload.
 - `services/core/llm.py` — talks to the **local** llama.cpp server on `127.0.0.1`.
 
-There is no outbound call in the PII engine, the copilot, or the API request path.
+There is no network call in the PII engine, the copilot, or the API request path.
+`tests/test_airgap_claims.py` enforces this: it walks every module under `services/` with an AST
+parser and fails if any of them other than `airgap.py` and `llm.py` gains a network primitive
+(`socket`, `urlopen`, `requests`, `httpx`, …), and it separately asserts that no cloud AI SDK is
+installed. If someone later adds a `requests.get()` to the copilot, the suite goes red.
 
 ---
 

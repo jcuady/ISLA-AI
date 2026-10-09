@@ -8,6 +8,7 @@ if this script passes, the demo should run start to finish with no surprises.
 
 from __future__ import annotations
 
+import re
 import sys
 import time
 import urllib.request
@@ -75,6 +76,41 @@ for p in REPO_ROOT.rglob("*"):
     except OSError:
         continue
 check("no retired-name references", not offenders, ", ".join(offenders[:3]))
+
+# --- hackathon rules: disclosure completeness --------------------------------
+# The host requires "models, APIs, frameworks, and major tools disclosed". That is
+# checkable: every model in the registry must actually appear in the disclosure,
+# and the rules/criteria must be transcribed somewhere a judge can audit.
+print("\n[hackathon rules]")
+DISCLOSURE_DOCS = [
+    "docs/DISCLOSURES.md",
+    "docs/SUBMISSION.md",
+    "docs/HACKATHON_RULES.md",
+    "docs/CORPUS_SOURCES.md",
+    "docs/LICENSING.md",
+]
+missing_docs = [d for d in DISCLOSURE_DOCS if not (REPO_ROOT / d).exists()]
+check("required disclosure docs present", not missing_docs, ", ".join(missing_docs))
+
+try:
+    registry = (REPO_ROOT / "models" / "registry.yaml").read_text(encoding="utf-8")
+    disclosures = (REPO_ROOT / "docs" / "DISCLOSURES.md").read_text(encoding="utf-8").lower()
+    # registry.yaml is a Markdown table despite the extension; the first cell of
+    # each row is the model key.
+    keys = set(re.findall(r"^\|\s*`([a-z0-9][a-z0-9._-]*)`\s*\|", registry, re.MULTILINE))
+    undisclosed = sorted(k for k in keys if k.split("-")[0] not in disclosures)
+    check(
+        "every registry model appears in DISCLOSURES",
+        bool(keys) and not undisclosed,
+        ", ".join(undisclosed[:3]) or f"{len(keys)} models checked",
+    )
+except OSError as exc:  # noqa: BLE001
+    check("model registry readable", False, str(exc))
+
+reqs = (REPO_ROOT / "requirements.txt").read_text(encoding="utf-8").lower()
+CLOUD_SDKS = ("openai", "anthropic", "google-generativeai", "cohere", "replicate", "groq")
+installed_cloud = [s for s in CLOUD_SDKS if any(l.strip().startswith(s) for l in reqs.splitlines())]
+check("no cloud AI SDK installed", not installed_cloud, ", ".join(installed_cloud))
 
 # --- unit tests -------------------------------------------------------------
 print("\n[tests]")

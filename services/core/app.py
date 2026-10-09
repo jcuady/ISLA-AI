@@ -9,7 +9,10 @@ Binds 127.0.0.1 ONLY. Serves the React UI and the four API surfaces:
     GET  /api/audit         hash-chained ledger
     GET  /api/health        model + corpus readiness
 
-There is no outbound request anywhere in this process.
+No customer data leaves this process and no cloud service is called. The single
+exception to "opens no outbound connection" is GET /api/airgap itself, which
+deliberately opens empty TCP handshakes to fixed public resolvers - a judge has
+to be able to falsify the air-gap claim by pulling the cable.
 """
 
 from __future__ import annotations

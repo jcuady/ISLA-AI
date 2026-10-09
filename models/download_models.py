@@ -83,6 +83,45 @@ WORKERS = 8
 RETRIES = 5
 
 
+def block_ranges(total: int, block: int) -> list[tuple[int, int]]:
+    """Inclusive (start, end) ranges covering [0, total)."""
+    return [(i, min(i + block - 1, total - 1)) for i in range(0, total, block)]
+
+
+def missing_ranges(path: Path, total: int, block: int) -> list[tuple[int, int]]:
+    """Ranges of a preallocated file that are still entirely zero.
+
+    The transfer writes each block at its own offset into a preallocated sparse
+    file, so a block that is not all-zero has already been received. Treating
+    "still zero" as "missing" is what lets an interrupted 2 GB download resume
+    instead of restarting from zero.
+
+    A GGUF legitimately contains zero bytes inside a payload, so a false
+    "missing" verdict only costs a redundant re-fetch; a false "present"
+    verdict cannot happen, because that would require a fully-zero block to
+    have been written.
+    """
+    if not path.exists() or path.stat().st_size < total:
+        return block_ranges(total, block)
+
+    ranges = []
+    with path.open("rb") as fh:
+        for start, end in block_ranges(total, block):
+            fh.seek(start)
+            if fh.read(end - start + 1).strip(b"\x00"):
+                continue
+            ranges.append((start, end))
+    return ranges
+
+
+def write_block(path: Path, start: int, data: bytes) -> int:
+    """Write `data` at `start`. Caller serialises access across threads."""
+    with path.open("r+b") as fh:
+        fh.seek(start)
+        fh.write(data)
+    return len(data)
+
+
 def _url(asset: Asset) -> str:
     return f"{HF}/{asset.repo}/resolve/main/{asset.file}"
 
@@ -106,9 +145,7 @@ def _fetch_block(url: str, start: int, end: int, path: Path, lock: threading.Loc
             if not data:
                 raise OSError("empty range response")
             with lock:
-                with path.open("r+b") as fh:
-                    fh.seek(start)
-                    fh.write(data)
+                write_block(path, start, data)
             return len(data)
         except Exception as exc:  # noqa: BLE001
             last = f"{type(exc).__name__}: {exc}"
@@ -134,45 +171,62 @@ def download(asset: Asset, force: bool = False) -> Path | None:
         return None
 
     part = target.with_suffix(target.suffix + ".part")
-    with part.open("wb") as fh:  # preallocate sparse
-        fh.truncate(total)
+    already = 0
+    if not force and part.exists() and part.stat().st_size == total:
+        # Resume rather than restart: only blocks still holding zeroes are fetched.
+        todo = missing_ranges(part, total, BLOCK)
+        already = total - sum(e - s + 1 for s, e in todo)
+        if not todo:
+            print(f"[skip ] {asset.key:30} already complete ({total / 1e6:,.0f} MB)")
+            return _finalise(part, target, asset)
+        print(f"[resume] {asset.key:30} {already / 1e6:,.0f}/{total / 1e6:,.0f} MB already present")
+    else:
+        with part.open("wb") as fh:  # preallocate sparse
+            fh.truncate(total)
+        todo = block_ranges(total, BLOCK)
 
-    blocks = [(i, min(i + BLOCK - 1, total - 1)) for i in range(0, total, BLOCK)]
-    print(f"[get ] {asset.key:30} {total / 1e6:,.0f} MB in {len(blocks)} blocks")
+    print(f"[get ] {asset.key:30} {len(todo)}/{len(block_ranges(total, BLOCK))} blocks remaining")
 
     lock = threading.Lock()
     done = 0
     started = time.time()
 
     with cf.ThreadPoolExecutor(max_workers=WORKERS) as pool:
-        futs = [pool.submit(_fetch_block, url, s, e, part, lock) for s, e in blocks]
+        futs = [pool.submit(_fetch_block, url, s, e, part, lock) for s, e in todo]
         for fut in cf.as_completed(futs):
             done += fut.result()
             if done % (BLOCK * 4) < BLOCK:
                 elapsed = max(time.time() - started, 0.001)
-                pct = 100 * done / total
+                pct = 100 * (already + done) / total
                 print(
-                    f"      {pct:5.1f}%  {done / 1e6:7.0f}/{total / 1e6:.0f} MB  "
+                    f"      {pct:5.1f}%  {(already + done) / 1e6:7.0f}/{total / 1e6:.0f} MB  "
                     f"{done / 1e6 / elapsed:5.2f} MB/s",
                     flush=True,
                 )
 
     actual = part.stat().st_size
-    if actual != total or done < total * 0.999:
-        print(f"[FAIL] {asset.key}: incomplete {done}/{total} bytes", file=sys.stderr)
+    if actual != total or already + done < total * 0.999:
+        print(
+            f"[FAIL] {asset.key}: incomplete {already + done}/{total} bytes",
+            file=sys.stderr,
+        )
         return None
 
+    return _finalise(part, target, asset)
+
+
+def _finalise(part: Path, target: Path, asset: Asset) -> Path:
+    """Hash the assembled file and promote it out of the .part staging name."""
     h = hashlib.sha256()
     with part.open("rb") as fh:
         while block := fh.read(1 << 22):
             h.update(block)
     digest = h.hexdigest()
-
     part.replace(target)
     print(f"[ok  ] {asset.key:30} sha256={digest[:24]}...")
 
     if asset.key == "multilingual-e5-small-int8":
-        _fetch_siblings(asset, target_dir)
+        _fetch_siblings(asset, target.parent)
 
     return target
 
