@@ -18,7 +18,7 @@ track, not a prediction of the result.
 |---|---|---|---|---|
 | 25% | Problem & Usefulness | **Strong, with one real exposure** | Narrow, named, regulation-backed user | "Would the general public benefit?" — they would not, and we cannot pretend otherwise |
 | 25% | Local AI Implementation | **Vulnerable** | Local inference is *architecturally* necessary | Our own ablation says the local AI is roughly tied with a lexical baseline |
-| 20% | Technical Execution | **Strong** | 213 tests, honest claims, bugs published | Corpus is 7 documents; small-sample metrics |
+| 20% | Technical Execution | **Strong** | 228 tests, honest claims, bugs published | Corpus is 7 documents; small-sample metrics |
 | 15% | Innovation | **Strong** | Refusing to be wrong; correct-refusal as a feature | Verifying your own redactor is good practice, not a novel idea |
 | 15% | Product & Demo Quality | **Medium-strong** | Real console, zero fake buttons | Demo video still pending — that is 15% with a hole in it |
 
@@ -140,7 +140,7 @@ we have earned it and it is the correct framing.
 technically sophisticated is the implementation? · Is it reliable enough for a
 live demonstration?*
 
-**Strongest case.** 114 Python tests + 99 UI tests, all passing. `tsc --noEmit`
+**Strongest case.** 129 Python tests + 99 UI tests, all passing. `tsc --noEmit`
 clean. Zero npm vulnerabilities. Every published metric regenerates from
 committed datasets by running committed code, in CI, on every push. Both web
 surfaces ship `default-src 'none'` and CI asserts zero external requests. The

@@ -17,6 +17,7 @@ to be able to falsify the air-gap claim by pulling the cable.
 
 from __future__ import annotations
 
+import mimetypes
 import os
 import sys
 from contextlib import asynccontextmanager
@@ -24,6 +25,14 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
+
+# The self-hosted woff2 files are served through the SPA fallback, which hands
+# them to FileResponse and lets mimetypes guess the content type. On this
+# platform it has no entry for .woff2, so the fonts ship as
+# application/octet-stream. Chrome tolerates that; Safari refuses to render a
+# font with the wrong MIME type and silently falls back to a system face -
+# which would look like the brand fonts "not working" on a judge's laptop.
+mimetypes.add_type("font/woff2", ".woff2")
 
 from fastapi import FastAPI, HTTPException  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
