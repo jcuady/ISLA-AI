@@ -23,6 +23,8 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from services.copilot.retrieval import expand_query, scope_note_for
+
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 CORPUS_AS_OF = "2024-12-19 (NPC Advisory 2024-04)"
 
@@ -209,8 +211,10 @@ class DPACopilot:
                     "Hindi ito tanong tungkol sa Data Privacy Act o mga patakaran ng NPC, "
                     "kaya wala akong maibibigay na batayan sa loob ng corpus na 'to.\n\n"
                     + REFUSAL_TAGLISH
-                    + "\n\nAng corpus na 'to ay saklaw lamang ang RA 10173, ang IRR, "
-                    "at ang mga circular/advisory ng NPC at BSP."
+                    + "\n\nAng corpus na 'to ay saklaw ang RA 10173, ang IRR, at ang mga "
+                    "circular at advisory ng NPC, at ang Isla AI Operational Guide para sa "
+                    "front-line ng bangko. Wala rito ang mga circular ng Bangko Sentral o "
+                    "ang PCI DSS."
                 ),
                 refused=True,
                 confidence=_native_float(top_score),
@@ -222,7 +226,15 @@ class DPACopilot:
                 notes=["refused: out of domain for the PH privacy corpus"],
             )
 
-        query_terms = {t for t in re.findall(r"[a-z0-9]{3,}", question.lower())}
+        # Sentences are matched against the EXPANDED query, not the raw question.
+        # "Can I ask the customer for the PIN at the back of their credit card?"
+        # contains no legal vocabulary at all, so raw-term matching scored every
+        # sentence in Section 20 equally and the operative-sentence bonus picked
+        # whichever "shall" happened to come first. Feeding it the statutory
+        # vocabulary instead makes Section 20(e) - employees, agents and
+        # representatives hold personal information under strict confidentiality
+        # - the sentence that actually answers the question.
+        query_terms = {t for t in expand_query(question) if len(t) >= 3}
 
         # Rule 3: extractive-first. Build the grounded answer from retrieved spans.
         citations: list[dict] = []
@@ -247,7 +259,27 @@ class DPACopilot:
                 ) else 1
             )
 
-        for rank, hit in enumerate(ordered[:3], start=1):
+        # Skip chunks that overlap a chunk already cited. The chunker splits long
+        # sections with a 260-character overlap, so "Section 20" and "Section 20.
+        # (cont.)" both contain paragraph (e) verbatim. Citing both and printing
+        # the same sentence twice under two different labels reads like the
+        # copilot padded its answer to look thorough. Overlapping candidates are
+        # skipped so the third slot goes to a genuinely different provision.
+        accepted_texts: list[str] = []
+
+        def _is_overlap(candidate: str) -> bool:
+            head = re.sub(r"\s+", " ", candidate).strip()[:240]
+            for already in accepted_texts:
+                if head in already or already in head:
+                    return True
+            return False
+
+        rank = 0
+        for hit in ordered:
+            if rank >= 3:
+                break
+            if _is_overlap(hit.chunk["text"]):
+                continue
             quotes = _best_sentences(hit.chunk["text"], query_terms, limit=2)
             if not quotes:
                 continue
@@ -255,6 +287,8 @@ class DPACopilot:
             if quote in seen_text:
                 continue
             seen_text.add(quote)
+            accepted_texts.append(re.sub(r"\s+", " ", hit.chunk["text"]).strip())
+            rank += 1
 
             citation = {
                 "id": hit.chunk["chunk_id"],
@@ -314,6 +348,17 @@ class DPACopilot:
         if not re.search(r"\[[A-Z0-9][^\]]+\]", answer_text):
             answer_text = f"{answer_text}\n\n{parts[0]}"
             notes.append("citation restored after generation")
+
+        # Operational boundary. Retrieval can establish that soliciting a card
+        # secret is a data-privacy matter and cite the sections that make it
+        # one. It cannot establish whether the bank's card programme permits
+        # it, because that rule is not in this corpus. Say so, in the answer,
+        # every time - an operator who takes a confident answer as a go-ahead
+        # is exactly the failure this product exists to prevent.
+        scope_note = scope_note_for(question)
+        if scope_note and scope_note not in answer_text:
+            answer_text = f"{answer_text}\n\n{scope_note}"
+            notes.append("operational scope note appended (PCI DSS / BSP not in corpus)")
 
         elapsed = (time.perf_counter() - started) * 1000
         return CopilotAnswer(

@@ -68,7 +68,7 @@ NOISE_LINE_RE = re.compile(r"^\s*(?:page\s+\d+|-\s*\d+\s*-|©|\|.*\|)\s*$", re.I
 # Not citable authority, so the chunker must not emit it.
 BOILERPLATE_SECTION_RE = re.compile(
     r"\b(?:effectivity|effect\s+of\s+this|approval|approved|date\s+of\s+approval|"
-    r"date\s+of\s+effectivity|signature|signatures|issuance)\b",
+    r"date\s+of\s+effectivity|signature|signatures|issuance|separability)\b",
     re.IGNORECASE,
 )
 
@@ -105,12 +105,39 @@ def read_source(path: Path) -> str:
     return _re.sub(r"<[^>]+>", "\n", html)
 
 
+# A section heading is a title: "Section 11. Retention of call recordings".
+# Body text that merely begins a line with a cross-reference reads as
+# "Section 11(f) requires that personal information be kept" - a sentence whose
+# first word after the number is a finite verb. Treating that as a header
+# relabels the paragraph it opens and swallows the real header after it.
+_HEADING_LEADING_VERBS = frozenset(
+    {
+        "requires", "require", "shall", "must", "is", "are", "was", "were",
+        "has", "have", "can", "may", "will", "means", "means", "refers",
+        "states", "provides", "sets", "applies", "covers", "gives", "allows",
+        "prohibits", "imposes", "mandates", "becomes", "takes", "does", "do",
+        "contains", "includes", "lists", "describes", "governs", "applies",
+    }
+)
+
+
 def find_headers(lines: list[str]) -> list[tuple[int, str]]:
     """Return (line_index, section_label) for every legal header we can cite.
 
     Administrative trailing clauses are skipped: they are not authority for
     anything, and when a source's text order is scrambled they would otherwise
     label the body text that follows them. See BOILERPLATE_SECTION_RE.
+
+    Two further guards keep cross-references from being mistaken for headers:
+
+      * a line that mentions "Section" more than once is not a header - a real
+        header names its own section and nothing else; and
+      * a line whose first word after the number is a finite verb is a
+        sentence, not a title.
+
+    Both exist because the Isla AI operational guide shipped sections labelled
+    "Section 12. RA 10173 Section 11(f) requires that personal information be
+    kept", which is a citation to nothing at all.
     """
     found: list[tuple[int, str]] = []
     for i, line in enumerate(lines):
@@ -119,11 +146,20 @@ def find_headers(lines: list[str]) -> list[tuple[int, str]]:
             continue
         if BOILERPLATE_SECTION_RE.search(stripped):
             continue
+        if len(re.findall(r"\bsections?\b", stripped, re.IGNORECASE)) > 1:
+            continue
         for pat in SECTION_PATTERNS:
             m = pat.match(stripped)
-            if m:
-                found.append((i, stripped[:120]))
+            if not m:
+                continue
+            groups = m.groups()
+            # The last group is the trailing title text for every pattern here.
+            trailing = (groups[-1] or "").strip()
+            first_word = re.split(r"[\s(,;:]", trailing, maxsplit=1)[0].lower()
+            if first_word in _HEADING_LEADING_VERBS:
                 break
+            found.append((i, stripped[:120]))
+            break
     return found
 
 

@@ -8,6 +8,11 @@ so every source is fetched through a mirror chain:
   3. lawphil      - lawphil.net mirror for RA 10173
 
 All documents are public government publications; nothing here requires clearance.
+
+One document is NOT fetched: ISLA-GUIDE-CS is authored in-repo (corpus/raw/
+ISLA-GUIDE-CS.md) and marked local_only. It still travels through this script,
+the manifest and the chunker so it inherits the same citation metadata, but no
+network request is made for it.
 """
 
 from __future__ import annotations
@@ -50,6 +55,11 @@ class SourceDoc:
     sha256: str | None = None
     fetch_status: str = "pending"
     notes: str = ""
+    # Authored in-repo instead of fetched. Used for the operational guide, which
+    # is Isla AI's own compilation and has no origin URL to retrieve. It still
+    # has to travel through the manifest and the chunker like everything else,
+    # otherwise it would be invisible to retrieval and to the citation metadata.
+    local_only: bool = False
 
 
 # Target set for the shipped scope. Prioritised by what the demo queries actually cite.
@@ -172,6 +182,23 @@ SOURCES: list[SourceDoc] = [
             "NPC-Circular-No.-2023-04_Guidelines-on-Consent_07Nov2023.pdf"
         ],
         notes="SS18 profiling and automated processing consent.",
+    ),
+    SourceDoc(
+        doc_id="ISLA-GUIDE-CS",
+        title="Isla AI Operational Guide - Front-line and Customer-Facing "
+              "Data Handling in Philippine Banking",
+        issuer="Isla AI (compiled aid; not a legal source)",
+        doc_type="sector_guidance",
+        origin_url="isla-ai://corpus/ISLA-GUIDE-CS",
+        authority_tier=3,
+        effective_date="2026-10-09",
+        local_path="corpus/raw/ISLA-GUIDE-CS.md",
+        local_only=True,
+        notes="NOT primary law. Compiled by Isla AI to route front-line questions "
+              "to the right instrument. Cites the indexed DPA sections, and names "
+              "PCI DSS and BSP regulations as pointers it does not hold. Ranked "
+              "below every statute, circular and advisory so it can never "
+              "outrank a real source.",
     ),
 ]
 
@@ -306,28 +333,115 @@ def try_mirrors(doc: SourceDoc, retries: int = 2) -> Path | None:
     return None
 
 
+def adopt_local(doc: SourceDoc) -> Path | None:
+    """Verify an authored in-repo source instead of downloading it."""
+    src = REPO_ROOT / (doc.local_path or "")
+    if not src.exists():
+        print(f"[FAIL] {doc.doc_id:18} local file missing: {src}", file=sys.stderr)
+        return None
+    data = src.read_bytes()
+    text = data.decode("utf-8", errors="replace")
+    if len(text) < 4000:
+        print(f"[FAIL] {doc.doc_id:18} local file too short ({len(text)} chars)",
+              file=sys.stderr)
+        return None
+    doc.sha256 = hashlib.sha256(data).hexdigest()
+    doc.fetch_status = f"ok:local:{len(data)}b:authored"
+    print(f"[ok  ] {doc.doc_id:18} via local    {len(data):>9,}b  md   authored in repo")
+    return src
+
+
+def adopt_existing(doc: SourceDoc) -> Path | None:
+    """Adopt a raw file already on disk instead of downloading it again.
+
+    This is what makes `fetch_corpus.py --offline` possible, which matters for
+    a product whose central claim is that it runs air-gapped: the corpus has to
+    be buildable on a box that cannot reach privacy.gov.ph at all.
+    """
+    for ext in ("pdf", "html", "md"):
+        candidate = RAW_DIR / f"{doc.doc_id}.{ext}"
+        if not candidate.exists():
+            continue
+        data = candidate.read_bytes()
+        doc.local_path = str(candidate.relative_to(REPO_ROOT))
+        doc.sha256 = hashlib.sha256(data).hexdigest()
+        doc.fetch_status = f"ok:existing:{len(data)}b:{ext}"
+        print(f"[ok  ] {doc.doc_id:18} via disk     {len(data):>9,}b  {ext}  "
+              "already in corpus/raw")
+        return candidate
+    return None
+
+
 def write_manifest() -> None:
+    """Write the manifest, preserving local_path for documents this run skipped.
+
+    A partial run (`fetch_corpus.py ISLA-GUIDE-CS`) must not erase the seven
+    other documents' local_path entries. Doing so silently rebuilt the chunk
+    file from one document and dropped the corpus from 227 chunks to 19 with
+    no error anywhere: the chunker skips a document with no local_path and
+    prints "[skip] ... not fetched", which reads like a download problem
+    rather than a build one. An entry is only allowed to lose its local_path
+    if the file it pointed at has actually gone.
+    """
+    previous: dict[str, dict] = {}
+    if METADATA_PATH.exists():
+        try:
+            previous = {d["doc_id"]: d for d in json.loads(
+                METADATA_PATH.read_text(encoding="utf-8")
+            )}
+        except (json.JSONDecodeError, KeyError, TypeError):
+            previous = {}
+
+    entries = []
+    for doc in SOURCES:
+        row = asdict(doc)
+        if not row["local_path"]:
+            prior = previous.get(doc.doc_id, {})
+            prior_path = prior.get("local_path")
+            if prior_path and (REPO_ROOT / prior_path).exists():
+                row["local_path"] = prior_path
+                row["sha256"] = prior.get("sha256") or row["sha256"]
+                row["fetch_status"] = prior.get("fetch_status") or row["fetch_status"]
+                print(f"[keep] {doc.doc_id:18} reusing {prior_path}")
+        entries.append(row)
+
     METADATA_PATH.write_text(
-        json.dumps([asdict(d) for d in SOURCES], indent=2, ensure_ascii=False),
+        json.dumps(entries, indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
 
 
 def main() -> int:
-    only = set(sys.argv[1:])
+    argv = [a for a in sys.argv[1:] if not a.startswith("-")]
+    offline = "--offline" in sys.argv[1:]
+    only = set(argv)
     docs = [d for d in SOURCES if not only or d.doc_id in only]
-    print(f"Isla AI corpus fetch - {len(docs)} required document(s)\n")
+    print(f"Isla AI corpus fetch - {len(docs)} required document(s)"
+          f"{' [offline]' if offline else ''}\n")
 
     ok = 0
     for doc in docs:
-        if try_mirrors(doc):
+        if doc.local_only:
+            got = adopt_local(doc)
+        elif offline:
+            got = adopt_existing(doc)
+            if got is None and not only:
+                print(f"[FAIL] {doc.doc_id:18} not in corpus/raw and --offline",
+                      file=sys.stderr)
+        else:
+            got = try_mirrors(doc)
+            if got is None:
+                got = adopt_existing(doc)
+        if got:
             ok += 1
 
     print("\n-- optional (non-blocking) --")
     for doc in OPTIONAL_SOURCES:
         if only and doc.doc_id not in only:
             continue
-        if try_mirrors(doc) is None:
+        if not offline and try_mirrors(doc) is not None:
+            continue
+        if adopt_existing(doc) is None:
             print(f"      (continuing without {doc.doc_id} - not required by the copilot)")
 
     write_manifest()

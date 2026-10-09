@@ -33,6 +33,11 @@ W_BM25 = 0.25
 W_SECTION = 0.15
 
 # Authority multipliers by document type. Tier 1 is the statute itself.
+#
+# sector_guidance is Isla AI's own compiled operational aid. It is deliberately
+# below everything, including internal SOPs at 0.70: a question that a statute
+# can answer must never be answered by the guide instead, and a judge should be
+# able to see at a glance that the guide outranked nothing.
 AUTHORITY_WEIGHT = {
     "statute": 1.00,
     "irr": 0.98,
@@ -41,6 +46,7 @@ AUTHORITY_WEIGHT = {
     "bsp_memo": 0.88,
     "morb": 0.88,
     "sop": 0.70,
+    "sector_guidance": 0.55,
 }
 
 # Legal tokens that must match lexically to score the section-ID bonus.
@@ -74,6 +80,17 @@ DOMAIN_TERMS = (
     "karapatang", "customer", "collection", "data ng", "basehan",
     "ahente", "complaint", "reklamo", "itinatago", "itago", "pasok",
     "labas", "privacy officer", "compliance officer",
+    # Front-line and customer-facing vocabulary. A call-centre agent asking
+    # "pwede ba humingi ng CVV sa customer?" was refused as out-of-scope
+    # because none of the above terms appeared in it. That was wrong: asking
+    # for a card credential IS data-privacy processing, so the question is
+    # squarely in domain even though it contains no legal vocabulary at all.
+    "credit card", "debit card", "card number", "cardholder", "cvv", "cvc",
+    "security code", "atm", "pin", "password", "otp", "one-time",
+    "verification code", "agent", "call center", "call centre",
+    "front line", "frontline", "teller", "recorded call", "recording",
+    "transcript", "chat log", "screenshot", "employee", "staff",
+    "disclose", "solicit", "soliciting", "over the phone", "caller",
 )
 
 
@@ -218,6 +235,104 @@ _DATA_HANDLING_CUES = ("breach", "leak", "nag-leak", "compromised", "hacked",
 _DATA_HANDLING_TERMS = ("breach", "compromised", "unauthorized", "affected",
                         "notification", "notify", "incident")
 
+# Front-line and customer-facing phrasing. The recurring bank question is not
+# written in legal register: a call-centre agent asks "pwede ba humingi ng CVV
+# sa customer?" and the statute never uses the words CVV, agent or customer.
+# Raw BM25 scored that question at 0.000 against the provision that actually
+# decides it - RA 10173 Section 11(d), which requires collection to be adequate
+# and not excessive, and Section 20(e), which holds agents to strict
+# confidentiality. So the phrasing is mapped onto the words the Act uses.
+#
+# ROLE and ACTION are deliberately separate lists. "Can our call center use AI
+# to score our agents?" contains two role cues and no action, and it is an
+# automated-decision question answered by NPC Advisory 2024-04. Expanding it
+# toward confidentiality pulled it off that document and dropped source
+# attribution from 80% to 60%. Roles describe WHO is asking, which says nothing
+# about what the question is about; only actions do.
+_FRONTLINE_ROLE_CUES = (
+    "agent", "ahente", "teller", "call center", "call centre",
+    "customer service", "customer-facing", "staff", "employee",
+    "caller", "over the phone", "front line", "frontline", "front desk",
+)
+_FRONTLINE_ACTION_CUES = (
+    "recorded call", "recording", "record the call", "call recording",
+    "tape the call", "transcript", "chat log", "screenshot",
+    "conversation with", "chat with the", "how long", "retention",
+    "delete the recording", "disclose to the", "read out", "spell out",
+    "write down", "take down", "note down",
+    "humingi", "i-ask", "magtanong", "ibigay", "kayang",
+    "ask the customer", "ask the client", "solicit",
+)
+_FRONTLINE_TERMS = (
+    # DPA anchors that decide a front-line question.
+    "sensitive", "personal", "information", "financial",
+    "adequate", "excessive", "purpose", "declared", "legitimate",
+    "strict", "confidentiality", "employees", "agents", "representatives",
+    "security", "measures", "reasonable", "appropriate",
+    "consent", "lawful", "unauthorized", "processing", "penalized",
+    "breach", "notification", "data", "protection", "officer",
+    "retention", "retained", "collected",
+)
+
+# Card and account credentials specifically. These map onto the two provisions
+# that make soliciting a card secret a privacy matter rather than a style rule:
+# RA 10173 Section 11(d) (adequate and not excessive) and Section 20(e)
+# (employees, agents and representatives hold personal information under
+# strict confidentiality).
+_CARD_CREDENTIAL_CUES = (
+    "cvv", "cvc", "cvv2", "cid", "security code", "card verification",
+    "likod ng credit card", "back of the card", "back of their card",
+    "cardholder data", "card number", "credit card", "debit card",
+    " atm pin", "pin code", "personal identification number",
+    "password", "login", "log-in", "one-time", "otp", "authenticator",
+    "verification code",
+)
+_CARD_CREDENTIAL_TERMS = (
+    "sensitive", "authentication", "personal", "information", "financial",
+    "adequate", "excessive", "purpose", "collected",
+    "strict", "confidentiality", "employees", "agents", "representatives",
+    "security", "measures", "reasonable", "appropriate", "unlawful",
+    "disclosure", "unauthorized", "processing", "penalized",
+    "card", "verification", "value", "pin", "password", "credential",
+    "login", "breach", "notification", "72", "hours",
+)
+
+
+# Classification questions ("is credit card information SPI?") are a different
+# question from handling questions. The handling expansions pull Section 20
+# hard, because Section 20 really is the strongest provision for "may I collect
+# this". But a question about what a category of data IS is answered by the
+# SPI definition in RA 10173 Section 3 and the SPI rules in Section 13.
+_CLASSIFICATION_CUES = (
+    "sensitive personal", "sensitive?", "considered sensitive", "classified",
+    "is it spi", "spi?", " considered personal information", "is personal data",
+    "does it count as", "fall under", "falls under", "covered by",
+    "considered private", "private information",
+)
+_CLASSIFICATION_TERMS = (
+    "sensitive", "personal", "information", "privileged",
+    "prohibited", "consent", "authorization", "lawful", "processing",
+    "financial", "definition", "means", "refers",
+)
+
+
+# Registration questions. "Kailangan ba mag-register ng AI credit scoring model
+# ang banko namin?" was answered with NPC Advisory 2024-04 (what AI systems
+# owe) instead of NPC Circular 2022-04 (how a processing system is registered),
+# because "ai", "credit", "scoring" and "model" all pull the advisory and
+# "register" alone is too rare to pull back. Registration is its own body of
+# vocabulary with its own instrument.
+_REGISTRATION_CUES = (
+    "mag-register", "magregister", "registro", "register", "registration",
+    "dps", "data processing system", "processing system", "seal of registration",
+    "certificate of registration", "notified entity", "privacy.gov.ph/registration",
+)
+_REGISTRATION_TERMS = (
+    "registration", "registry", "registered", "register", "certificate",
+    "seal", "processing", "system", "systems", "notification", "notify",
+    "circular", "dpo", "accountability", "penal",
+)
+
 
 def expand_query(query: str) -> list[str]:
     """Query tokens plus statutory synonyms implied by the phrasing."""
@@ -227,11 +342,62 @@ def expand_query(query: str) -> list[str]:
         tokens += [_stem(t) for t in _OUTBOUND_TERMS]
     if any(cue in low for cue in _DATA_HANDLING_CUES):
         tokens += [_stem(t) for t in _DATA_HANDLING_TERMS]
+    if any(cue in low for cue in _FRONTLINE_ACTION_CUES):
+        tokens += [_stem(t) for t in _FRONTLINE_TERMS]
+    if any(cue in low for cue in _CARD_CREDENTIAL_CUES):
+        tokens += [_stem(t) for t in _CARD_CREDENTIAL_TERMS]
+    if any(cue in low for cue in _CLASSIFICATION_CUES):
+        tokens += [_stem(t) for t in _CLASSIFICATION_TERMS]
+    if any(cue in low for cue in _REGISTRATION_CUES):
+        tokens += [_stem(t) for t in _REGISTRATION_TERMS]
     return tokens
 
 
+# Questions that turn on an operational rule the corpus does not hold.
+_SOLICITATION_CUES = (
+    "humingi", "i-ask", "magtanong", "tinanong", "ask", "asking", "request",
+    "solicit", "disclose", "kayang", "ibigay", "pwede", "can i", "can we",
+    "can our", "should i", "should we", "allowed", "permit", "bakit", "why",
+    "take down", "write down", "record", "hold on to",
+    "read", "spell", "say aloud", "recite", "verify", "confirm",
+)
+
+# The one thing this system must never do is let a front-line "can I ask the
+# customer for the CVV?" resolve into a confident yes or no that it has no
+# authority for. The Data Privacy Act makes the situation a privacy matter and
+# the corpus answers that part. Whether the bank's card programme permits the
+# act is set by PCI DSS and Bangko Sentral regulations, which are not indexed.
+# Rather than refuse (the previous behaviour, which read as "not my scope" and
+# was useless to the person asking) or bluff, the copilot answers the part it
+# can cite and then states the boundary out loud.
+SCOPE_NOTE = (
+    "SCOPE NOTE: everything quoted above comes from the instruments this "
+    "system holds locally - the Data Privacy Act, its IRR, and the National "
+    "Privacy Commission circulars. The operational go/no-go rule at the "
+    "counter (whether staff may solicit a card verification value, PIN, "
+    "password or one-time code, and how long a recording may be kept) is set "
+    "by PCI DSS and by Bangko Sentral regulations, neither of which is in "
+    "this corpus, so this answer does not decide that question. Confirm with "
+    "your data protection officer and the bank's card security policy before "
+    "you act on a customer."
+)
+
+
+def scope_note_for(query: str) -> str | None:
+    """The operational-scope boundary, when the question depends on it.
+
+    Fires on a credential or an interaction cue, never on a role alone. A
+    role alone is not an operational question: "can our call center use AI to
+    score our agents" mentions a call centre and has nothing to do with PCI DSS.
+    """
+    low = query.lower()
+    credential = any(cue in low for cue in _CARD_CREDENTIAL_CUES)
+    interaction = any(cue in low for cue in _FRONTLINE_ACTION_CUES)
+    solicitation = any(cue in low for cue in _SOLICITATION_CUES)
+    return SCOPE_NOTE if ((credential or interaction) and solicitation) else None
+
+
 def extract_section_tokens(text: str) -> set[str]:
-    """Pull normalised legal identifiers like '16-03', '2022-04', '10173'."""
     out: set[str] = set()
     for m in SECTION_TOKEN_RE.finditer(text):
         num = re.sub(r"[^0-9\-]", "", m.group(1))
@@ -288,8 +454,22 @@ class HybridIndex:
                 return False
 
             emb_path = PROCESSED / f"embeddings.{embeddings.POOLING}.npy"
+            cached = None
             if emb_path.exists():
-                self._embeddings = np.load(emb_path)
+                cached = np.load(emb_path)
+                # A cached matrix from a different corpus build is not a stale
+                # cache, it is a crash: search() indexes cosines by chunk
+                # position, so a matrix with the wrong row count raises
+                # IndexError deep inside the query path. The corpus grew from
+                # 227 to 246 chunks when the operational guide was added, which
+                # is exactly how that happened.
+                if cached.shape[0] != len(self.chunks):
+                    print(f"[index] cached embeddings {cached.shape[0]} rows != "
+                          f"{len(self.chunks)} chunks; re-encoding")
+                    cached = None
+
+            if cached is not None:
+                self._embeddings = cached
                 print(f"[index] dense leg on: cached {self._embeddings.shape} ({embeddings.POOLING})")
             else:
                 print(f"[index] encoding corpus with e5-small ({embeddings.POOLING} pooling)...")

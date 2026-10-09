@@ -46,8 +46,32 @@ def test_the_pattern_matches_every_boilerplate_clause_form():
         "Section 26. Approval",
         "SECTION 30. Date of Approval",
         "Section 12. Signature",
+        "SECTION 24. Separability Clause. If any portion or provision",
     ):
         assert BOILERPLATE_SECTION_RE.search(label), label
+
+
+def test_a_line_mentioning_section_twice_is_not_a_header():
+    """Body text that opens with a cross-reference must not relabel itself.
+
+    A real header names its own section and nothing else. This guard exists
+    because the Isla AI guide's sections came out labelled "Section 12. RA 10173
+    Section 11(f) requires that personal information be kept" - a sentence
+    that merely began a line with a cross-reference.
+    """
+    lines = [
+        "Section 10. Retention of call recordings",
+        "The duty rests on RA 10173",
+        "Section 11(f) requires that personal information be kept",
+        "in a form which permits identification for no longer.",
+        "Section 11. Screenshots and note-taking",
+        "Never paste a card number into a chat tool.",
+    ]
+    labels = [label for _, label in find_headers(lines)]
+    assert labels == [
+        "Section 10. Retention of call recordings",
+        "Section 11. Screenshots and note-taking",
+    ], labels
 
 
 def test_the_pattern_does_not_match_substantive_provisions():
@@ -59,6 +83,9 @@ def test_the_pattern_does_not_match_substantive_provisions():
         "Section 7. Registration of Systems",
         "Section 41. Breach Report",
         "Section 38. Data Breach Notification",
+        "SECTION 3. Definition of Terms.  For the purpose of this Circular",
+        "Section 17.  Notification of the Commission. The personal information",
+        "Section 26. Organizational Security Measures. Where appropriate",
     ):
         assert not BOILERPLATE_SECTION_RE.search(label), label
 
@@ -107,6 +134,7 @@ def test_every_chunk_is_attributable_to_a_real_document():
         "NPC-CIRC-2022-01",
         "NPC-CIRC-2022-04",
         "NPC-CIRC-2023-04",
+        "ISLA-GUIDE-CS",
     }
     unknown = {c["doc_id"] for c in load_chunks()} - known
     assert not unknown, unknown

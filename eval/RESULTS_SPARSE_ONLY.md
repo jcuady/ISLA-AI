@@ -5,41 +5,6 @@ from the committed datasets in `eval/datasets/` — nothing is hand-entered.
 
 > **Sparse-only run.** The dense embedding model was deliberately not loaded. This file measures the degraded air-gap path and is kept separate from the headline scoreboard in `RESULTS.md`.
 
-## PII engine (Egress Guard)
-
-- Cases: **40** (29 positive, 11 negative)
-- Expected entity spans: **36**
-
-| Metric | Target | Measured | Status |
-|---|---|---|---|
-| Macro-F1 (PH entity types) | >= 0.90 | 1.0000 | PASS |
-| High-risk recall | >= 0.99 | 100.00% | PASS |
-| High-risk precision | >= 0.95 | 100.00% | PASS |
-| Residual leakage rate | 0.00% | 0.00% | PASS |
-| Luhn pass rate (flagged PANs) | >= 0.98 | 100.00% | PASS |
-| Negatives mis-redacted | 0 | 0 | PASS |
-
-Overall precision **100.00%**, recall **100.00%**, F1 **1.0000**
-
-### Per-entity breakdown
-
-| Entity type | Support | Precision | Recall | F1 |
-|---|---|---|---|---|
-| BANK_ACCOUNT | 3 | 100.00% | 100.00% | 1.0000 |
-| CARD_CVV | 3 | 100.00% | 100.00% | 1.0000 |
-| CARD_PAN | 5 | 100.00% | 100.00% | 1.0000 |
-| EMAIL | 1 | 100.00% | 100.00% | 1.0000 |
-| GCASH_MOBILE | 4 | 100.00% | 100.00% | 1.0000 |
-| PASSPORT | 1 | 100.00% | 100.00% | 1.0000 |
-| PHILSYS_ID | 1 | 100.00% | 100.00% | 1.0000 |
-| PH_MOBILE | 5 | 100.00% | 100.00% | 1.0000 |
-| PH_SSS | 4 | 100.00% | 100.00% | 1.0000 |
-| PH_TIN | 4 | 100.00% | 100.00% | 1.0000 |
-| REMITTANCE_REF | 2 | 100.00% | 100.00% | 1.0000 |
-| SALARY | 3 | 100.00% | 100.00% | 1.0000 |
-
-Latency p50 **0.2 ms**, p95 **0.5 ms**
-
 ## DPA Copilot (retrieval + citation enforcement)
 
 - Retrieval mode: **bm25+section**
@@ -48,19 +13,19 @@ Latency p50 **0.2 ms**, p95 **0.5 ms**
 | Metric | Target | Measured | Status |
 |---|---|---|---|
 | Citation accuracy | >= 0.95 | 100.00% | PASS |
-| Correct source document | >= 0.80 | 80.00% | PASS |
+| Correct source document | >= 0.80 | 60.00% | MISS |
 | Correct-refusal rate | >= 0.90 | 100.00% | PASS |
-| Copilot latency p50 | < 4000 ms | 2 ms | PASS |
+| Copilot latency p50 | < 4000 ms | 3 ms | PASS |
 
 ### Per-question detail
 
 | Question | Refused | Cited | Source correct | Conf | ms |
 |---|---|---|---|---|---|
-| Ilang oras dapat ko i-report ang data breach? | no | yes | yes | 0.60 | 4 |
-| Pwede ba ipasa ang CDR ng customer ko sa vendo | no | yes | yes | 0.62 | 2 |
-| Can our call center use AI to score our agents | no | yes | yes | 0.59 | 2 |
-| Ano ang fine kapag hindi na-notify ang NPC? | no | yes | yes | 0.61 | 1 |
-| Kailangan ba mag-register ng AI credit scoring | no | yes | no | 0.59 | 2 |
+| Ilang oras dapat ko i-report ang data breach? | no | yes | yes | 0.61 | 6 |
+| Pwede ba ipasa ang CDR ng customer ko sa vendo | no | yes | yes | 0.62 | 3 |
+| Can our call center use AI to score our agents | no | yes | no | 0.61 | 6 |
+| Ano ang fine kapag hindi na-notify ang NPC? | no | yes | yes | 0.61 | 2 |
+| Kailangan ba mag-register ng AI credit scoring | no | yes | no | 0.59 | 3 |
 
 ### Refusal behaviour (out of domain)
 
@@ -69,5 +34,5 @@ Latency p50 **0.2 ms**, p95 **0.5 ms**
 | Ano ang stock price ng BDO ngayong araw? | yes | 0.00 |
 | Who won the 2025 FIFA World Cup? | yes | 0.81 |
 | What is the capital of Kenya? | yes | 0.62 |
-| How do I cook adobo? | yes | 0.62 |
+| How do I cook adobo? | yes | 0.48 |
 | Magkano ang Porsche 911? | yes | 0.00 |

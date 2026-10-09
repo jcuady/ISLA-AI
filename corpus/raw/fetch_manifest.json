@@ -13,8 +13,9 @@
     ],
     "local_path": "corpus\\raw\\RA-10173.html",
     "sha256": "d9f00c3e74239247ad7896bf20ae76e4835b2ffed975f143296b9591b767d20f",
-    "fetch_status": "ok:origin:html:56745b:48002 chars verified",
-    "notes": "Primary statute. Sections 12-20 (rights), 25 (security), 26 (breach), 30 (concealment), 32 (penalties)."
+    "fetch_status": "ok:existing:56745b:html",
+    "notes": "Primary statute. Sections 12-20 (rights), 25 (security), 26 (breach), 30 (concealment), 32 (penalties).",
+    "local_only": false
   },
   {
     "doc_id": "IRR-RA10173",
@@ -30,8 +31,9 @@
     ],
     "local_path": "corpus\\raw\\IRR-RA10173.pdf",
     "sha256": "1d8218f48661ea7fade72a3dda44de5a1cfc08cac50f857d5eb4248b5a45133d",
-    "fetch_status": "ok:origin:pdf:505235b:98221 chars verified",
-    "notes": "IRR SS38-39 breach notification; SS16(c)(6) ADS notice. Verified: 98k chars, 'Section 38' and 'Section 39' present."
+    "fetch_status": "ok:existing:505235b:pdf",
+    "notes": "IRR SS38-39 breach notification; SS16(c)(6) ADS notice. Verified: 98k chars, 'Section 38' and 'Section 39' present.",
+    "local_only": false
   },
   {
     "doc_id": "NPC-ADV-2024-04",
@@ -47,8 +49,9 @@
     ],
     "local_path": "corpus\\raw\\NPC-ADV-2024-04.pdf",
     "sha256": "de6c031e34e24b5653de65518764a77d857259ae3d8de22daa116f8734cccfe4",
-    "fetch_status": "ok:wayback:pdf:196849b:12583 chars verified",
-    "notes": "THE AI-systems advisory. Transparency, accountability, fairness, accuracy, data minimisation, human intervention."
+    "fetch_status": "ok:existing:196849b:pdf",
+    "notes": "THE AI-systems advisory. Transparency, accountability, fairness, accuracy, data minimisation, human intervention.",
+    "local_only": false
   },
   {
     "doc_id": "NPC-CIRC-2022-04",
@@ -64,8 +67,9 @@
     ],
     "local_path": "corpus\\raw\\NPC-CIRC-2022-04.pdf",
     "sha256": "ed55fe1814ff53c01d65a00581f4424271b778fa4b144ca66b63a13d6d14a36e",
-    "fetch_status": "ok:origin:pdf:279913b:40664 chars verified",
-    "notes": "DPS registration, DPO designation, ADS/profiling notification."
+    "fetch_status": "ok:existing:279913b:pdf",
+    "notes": "DPS registration, DPO designation, ADS/profiling notification.",
+    "local_only": false
   },
   {
     "doc_id": "NPC-CIRC-16-03",
@@ -81,8 +85,9 @@
     ],
     "local_path": "corpus\\raw\\NPC-CIRC-16-03.pdf",
     "sha256": "167c9177cbffb84149d689625b95ff0fd5fa00cc47292e74c7d49709ba066103",
-    "fetch_status": "ok:origin:pdf:198660b:32548 chars verified",
-    "notes": "The 72-hour rule, delay conditions, 100-subject threshold. Verified: '72 hours' present in source text."
+    "fetch_status": "ok:existing:198660b:pdf",
+    "notes": "The 72-hour rule, delay conditions, 100-subject threshold. Verified: '72 hours' present in source text.",
+    "local_only": false
   },
   {
     "doc_id": "NPC-CIRC-2022-01",
@@ -98,8 +103,9 @@
     ],
     "local_path": "corpus\\raw\\NPC-CIRC-2022-01.pdf",
     "sha256": "2b8a43124ddf14abbbec6423a781cfab0a1b3ebbdcedd8c5efb22a99d36586a0",
-    "fetch_status": "ok:origin:pdf:346262b:13718 chars verified",
-    "notes": "0.25%-2% of annual gross income fine for failure to notify."
+    "fetch_status": "ok:existing:346262b:pdf",
+    "notes": "0.25%-2% of annual gross income fine for failure to notify.",
+    "local_only": false
   },
   {
     "doc_id": "NPC-CIRC-2023-04",
@@ -115,7 +121,24 @@
     ],
     "local_path": "corpus\\raw\\NPC-CIRC-2023-04.pdf",
     "sha256": "260acf8ed16bc30cbd0e3c01569d163141615a7ee58233e78dd2f39b87a07286",
-    "fetch_status": "ok:origin:pdf:313774b:41624 chars verified",
-    "notes": "SS18 profiling and automated processing consent."
+    "fetch_status": "ok:existing:313774b:pdf",
+    "notes": "SS18 profiling and automated processing consent.",
+    "local_only": false
+  },
+  {
+    "doc_id": "ISLA-GUIDE-CS",
+    "title": "Isla AI Operational Guide - Front-line and Customer-Facing Data Handling in Philippine Banking",
+    "issuer": "Isla AI (compiled aid; not a legal source)",
+    "doc_type": "sector_guidance",
+    "origin_url": "isla-ai://corpus/ISLA-GUIDE-CS",
+    "authority_tier": 3,
+    "effective_date": "2026-10-09",
+    "supersedes": null,
+    "mirrors": [],
+    "local_path": "corpus/raw/ISLA-GUIDE-CS.md",
+    "sha256": "71ac4173c3d55bbb4eb1c91ba8299459bd3eabe704d910933c6195f62fcfbaa0",
+    "fetch_status": "ok:local:19744b:authored",
+    "notes": "NOT primary law. Compiled by Isla AI to route front-line questions to the right instrument. Cites the indexed DPA sections, and names PCI DSS and BSP regulations as pointers it does not hold. Ranked below every statute, circular and advisory so it can never outrank a real source.",
+    "local_only": true
   }
 ]

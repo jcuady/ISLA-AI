@@ -99,6 +99,46 @@ Section-header parsing was corrected during development after it was found to la
 the *following* section's header — which would have made **every citation off by one**. The fix is
 covered by `tests/`.
 
+Two further header guards were added after the front-line guide was authored. A line that mentions
+"Section" more than once is a cross-reference, not a heading, and a line whose first word after the
+number is a finite verb is a sentence, not a title. Without them, body text that happened to wrap
+onto a line beginning "Section 12. RA 10173 Section 11(f) requires…" was labelled as the heading
+for everything after it — a citation to nothing at all.
+
+The corpus can be rebuilt with no network at all, which matters for a product whose central claim is
+that it runs air-gapped:
+
+```powershell
+.venv\Scripts\python.exe corpus\fetch_corpus.py --offline   # adopt what is already in corpus/raw
+.venv\Scripts\python.exe corpus\chunk_corpus.py               # rebuild chunks.jsonl
+```
+
+---
+
+## The eighth document: ISLA-GUIDE-CS
+
+Seven of the eight documents in the corpus are Philippine legal instruments fetched from public
+mirrors. The eighth, `corpus/raw/ISLA-GUIDE-CS.md`, is **authored by Isla AI** and is not a legal
+source. It exists because the corpus had no answer to the most common question a bank front-line
+officer asks — "can I ask the customer for the CVV?" — and because the Act's own vocabulary
+("adequate and not excessive", "strict confidentiality") does not appear in the question.
+
+It is kept honest by construction:
+
+| Control | Where |
+|---|---|
+| `doc_type` is `sector_guidance`, not `circular` or `sop` | `corpus/fetch_corpus.py` |
+| `authority_tier` 3, and retrieval weight 0.55 — below every statute, circular and advisory | `AUTHORITY_WEIGHT` in `services/copilot/retrieval.py` |
+| Issuer reads "Isla AI (compiled aid; not a legal source)" on every citation chip | `fetch_corpus.py` |
+| URL is `isla-ai://corpus/ISLA-GUIDE-CS`, never a `privacy.gov.ph` link | `fetch_corpus.py` |
+| Every rule it states is split into "DPA basis" (citable, indexed) and "Binding rule" (PCI DSS / BSP, **not** indexed) | the document itself |
+| It declines to name BSP circular numbers rather than guess at them | `tests/test_frontline_copilot.py` |
+
+The operational go/no-go that decides whether staff may solicit a card secret lives in PCI DSS and
+Bangko Sentral regulations, neither of which is indexed. When a front-line question depends on it,
+the copilot cites the DPA provisions it *can* verify and appends a `SCOPE NOTE` saying so, rather
+than refusing the whole question or inventing the rule.
+
 ---
 
 ## Citation verification notes

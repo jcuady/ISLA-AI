@@ -7,7 +7,7 @@ screen. Rehearse three times; time each run.
 
 - [ ] Run the pre-flight self-check. It asserts every claim the demo makes — corpus loaded, dense
       retrieval up, redaction verified clean, the 72-hour answer citable, out-of-domain refusal
-      working, ledger chain intact, 228 tests green (129 Python + 99 UI). **Do not present until it prints
+      working, ledger chain intact, 272 tests green (173 Python + 99 UI). **Do not present until it prints
       `PRE-FLIGHT PASSED`.**
 
   ```powershell
@@ -119,6 +119,29 @@ BLOCK & ESCALATE
 > "Now in Taglish. Can we send the customer's CDR to our vendor in Singapore? This is the question
 > most compliance officers cannot answer in under an hour. Ours answers in under a second — offline —
 > from the statute, with citations."
+
+**Do — expect this one, and win with it.** A judge or a compliance officer will almost always ask
+this next. Type it exactly:
+
+**"pwede ba humingi ng CVV sa customer?"**
+
+**Expected:** an answer citing RA 10173 Section 20 (security of personal information) and the IRR's
+strict-confidentiality rule for employees, agents and representatives — then a **SCOPE NOTE**.
+
+> "A call-centre agent asking for the CVV at the back of the card. That is the single most common
+> question in Philippine bank front lines, and an earlier version of this refused it as out of scope.
+> It refused because the question contains no legal vocabulary at all — 'CVV' and 'customer' are not
+> words the Act uses. So we mapped the phrasing onto the words the Act does use, and it now reaches
+> Section twenty, which holds agents to strict confidentiality."
+
+> "And notice the scope note at the bottom. The operational rule — whether staff may solicit a card
+> verification value — lives in PCI DSS and Bangko Sentral regulations, and this system does not hold
+> those. So it tells you the boundary instead of guessing. It cites what it can verify, and says what
+> it cannot."
+
+**If a judge pushes on the scope note:** "That's deliberate. A copilot that answered 'no, you may not'
+would be asserting a PCI requirement it cannot show you. We'd rather be visibly incomplete than
+plausibly wrong."
 
 **Do — the differentiator:** click **"Who won the 2025 FIFA World Cup?"**
 

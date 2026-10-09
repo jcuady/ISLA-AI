@@ -46,19 +46,19 @@ Latency p50 **0.2 ms**, p95 **0.5 ms**
 | Metric | Target | Measured | Status |
 |---|---|---|---|
 | Citation accuracy | >= 0.95 | 100.00% | PASS |
-| Correct source document | >= 0.80 | 80.00% | PASS |
+| Correct source document | >= 0.80 | 100.00% | PASS |
 | Correct-refusal rate | >= 0.90 | 100.00% | PASS |
-| Copilot latency p50 | < 4000 ms | 8 ms | PASS |
+| Copilot latency p50 | < 4000 ms | 11 ms | PASS |
 
 ### Per-question detail
 
 | Question | Refused | Cited | Source correct | Conf | ms |
 |---|---|---|---|---|---|
-| Ilang oras dapat ko i-report ang data breach? | no | yes | yes | 0.78 | 18 |
-| Pwede ba ipasa ang CDR ng customer ko sa vendo | no | yes | yes | 0.78 | 9 |
-| Can our call center use AI to score our agents | no | yes | yes | 0.75 | 7 |
-| Ano ang fine kapag hindi na-notify ang NPC? | no | yes | yes | 0.77 | 6 |
-| Kailangan ba mag-register ng AI credit scoring | no | yes | no | 0.74 | 8 |
+| Ilang oras dapat ko i-report ang data breach? | no | yes | yes | 0.78 | 14 |
+| Pwede ba ipasa ang CDR ng customer ko sa vendo | no | yes | yes | 0.78 | 11 |
+| Can our call center use AI to score our agents | no | yes | yes | 0.69 | 11 |
+| Ano ang fine kapag hindi na-notify ang NPC? | no | yes | yes | 0.77 | 8 |
+| Kailangan ba mag-register ng AI credit scoring | no | yes | yes | 0.74 | 11 |
 
 ### Refusal behaviour (out of domain)
 
@@ -67,5 +67,5 @@ Latency p50 **0.2 ms**, p95 **0.5 ms**
 | Ano ang stock price ng BDO ngayong araw? | yes | 0.52 |
 | Who won the 2025 FIFA World Cup? | yes | 0.84 |
 | What is the capital of Kenya? | yes | 0.78 |
-| How do I cook adobo? | yes | 0.77 |
+| How do I cook adobo? | yes | 0.71 |
 | Magkano ang Porsche 911? | yes | 0.53 |
