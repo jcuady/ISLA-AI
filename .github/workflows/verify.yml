@@ -105,29 +105,47 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements-verify.txt
 
-      # The two scripts below need the app running, so this job starts it. They
-      # cover what the unit tests structurally cannot: that a live server answers
-      # a hostile payload without a 500 or a stack trace, and that every beat in
-      # docs/DEMO_SCRIPT.md still returns the result the demo claims.
-      - name: Start the server
+      # The two scripts below need the app running. Everything happens inside a
+      # SINGLE step on purpose: GitHub Actions gives every `run:` block its own
+      # shell, and a process backgrounded with `&` is killed when that step
+      # ends. Splitting "start the server" and "run the probes" into two steps
+      # meant the probes connected to nothing and the job went red for a reason
+      # that had nothing to do with the code.
+      #
+      # They cover what the unit tests structurally cannot: that a live server
+      # answers a hostile payload without a 500 or a stack trace, and that every
+      # beat in docs/DEMO_SCRIPT.md still returns the result the demo claims.
+      #
+      # Note there is no `npm run build` here, so apps/web/dist is absent and the
+      # two surfaces are served by the app's unbuilt-UI branch. That is the
+      # intended shape for this job: it is an API check. Delivery of the built
+      # UI is covered by the web-build job and by scripts/preflight.py.
+      - name: Start server, probe it, walk every use case
         run: |
           python -m uvicorn services.core.app:app --host 127.0.0.1 --port 8765 &
-          for i in $(seq 1 60); do
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
+
+          for i in $(seq 1 90); do
             if curl -sf http://127.0.0.1:8765/api/health > /dev/null; then
-              echo "server up after ${i}s"; exit 0
+              echo "server healthy after ${i}s"
+              break
+            fi
+            if [ "$i" -eq 90 ]; then
+              echo "::error::server did not become healthy"
+              exit 1
             fi
             sleep 1
           done
-          echo "::error::server did not become healthy"; exit 1
 
-      # Fails the build on any 500, any leaked traceback, any unknown path that
-      # answers 200, or any missing security header.
-      - name: Adversarial probe of every endpoint
-        run: python scripts/qa_probe.py
+          # Fails the build on any 500, any leaked traceback, any unknown path
+          # that answers 200, or any missing security header.
+          echo "--- adversarial probe ---"
+          python scripts/qa_probe.py
 
-      # Fails the build if any demo beat stops returning its answer.
-      - name: Walk every documented use case
-        run: python scripts/use_case_walk.py
+          # Fails the build if any demo beat stops returning its answer.
+          echo "--- use case walk ---"
+          python scripts/use_case_walk.py
 
   web-build:
     name: Web UI build
