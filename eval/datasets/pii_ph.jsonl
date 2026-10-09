@@ -1,0 +1,40 @@
+{"id": "ph-000", "text": "Kustomer ay may SSS 12-345-6789 na nakaparehistro.", "expect": [{"type": "PH_SSS", "value": "12-345-6789"}], "is_negative": false}
+{"id": "ph-001", "text": "Please verify SSS 123-45-6789 before releasing the loan.", "expect": [{"type": "PH_SSS", "value": "123-45-6789"}], "is_negative": false}
+{"id": "ph-002", "text": "Record update: SSS 523 456 789.", "expect": [{"type": "PH_SSS", "value": "523 456 789"}], "is_negative": false}
+{"id": "ph-003", "text": "Ten-digit run that is NOT an SSS: 523 456 7890.", "expect": [], "is_negative": true}
+{"id": "ph-004", "text": "TIN 456-789-012 is on file for this corporation.", "expect": [{"type": "PH_TIN", "value": "456-789-012"}], "is_negative": false}
+{"id": "ph-005", "text": "Taxpayer identification number: 123-456-789.", "expect": [{"type": "PH_TIN", "value": "123-456-789"}], "is_negative": false}
+{"id": "ph-006", "text": "TIN 987-654-321 registered to the branch.", "expect": [{"type": "PH_TIN", "value": "987-654-321"}], "is_negative": false}
+{"id": "ph-007", "text": "Card on file: 4539578763621486.", "expect": [{"type": "CARD_PAN", "value": "4539578763621486"}], "is_negative": false}
+{"id": "ph-008", "text": "Credit card 4111 1111 1111 1111 was declined.", "expect": [{"type": "CARD_PAN", "value": "4111 1111 1111 1111"}], "is_negative": false}
+{"id": "ph-009", "text": "Visa 4012888888881881 exp 09/28.", "expect": [{"type": "CARD_PAN", "value": "4012888888881881"}], "is_negative": false}
+{"id": "ph-010", "text": "GCash card number 6011000000000004 charged twice.", "expect": [{"type": "CARD_PAN", "value": "6011000000000004"}], "is_negative": false}
+{"id": "ph-011", "text": "CVV: 456 on the back of the card.", "expect": [{"type": "CARD_CVV", "value": "456"}], "is_negative": false}
+{"id": "ph-012", "text": "Security code 789 belongs to this card.", "expect": [{"type": "CARD_CVV", "value": "789"}], "is_negative": false}
+{"id": "ph-013", "text": "Reach the customer at 0917 123 4567.", "expect": [{"type": "PH_MOBILE", "value": "0917 123 4567"}], "is_negative": false}
+{"id": "ph-014", "text": "Mobile number +63 917 555 0199.", "expect": [{"type": "PH_MOBILE", "value": "+63 917 555 0199"}], "is_negative": false}
+{"id": "ph-015", "text": "Contact 639175550199 during business hours.", "expect": [{"type": "PH_MOBILE", "value": "639175550199"}], "is_negative": false}
+{"id": "ph-016", "text": "Text the borrower at 0922 445 6677 today.", "expect": [{"type": "PH_MOBILE", "value": "0922 445 6677"}], "is_negative": false}
+{"id": "ph-017", "text": "Send the refund to GCash number 09181234567.", "expect": [{"type": "GCASH_MOBILE", "value": "09181234567"}], "is_negative": false}
+{"id": "ph-018", "text": "Maya wallet registered as 0917 333 4444.", "expect": [{"type": "GCASH_MOBILE", "value": "0917 333 4444"}], "is_negative": false}
+{"id": "ph-019", "text": "Account number: 0056-12345678 is the subject of the complaint.", "expect": [{"type": "BANK_ACCOUNT", "value": "0056-12345678"}], "is_negative": false}
+{"id": "ph-020", "text": "Debit the account no. 001234567890 please.", "expect": [{"type": "BANK_ACCOUNT", "value": "001234567890"}], "is_negative": false}
+{"id": "ph-021", "text": "Remittance via Cebuana Lhuillier ref #CEB-88213-4455 was released.", "expect": [{"type": "REMITTANCE_REF", "value": "CEB-88213-4455"}], "is_negative": false}
+{"id": "ph-022", "text": "Western Union reference WU-4471200 to the recipient.", "expect": [{"type": "REMITTANCE_REF", "value": "WU-4471200"}], "is_negative": false}
+{"id": "ph-023", "text": "PhilSys ID 1234-5678-9012-3456 presented at branch.", "expect": [{"type": "PHILSYS_ID", "value": "1234-5678-9012-3456"}], "is_negative": false}
+{"id": "ph-024", "text": "Passport P1234567A expires next year.", "expect": [{"type": "PASSPORT", "value": "P1234567A"}], "is_negative": false}
+{"id": "ph-025", "text": "Forward the complaint from juan.delacruz@usapalmabank.com.ph.", "expect": [{"type": "EMAIL", "value": "juan.delacruz@usapalmabank.com.ph"}], "is_negative": false}
+{"id": "ph-026", "text": "Monthly salary PHP 42,500 was credited last payday.", "expect": [{"type": "SALARY", "value": "42,500"}], "is_negative": false}
+{"id": "ph-027", "text": "Basic pay: 185,000 per month.", "expect": [{"type": "SALARY", "value": "185,000"}], "is_negative": false}
+{"id": "ph-028", "text": "Magandang araw po Maria. Nag-apply po ng overdue notice si Maria Concepcion de los Santos, SSS 12-345-6789, TIN 456-789-012. Registered mobile 0917 123 4567, GCash number +639171234568. Credit card ending 4539578763621486, CVV 123. Account number: 0056-12345678. Monthly salary PHP 42,500. Pakisuri na po bago mag-escalate.", "expect": [{"type": "PH_SSS", "value": "12-345-6789"}, {"type": "PH_TIN", "value": "456-789-012"}, {"type": "GCASH_MOBILE", "value": "0917 123 4567"}, {"type": "GCASH_MOBILE", "value": "+639171234568"}, {"type": "CARD_PAN", "value": "4539578763621486"}, {"type": "CARD_CVV", "value": "123"}, {"type": "BANK_ACCOUNT", "value": "0056-12345678"}, {"type": "SALARY", "value": "42,500"}], "is_negative": false}
+{"id": "ph-029", "text": "Collections ticket CDR-2024-8891. Borrower: D Dela Cruz. Contact 0928 777 1234. Outstanding balance PHP 18,450.00. Sent via SMS.", "expect": [{"type": "PH_MOBILE", "value": "0928 777 1234"}], "is_negative": false}
+{"id": "ph-030", "text": "Please process invoice INV-2024-00123456 for batch 20240315.", "expect": [], "is_negative": true}
+{"id": "ph-031", "text": "Order reference 9988776655443 was shipped yesterday.", "expect": [], "is_negative": true}
+{"id": "ph-032", "text": "Terminal ID 12-34567 printed the receipt.", "expect": [], "is_negative": true}
+{"id": "ph-033", "text": "Jealousy ng customer ay malaking bagay, ayon sa Santos (2024).", "expect": [], "is_negative": true}
+{"id": "ph-034", "text": "The meeting is scheduled for 2024-03-15 at 09:00 in Room 3.", "expect": [], "is_negative": true}
+{"id": "ph-035", "text": "Our BIC code is PHPBGSH but the branch code is 12-34567.", "expect": [], "is_negative": true}
+{"id": "ph-036", "text": "Total of PHP 1,250.50 was charged to the account this month.", "expect": [], "is_negative": true}
+{"id": "ph-037", "text": "Republic Act No. 10173 is the Data Privacy Act of 2012.", "expect": [], "is_negative": true}
+{"id": "ph-038", "text": "Please update the customer about the new product launch.", "expect": [], "is_negative": true}
+{"id": "ph-039", "text": "Ate, pwede bang i-advance yung salary loan ko?", "expect": [], "is_negative": true}

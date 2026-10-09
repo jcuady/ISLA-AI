@@ -1,0 +1,117 @@
+name: verify
+
+# KALIX claims are reproducible claims. This workflow regenerates the published
+# scoreboard on every push so a reviewer never has to take the README on trust.
+#
+# Three independent jobs, each proving a different degradation claim:
+#   1. pii-guard      - zero third-party dependencies at all
+#   2. tests + eval   - no model weights, no GPU, BM25 fallback only
+#   3. web build      - the UI type-checks and compiles
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pii-guard:
+    name: PII guard (standard library only)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # No pip install step on purpose. services/pii/engine.py and recognizers.py
+      # import only the standard library, so this job fails the moment someone
+      # introduces a hidden ML dependency into the Egress Guard hot path.
+      - name: Regenerate the PII scoreboard with zero dependencies
+        run: python eval/run_eval.py --pii-only
+
+      - name: Show the scoreboard
+        run: cat eval/RESULTS_PII.md
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eval-pii-no-dependencies
+          path: eval/RESULTS_PII.md
+
+  tests-and-eval:
+    name: Tests and RAG eval (no model weights)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install the verification dependency set
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-verify.txt
+
+      - name: Unit tests
+        run: python -m pytest tests/ -q
+
+      # --sparse-only skips the dense embedding leg and writes to a separate file
+      # so it can never overwrite the headline RESULTS.md. Passing here proves the
+      # copilot still cites correctly on a machine with no model weights at all.
+      - name: RAG eval without dense retrieval
+        run: python eval/run_eval.py --sparse-only
+
+      # Every published gate must hold, in this configuration and in the full-hybrid one.
+      # No metric is exempted: source attribution sits exactly on its 80% target, so a
+      # regression in either direction fails the build. How it reached 80% is
+      # documented in docs/DISCLOSURES.md section 7.
+      - name: Fail if any published gate regressed
+        run: |
+          if grep '| MISS |' eval/RESULTS_SPARSE_ONLY.md; then
+            echo "::error::a published gate regressed"
+            exit 1
+          fi
+          echo "All published gates hold with no model weights installed."
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eval-sparse-only
+          path: eval/RESULTS_SPARSE_ONLY.md
+
+  web-build:
+    name: Web UI build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - run: npm ci
+      - run: npm run build
+
+      # The landing page permits its inline reveal script only by SHA-256 hash,
+      # in two places that must agree (the page meta and the server header). If
+      # the script changes without both being updated, the page silently loses
+      # every section below the fold.
+      - name: Assert the CSP inline-script hash is current
+        run: node verify-ui.mjs --csp-only
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: apps/web/dist
+          retention-days: 7

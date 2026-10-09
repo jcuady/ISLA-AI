@@ -1,0 +1,94 @@
+# Model registry
+
+Pinned model weights for KALIX. **No weights are committed to this repository.**
+`models/download_models.py` fetches these files and records their SHA-256.
+
+All licences are commercial-use compatible. See [`docs/LICENSING.md`](../docs/LICENSING.md).
+
+---
+
+## Runtime models
+
+| Key | Repo | File | Size | Licence | Role | Critical |
+|---|---|---|---|---|---|---|
+| `multilingual-e5-small-int8` | `intfloat/multilingual-e5-small` | `onnx/model_qint8_avx512_vnni.onnx` | 113 MB | MIT | Embeddings (retrieval) | ✅ |
+| `qwen2.5-3b-instruct-q4_k_m` | `Qwen/Qwen2.5-3B-Instruct-GGUF` | `qwen2.5-3b-instruct-q4_k_m.gguf` | 2.0 GB | Apache-2.0 | Generation (optional) | ✅ |
+| `gliner-multi-v2.1` | `urchade/gliner_multi-v2.1` | `model.safetensors` | 1.1 GB | Apache-2.0 | Contextual NER (optional) | — |
+
+### Why e5-small rather than bge-m3
+
+The blueprint specified `bge-m3` (568 M params, ~2.3 GB) with no int8 ONNX export. The development
+machine had ~1 GB of free RAM, which cannot host it alongside the LLM. `multilingual-e5-small` int8 is
+**113 MB** and is genuinely cross-lingual — which is the actual requirement, because queries arrive in
+Taglish while the corpus is English. Twenty times lighter, same job.
+
+### Why Qwen2.5-3B rather than 7B
+
+No NVIDIA GPU. A 7B Q4_K_M on CPU with ~1 GB free RAM risks slow answers or OOM during a live
+demonstration. 3B keeps latency comfortable and frees RAM for GLiNER and the embedding model running
+simultaneously. The 7B and 14B tiers are documented for T2/T3 hardware.
+
+---
+
+## Fetch
+
+```powershell
+# Everything, ordered by demo criticality
+.venv\Scripts\python.exe models\download_models.py
+
+# Skip the optional NER stage when time or bandwidth is short
+.venv\Scripts\python.exe models\download_models.py --skip-optional
+
+# One asset
+.venv\Scripts\python.exe models\download_models.py --only multilingual-e5-small-int8
+```
+
+The downloader uses **ranged parallel connections**. The single-stream HF transfer on this network
+stalled at ~8 KB/s; parallel ranges sustained ~0.3 MB/s. Each asset is written to a sparse file,
+assembled from blocks, and verified by SHA-256.
+
+> **Known: the huggingface.co single-stream path can stall.** If a download appears frozen, check the
+> `.part` file size before restarting — the ranged fetcher preallocates the full length, so file size
+> alone does not indicate progress. The progress log line does.
+
+---
+
+## Integrity
+
+`download_models.py` computes and prints a SHA-256 per asset on completion. Record expected digests in
+your own deployment manifest and **verify at load**, not only at download — a weight file can be
+replaced after the initial fetch.
+
+```powershell
+Get-FileHash models\weights\qwen2.5-3b-instruct-q4_k_m\qwen2.5-3b-instruct-q4_k_m.gguf -Algorithm SHA256
+```
+
+---
+
+## Optional tiers
+
+| Tier | Hardware | Model | Size |
+|---|---|---|---|
+| T1 — Branch box | Intel N100/N305, 16 GB, no GPU | `bartowski/Phi-3.5-mini-instruct-GGUF` Q4_K_M | 2.4 GB |
+| T2 — Standard laptop | 32 GB, RTX 4060 8 GB | `Qwen/Qwen2.5-7B-Instruct-GGUF` Q4_K_M | 4.7 GB |
+| T3 — Analyst WS | 64–128 GB, RTX 4090 | `Qwen/Qwen2.5-14B-Instruct-GGUF` Q4_K_M | 9 GB |
+
+Fetch any of these by editing the `ASSETS` list in `models/download_models.py`, or by passing the GGUF
+path directly to `llama-server`.
+
+---
+
+## llama.cpp
+
+Binary distribution is **not** vendored. Fetched from `ggml-org/llama.cpp`, tag pinned to **`b11515`**.
+
+> Do **not** use the `latest` release tag — it resolves to a nightly stub with no Windows binaries
+> attached. `b11515` carries the Vulkan and CPU builds.
+
+```
+models/llamacpp/vulkan/llama-server.exe
+models/llamacpp/vulkan/llama-b11515-bin-win-vulkan-x64.zip
+```
+
+Licence: MIT. The Zen4 CPU backend (`ggml-cpu-zen4.dll`) is present and is the natural path on an
+AMD Ryzen host.

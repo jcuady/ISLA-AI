@@ -1,0 +1,43 @@
+# KALIX
+
+MIT License
+
+Copyright (c) 2026 KALIX
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## Third-party components
+
+This project depends on third-party software under separate licences. Those
+licences apply to those components, not to this licence.
+
+See [`docs/LICENSING.md`](docs/LICENSING.md) for the full inventory, including
+one component (PyMuPDF, AGPL-3.0-or-commercial) whose use is confined to
+build-time tools and flagged for review before distribution in any packaged
+form.
+
+Model weights are not distributed with this repository. `models/download_models.py`
+fetches pinned files from their original sources under their own licences.
+
+The corpus consists of public government publications of the Republic of the
+Philippines — Republic Act No. 10173, its Implementing Rules and Regulations,
+and issuances of the National Privacy Commission. Provenance and SHA-256 for
+each document are recorded in `corpus/raw/fetch_manifest.json`.

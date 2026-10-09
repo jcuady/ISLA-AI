@@ -1,0 +1,24 @@
+# Normalise line endings so the repository does not churn when contributors on
+# Windows, macOS and Linux all push. Without this, every file shows as modified
+# on the platform that does not match the working copy.
+
+* text=auto eol=lf
+
+# Native scripts that require CRLF on Windows.
+*.ps1   text eol=crlf
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+
+# Binary assets — never diffed, never line-ending converted.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.ico   binary
+*.gguf  binary
+*.onnx  binary
+*.npy   binary
+*.pdf   binary
+
+# Keep these out of language statistics and diffs.
+eval/datasets/*.jsonl text eol=lf
+corpus/processed/chunks.jsonl text eol=lf

@@ -1,0 +1,1 @@
+"""DPA Copilot: grounded retrieval and citation-enforcing answers."""

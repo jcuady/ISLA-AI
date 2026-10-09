@@ -1,0 +1,15 @@
+# Minimal dependency set to reproduce every published number and run the test
+# suite. Deliberately excludes torch / transformers / onnxruntime.
+#
+# Why this file exists: the Egress Guard is pure Python standard library, and the
+# copilot falls back to BM25 + section matching when no model weights are present.
+# Both facts are asserted in CI, so a reviewer can clone this repo, run two pip
+# installs, and independently regenerate eval/RESULTS.md without a GPU, without
+# 2 GB of weights, and without a network connection.
+#
+#   pip install -r requirements-verify.txt
+#   python -m pytest tests/ -q
+#   python eval/run_eval.py
+
+pytest>=8.0
+rank-bm25>=0.2.2

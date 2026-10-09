@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120" width="420" height="120" role="img" aria-label="KALIX">
+  <title>KALIX</title>
+  <defs>
+    <linearGradient id="kShieldD" x1="60" y1="18" x2="60" y2="102" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3FB894"/>
+      <stop offset="1" stop-color="#2A9D78"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="420" height="120" fill="#071524"/>
+
+  <path d="M60 16 99 28v27.5c0 19.7-13.4 37.5-39 43C33.4 93 20 75.2 20 55.5V28L60 16Z"
+        fill="url(#kShieldD)" stroke="#0B1F33" stroke-width="3.2" stroke-linejoin="round"/>
+  <circle cx="60" cy="49" r="9" fill="#071524"/>
+  <path d="M60 56.6c-4.6 0-8.4 3.8-8.4 8.4v10.8h16.8V65c0-4.6-3.8-8.4-8.4-8.4Z" fill="#071524"/>
+
+  <text x="126" y="66"
+        font-family="Inter, -apple-system, 'Segoe UI', Roboto, sans-serif"
+        font-size="42" font-weight="700" letter-spacing="7"
+        fill="#E8EEF5">KALIX</text>
+  <text x="128" y="88"
+        font-family="Inter, -apple-system, 'Segoe UI', Roboto, sans-serif"
+        font-size="11.5" font-weight="500" letter-spacing="1.6"
+        fill="#3FB894">WALANG DATOS NA LUMALABAS</text>
+</svg>

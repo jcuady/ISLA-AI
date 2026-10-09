@@ -1,0 +1,121 @@
+[
+  {
+    "doc_id": "RA-10173",
+    "title": "Republic Act No. 10173 - Data Privacy Act of 2012",
+    "issuer": "Congress of the Philippines",
+    "doc_type": "statute",
+    "origin_url": "https://lawphil.net/statutes/repacts/ra2012/ra_10173_2012.html",
+    "authority_tier": 1,
+    "effective_date": "2012-08-15",
+    "supersedes": null,
+    "mirrors": [
+      "https://lawphil.net/statutes/repacts/ra2012/ra_10173_2012.html"
+    ],
+    "local_path": "corpus\\raw\\RA-10173.html",
+    "sha256": "d9f00c3e74239247ad7896bf20ae76e4835b2ffed975f143296b9591b767d20f",
+    "fetch_status": "ok:origin:html:56745b:48002 chars verified",
+    "notes": "Primary statute. Sections 12-20 (rights), 25 (security), 26 (breach), 30 (concealment), 32 (penalties)."
+  },
+  {
+    "doc_id": "IRR-RA10173",
+    "title": "Implementing Rules and Regulations of RA 10173 (as amended)",
+    "issuer": "National Privacy Commission",
+    "doc_type": "irr",
+    "origin_url": "https://privacy.gov.ph/wp-content/uploads/2023/06/IRR_RA-10173-as-amended.pdf",
+    "authority_tier": 1,
+    "effective_date": "2016-09-09",
+    "supersedes": null,
+    "mirrors": [
+      "https://web.archive.org/web/2024id_/https://privacy.gov.ph/wp-content/uploads/2023/06/IRR_RA-10173-as-amended.pdf"
+    ],
+    "local_path": "corpus\\raw\\IRR-RA10173.pdf",
+    "sha256": "1d8218f48661ea7fade72a3dda44de5a1cfc08cac50f857d5eb4248b5a45133d",
+    "fetch_status": "ok:origin:pdf:505235b:98221 chars verified",
+    "notes": "IRR SS38-39 breach notification; SS16(c)(6) ADS notice. Verified: 98k chars, 'Section 38' and 'Section 39' present."
+  },
+  {
+    "doc_id": "NPC-ADV-2024-04",
+    "title": "NPC Advisory No. 2024-04 - Guidelines on Artificial Intelligence and Sensitive Personal Data",
+    "issuer": "National Privacy Commission",
+    "doc_type": "advisory",
+    "origin_url": "https://privacy.gov.ph/wp-content/uploads/2024/12/Advisory-2024.12.19-Guidelines-on-Artificial-Intelligence-w-SGD.pdf",
+    "authority_tier": 1,
+    "effective_date": "2024-12-19",
+    "supersedes": null,
+    "mirrors": [
+      "https://web.archive.org/web/2024id_/https://privacy.gov.ph/wp-content/uploads/2024/12/Advisory-2024.12.19-Guidelines-on-Artificial-Intelligence-w-SGD.pdf"
+    ],
+    "local_path": "corpus\\raw\\NPC-ADV-2024-04.pdf",
+    "sha256": "de6c031e34e24b5653de65518764a77d857259ae3d8de22daa116f8734cccfe4",
+    "fetch_status": "ok:wayback:pdf:196849b:12583 chars verified",
+    "notes": "THE AI-systems advisory. Transparency, accountability, fairness, accuracy, data minimisation, human intervention."
+  },
+  {
+    "doc_id": "NPC-CIRC-2022-04",
+    "title": "NPC Circular No. 2022-04 - Registration of Data Processing Systems, Notification Regarding Automated Decision-Making or Profiling, Designation of Data Protection Officer",
+    "issuer": "National Privacy Commission",
+    "doc_type": "circular",
+    "origin_url": "https://privacy.gov.ph/wp-content/uploads/2023/05/Circular-2022-04-2.pdf",
+    "authority_tier": 1,
+    "effective_date": "2022-06-22",
+    "supersedes": null,
+    "mirrors": [
+      "https://web.archive.org/web/2024id_/https://privacy.gov.ph/wp-content/uploads/2023/05/Circular-2022-04-2.pdf"
+    ],
+    "local_path": "corpus\\raw\\NPC-CIRC-2022-04.pdf",
+    "sha256": "ed55fe1814ff53c01d65a00581f4424271b778fa4b144ca66b63a13d6d14a36e",
+    "fetch_status": "ok:origin:pdf:279913b:40664 chars verified",
+    "notes": "DPS registration, DPO designation, ADS/profiling notification."
+  },
+  {
+    "doc_id": "NPC-CIRC-16-03",
+    "title": "NPC Circular No. 16-03 - Personal Data Breach Management",
+    "issuer": "National Privacy Commission",
+    "doc_type": "circular",
+    "origin_url": "https://privacy.gov.ph/wp-content/uploads/2022/01/sgd-npc-circular-16-03-personal-data-breach-management.pdf",
+    "authority_tier": 1,
+    "effective_date": "2016-12-15",
+    "supersedes": null,
+    "mirrors": [
+      "https://web.archive.org/web/2024id_/https://privacy.gov.ph/wp-content/uploads/2022/01/sgd-npc-circular-16-03-personal-data-breach-management.pdf"
+    ],
+    "local_path": "corpus\\raw\\NPC-CIRC-16-03.pdf",
+    "sha256": "167c9177cbffb84149d689625b95ff0fd5fa00cc47292e74c7d49709ba066103",
+    "fetch_status": "ok:origin:pdf:198660b:32548 chars verified",
+    "notes": "The 72-hour rule, delay conditions, 100-subject threshold. Verified: '72 hours' present in source text."
+  },
+  {
+    "doc_id": "NPC-CIRC-2022-01",
+    "title": "NPC Circular No. 2022-01 - Guidelines on Administrative Fines",
+    "issuer": "National Privacy Commission",
+    "doc_type": "circular",
+    "origin_url": "https://privacy.gov.ph/wp-content/uploads/2022/08/NPC-CIRCULAR-NO.-2022-01-GUIDELINES-ON-ADMINISTRATIVE-FINES-dated-08-AUGUST-2022-w-SGD.pdf",
+    "authority_tier": 1,
+    "effective_date": "2022-08-08",
+    "supersedes": null,
+    "mirrors": [
+      "https://web.archive.org/web/2024id_/https://privacy.gov.ph/wp-content/uploads/2022/08/NPC-CIRCULAR-NO.-2022-01-GUIDELINES-ON-ADMINISTRATIVE-FINES-dated-08-AUGUST-2022-w-SGD.pdf"
+    ],
+    "local_path": "corpus\\raw\\NPC-CIRC-2022-01.pdf",
+    "sha256": "2b8a43124ddf14abbbec6423a781cfab0a1b3ebbdcedd8c5efb22a99d36586a0",
+    "fetch_status": "ok:origin:pdf:346262b:13718 chars verified",
+    "notes": "0.25%-2% of annual gross income fine for failure to notify."
+  },
+  {
+    "doc_id": "NPC-CIRC-2023-04",
+    "title": "NPC Circular No. 2023-04 - Guidelines on Consent",
+    "issuer": "National Privacy Commission",
+    "doc_type": "circular",
+    "origin_url": "https://privacy.gov.ph/wp-content/uploads/2023/11/NPC-Circular-No.-2023-04_Guidelines-on-Consent_07Nov2023.pdf",
+    "authority_tier": 1,
+    "effective_date": "2023-11-07",
+    "supersedes": null,
+    "mirrors": [
+      "https://web.archive.org/web/2024id_/https://privacy.gov.ph/wp-content/uploads/2023/11/NPC-Circular-No.-2023-04_Guidelines-on-Consent_07Nov2023.pdf"
+    ],
+    "local_path": "corpus\\raw\\NPC-CIRC-2023-04.pdf",
+    "sha256": "260acf8ed16bc30cbd0e3c01569d163141615a7ee58233e78dd2f39b87a07286",
+    "fetch_status": "ok:origin:pdf:313774b:41624 chars verified",
+    "notes": "SS18 profiling and automated processing consent."
+  }
+]

@@ -1,0 +1,339 @@
+"""Fetch the Philippine privacy corpus from reachable mirrors.
+
+privacy.gov.ph and bsp.gov.ph both return HTTP 403 from this network (verified),
+so every source is fetched through a mirror chain:
+
+  1. direct       - origin URL, tried first
+  2. wayback      - web.archive.org/web/2024id_/<url>  (raw, un-rewritten)
+  3. lawphil      - lawphil.net mirror for RA 10173
+
+All documents are public government publications; nothing here requires clearance.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import re
+import sys
+import time
+import urllib.error
+import urllib.request
+from dataclasses import dataclass, asdict, field
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+RAW_DIR = REPO_ROOT / "corpus" / "raw"
+METADATA_PATH = REPO_ROOT / "corpus" / "raw" / "fetch_manifest.json"
+
+USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+)
+WAYBACK_PREFIX = "https://web.archive.org/web/2024id_/"
+
+
+@dataclass
+class SourceDoc:
+    """One document in the corpus, with the citation metadata every chunk inherits."""
+
+    doc_id: str
+    title: str
+    issuer: str
+    doc_type: str  # statute | irr | circular | advisory | bsp_memo | morb
+    origin_url: str
+    authority_tier: int  # 1 = statute/NPC, 2 = BSP, 3 = internal
+    effective_date: str = ""
+    supersedes: str | None = None
+    mirrors: list[str] = field(default_factory=list)
+    local_path: str | None = None
+    sha256: str | None = None
+    fetch_status: str = "pending"
+    notes: str = ""
+
+
+# Target set for the shipped scope. Prioritised by what the demo queries actually cite.
+SOURCES: list[SourceDoc] = [
+    SourceDoc(
+        doc_id="RA-10173",
+        title="Republic Act No. 10173 - Data Privacy Act of 2012",
+        issuer="Congress of the Philippines",
+        doc_type="statute",
+        origin_url="https://lawphil.net/statutes/repacts/ra2012/ra_10173_2012.html",
+        authority_tier=1,
+        effective_date="2012-08-15",
+        mirrors=["https://lawphil.net/statutes/repacts/ra2012/ra_10173_2012.html"],
+        notes="Primary statute. Sections 12-20 (rights), 25 (security), 26 (breach), "
+               "30 (concealment), 32 (penalties).",
+    ),
+    SourceDoc(
+        doc_id="IRR-RA10173",
+        title="Implementing Rules and Regulations of RA 10173 (as amended)",
+        issuer="National Privacy Commission",
+        doc_type="irr",
+        origin_url="https://privacy.gov.ph/wp-content/uploads/2023/06/IRR_RA-10173-as-amended.pdf",
+        authority_tier=1,
+        effective_date="2016-09-09",
+        mirrors=[
+            WAYBACK_PREFIX
+            + "https://privacy.gov.ph/wp-content/uploads/2023/06/IRR_RA-10173-as-amended.pdf"
+        ],
+        notes="IRR SS38-39 breach notification; SS16(c)(6) ADS notice. Verified: "
+              "98k chars, 'Section 38' and 'Section 39' present.",
+    ),
+    SourceDoc(
+        doc_id="NPC-ADV-2024-04",
+        title="NPC Advisory No. 2024-04 - Guidelines on Artificial Intelligence "
+              "and Sensitive Personal Data",
+        issuer="National Privacy Commission",
+        doc_type="advisory",
+        origin_url=(
+            "https://privacy.gov.ph/wp-content/uploads/2024/12/"
+            "Advisory-2024.12.19-Guidelines-on-Artificial-Intelligence-w-SGD.pdf"
+        ),
+        authority_tier=1,
+        effective_date="2024-12-19",
+        mirrors=[
+            WAYBACK_PREFIX
+            + "https://privacy.gov.ph/wp-content/uploads/2024/12/"
+            "Advisory-2024.12.19-Guidelines-on-Artificial-Intelligence-w-SGD.pdf"
+        ],
+        notes="THE AI-systems advisory. Transparency, accountability, fairness, accuracy, "
+               "data minimisation, human intervention.",
+    ),
+    SourceDoc(
+        doc_id="NPC-CIRC-2022-04",
+        title="NPC Circular No. 2022-04 - Registration of Data Processing Systems, "
+              "Notification Regarding Automated Decision-Making or Profiling, "
+              "Designation of Data Protection Officer",
+        issuer="National Privacy Commission",
+        doc_type="circular",
+        origin_url="https://privacy.gov.ph/wp-content/uploads/2023/05/Circular-2022-04-2.pdf",
+        authority_tier=1,
+        effective_date="2022-06-22",
+        mirrors=[
+            WAYBACK_PREFIX + "https://privacy.gov.ph/wp-content/uploads/2023/05/Circular-2022-04-2.pdf"
+        ],
+        notes="DPS registration, DPO designation, ADS/profiling notification.",
+    ),
+    SourceDoc(
+        doc_id="NPC-CIRC-16-03",
+        title="NPC Circular No. 16-03 - Personal Data Breach Management",
+        issuer="National Privacy Commission",
+        doc_type="circular",
+        origin_url=(
+            "https://privacy.gov.ph/wp-content/uploads/2022/01/"
+            "sgd-npc-circular-16-03-personal-data-breach-management.pdf"
+        ),
+        authority_tier=1,
+        effective_date="2016-12-15",
+        mirrors=[
+            WAYBACK_PREFIX
+            + "https://privacy.gov.ph/wp-content/uploads/2022/01/"
+            "sgd-npc-circular-16-03-personal-data-breach-management.pdf"
+        ],
+        notes="The 72-hour rule, delay conditions, 100-subject threshold. Verified: "
+              "'72 hours' present in source text.",
+    ),
+    SourceDoc(
+        doc_id="NPC-CIRC-2022-01",
+        title="NPC Circular No. 2022-01 - Guidelines on Administrative Fines",
+        issuer="National Privacy Commission",
+        doc_type="circular",
+        origin_url=(
+            "https://privacy.gov.ph/wp-content/uploads/2022/08/"
+            "NPC-CIRCULAR-NO.-2022-01-GUIDELINES-ON-ADMINISTRATIVE-FINES-"
+            "dated-08-AUGUST-2022-w-SGD.pdf"
+        ),
+        authority_tier=1,
+        effective_date="2022-08-08",
+        mirrors=[
+            WAYBACK_PREFIX
+            + "https://privacy.gov.ph/wp-content/uploads/2022/08/"
+            "NPC-CIRCULAR-NO.-2022-01-GUIDELINES-ON-ADMINISTRATIVE-FINES-"
+            "dated-08-AUGUST-2022-w-SGD.pdf"
+        ],
+        notes="0.25%-2% of annual gross income fine for failure to notify.",
+    ),
+    SourceDoc(
+        doc_id="NPC-CIRC-2023-04",
+        title="NPC Circular No. 2023-04 - Guidelines on Consent",
+        issuer="National Privacy Commission",
+        doc_type="circular",
+        origin_url=(
+            "https://privacy.gov.ph/wp-content/uploads/2023/11/"
+            "NPC-Circular-No.-2023-04_Guidelines-on-Consent_07Nov2023.pdf"
+        ),
+        authority_tier=1,
+        effective_date="2023-11-07",
+        mirrors=[
+            WAYBACK_PREFIX
+            + "https://privacy.gov.ph/wp-content/uploads/2023/11/"
+            "NPC-Circular-No.-2023-04_Guidelines-on-Consent_07Nov2023.pdf"
+        ],
+        notes="SS18 profiling and automated processing consent.",
+    ),
+]
+
+# Optional documents: fetched when reachable, but the product does not depend on them.
+# BSP 403s from this network and has no usable Wayback capture of the memo page.
+OPTIONAL_SOURCES: list[SourceDoc] = [
+    SourceDoc(
+        doc_id="BSP-M-2024-019",
+        title="BSP Memorandum M-2024-019 - Reminders on the Handling of PII "
+              "and Other Sensitive Data",
+        issuer="Bangko Sentral ng Pilipinas",
+        doc_type="bsp_memo",
+        origin_url="https://www.bsp.gov.ph/SitePages/Regulations/MemorandaCirculars.aspx",
+        authority_tier=2,
+        effective_date="2024-09-20",
+        mirrors=[
+            WAYBACK_PREFIX + "https://www.bsp.gov.ph/SitePages/Regulations/MemorandaCirculars.aspx"
+        ],
+        notes="Cited in README as supervisory context; not required by the copilot corpus.",
+    ),
+]
+
+
+def fetch(url: str, timeout: int = 60) -> tuple[bytes, str]:
+    """Return (bytes, content_type). Raises on failure."""
+    req = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": USER_AGENT,
+            "Accept": "text/html,application/pdf,*/*",
+        },
+    )
+    with urllib.request.urlopen(req, timeout=timeout) as resp:  # noqa: S310
+        return resp.read(), resp.headers.get("Content-Type", "")
+
+
+def extract_text(data: bytes, ext: str) -> str:
+    """Plain-text extraction used to reject index/listing pages masquerading as documents."""
+    if ext == "pdf":
+        try:
+            import io
+
+            import pymupdf
+
+            with pymupdf.open(stream=data, filetype="pdf") as doc:
+                return " ".join("".join(p.get_text() for p in doc).split())
+        except Exception as exc:  # noqa: BLE001
+            print(f"      (pdf extract failed: {exc})")
+            return ""
+    if ext == "html":
+        text = data.decode("utf-8", errors="replace")
+        text = re.sub(r"<script.*?</script>|<style.*?</style>", " ", text, flags=re.S | re.I)
+        text = re.sub(r"<[^>]+>", " ", text)
+        return " ".join(text.split())
+    return ""
+
+
+def validate(doc: SourceDoc, data: bytes, ext: str) -> tuple[bool, str]:
+    """Reject pages that are index listings or search forms rather than the document itself."""
+    text = extract_text(data, ext)
+    if len(text) < 2000:
+        return False, f"too little text ({len(text)} chars)"
+
+    low = text.lower()
+
+    # An index page lists many circulars; a real circular discusses its own subject.
+    if ext == "html" and low.count("advisory no.") >= 8:
+        return False, "looks like an index/listing page, not the document"
+
+    # Each document must mention its own identity, not just the issuing body.
+    identity_tokens = {
+        "RA-10173": ["data privacy act"],
+        "IRR-RA10173": ["implementing rules"],
+        "NPC-ADV-2024-04": ["artificial intelligence"],
+        "NPC-CIRC-2022-04": ["data protection officer"],
+        "NPC-CIRC-16-03": ["personal data breach"],
+        "NPC-CIRC-2022-01": ["administrative fine"],
+        "NPC-CIRC-2023-04": ["consent"],
+    }.get(doc.doc_id, [])
+    for token in identity_tokens:
+        if token not in low:
+            return False, f"does not mention {token!r} (not the real document)"
+
+    return True, f"{len(text)} chars verified"
+
+
+def try_mirrors(doc: SourceDoc, retries: int = 2) -> Path | None:
+    """Try direct origin, then each mirror. Saves to corpus/raw/<doc_id>.<ext>."""
+    RAW_DIR.mkdir(parents=True, exist_ok=True)
+
+    candidates: list[tuple[str, str]] = [(doc.origin_url, "origin")]
+    candidates += [(m, "wayback") for m in doc.mirrors]
+
+    last_err = "no candidates"
+    for url, kind in candidates:
+        for attempt in range(retries):
+            try:
+                data, ctype = fetch(url)
+            except (urllib.error.URLError, OSError, ValueError) as exc:
+                last_err = f"{type(exc).__name__}: {exc}"
+                time.sleep(1.5 * (attempt + 1))
+                continue
+
+            if len(data) < 512:
+                last_err = f"suspiciously small ({len(data)} bytes)"
+                continue
+
+            # Extension inferred from magic bytes first, content-type second.
+            if data[:5] == b"%PDF-":
+                ext = "pdf"
+            elif b"<" in data[:400].lstrip() or "html" in ctype.lower():
+                ext = "html"
+            else:
+                ext = "bin"
+
+            ok, reason = validate(doc, data, ext)
+            if not ok:
+                last_err = f"{kind}: {reason}"
+                print(f"      reject {doc.doc_id} via {kind}: {reason}")
+                continue
+
+            dest = RAW_DIR / f"{doc.doc_id}.{ext}"
+            dest.write_bytes(data)
+            doc.local_path = str(dest.relative_to(REPO_ROOT))
+            doc.sha256 = hashlib.sha256(data).hexdigest()
+            doc.fetch_status = f"ok:{kind}:{ext}:{len(data)}b:{reason}"
+            print(f"[ok  ] {doc.doc_id:18} via {kind:8} {len(data):>9,}b  {ext}  {reason}")
+            return dest
+
+    doc.fetch_status = f"FAILED: {last_err}"
+    print(f"[FAIL] {doc.doc_id:18} {last_err}", file=sys.stderr)
+    return None
+
+
+def write_manifest() -> None:
+    METADATA_PATH.write_text(
+        json.dumps([asdict(d) for d in SOURCES], indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+
+def main() -> int:
+    only = set(sys.argv[1:])
+    docs = [d for d in SOURCES if not only or d.doc_id in only]
+    print(f"KALIX corpus fetch - {len(docs)} required document(s)\n")
+
+    ok = 0
+    for doc in docs:
+        if try_mirrors(doc):
+            ok += 1
+
+    print("\n-- optional (non-blocking) --")
+    for doc in OPTIONAL_SOURCES:
+        if only and doc.doc_id not in only:
+            continue
+        if try_mirrors(doc) is None:
+            print(f"      (continuing without {doc.doc_id} - not required by the copilot)")
+
+    write_manifest()
+    print(f"\nfetched {ok}/{len(docs)} required  ->  {METADATA_PATH.relative_to(REPO_ROOT)}")
+    return 0 if ok == len(docs) else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

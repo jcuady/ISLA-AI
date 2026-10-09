@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "KALIX — Local-First AI Privacy Copilot",
+    "output": "kalix-architecture.html",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "egress-guard",
+        "label": "Egress Guard",
+        "focus": ["browser", "core", "egress", "recognizers", "ner", "verify", "ledger"],
+        "note": "Follow one paste from the UI through detection, redaction and the verification pass into the tamper-evident ledger."
+      },
+      {
+        "id": "copilot",
+        "label": "DPA Copilot",
+        "focus": ["browser", "core", "copilot", "retrieval", "corpus", "llm"],
+        "note": "A Taglish question becomes a cited answer, or a refusal, entirely from local retrieval."
+      },
+      {
+        "id": "proof",
+        "label": "Air-gap proof",
+        "focus": ["core", "probe", "ledger"],
+        "note": "The NETWORK badge is an observed socket probe, and the ledger proves what happened without storing customer data."
+      }
+    ]
+  },
+  "components": [
+    { "id": "browser", "type": "external", "label": "Browser UI", "sublabel": "React SPA", "pos": [40, 280], "size": [120, 54] },
+    { "id": "core", "type": "backend", "label": "KALIX Core", "sublabel": "FastAPI :8765", "pos": [236, 280], "size": [134, 58], "tag": "loopback only" },
+    { "id": "probe", "type": "security", "label": "Air-Gap Probe", "sublabel": "real socket test", "pos": [236, 116], "size": [134, 54] },
+
+    { "id": "egress", "type": "backend", "label": "Egress Guard", "sublabel": "redaction pipeline", "pos": [460, 186], "size": [134, 58] },
+    { "id": "recognizers", "type": "backend", "label": "PH Recognizers", "sublabel": "regex + Luhn", "pos": [694, 92], "size": [140, 54] },
+    { "id": "ner", "type": "backend", "label": "GLiNER NER", "sublabel": "19 PH labels", "pos": [694, 174], "size": [140, 54] },
+    { "id": "verify", "type": "security", "label": "Verification Pass", "sublabel": "re-detect max 3x", "pos": [694, 256], "size": [140, 54], "tag": "0.00% residual" },
+
+    { "id": "copilot", "type": "backend", "label": "DPA Copilot", "sublabel": "Taglish RAG", "pos": [460, 396], "size": [134, 58] },
+    { "id": "retrieval", "type": "backend", "label": "Hybrid Retrieval", "sublabel": "dense + BM25", "pos": [694, 396], "size": [140, 54] },
+    { "id": "corpus", "type": "database", "label": "PH Corpus", "sublabel": "223 cited chunks", "pos": [694, 474], "size": [140, 54] },
+    { "id": "llm", "type": "backend", "label": "Local LLM", "sublabel": "Qwen2.5-3B Q4", "pos": [460, 486], "size": [134, 54], "tag": "optional" },
+
+    { "id": "ledger", "type": "database", "label": "Audit Ledger", "sublabel": "SHA-256 chain", "pos": [912, 256], "size": [140, 54], "tag": "no raw PII" }
+  ],
+  "boundaries": [
+    {
+      "kind": "security-group",
+      "label": "Trusted core — no outbound socket",
+      "wraps": ["core", "egress", "recognizers", "ner", "verify", "copilot", "retrieval", "llm", "probe"]
+    },
+    {
+      "kind": "region",
+      "label": "Local data stores on disk",
+      "wraps": ["corpus", "ledger"]
+    }
+  ],
+  "connections": [
+    { "id": "ui-to-core", "from": "browser", "to": "core", "label": "loopback", "variant": "emphasis" },
+
+    { "id": "core-to-egress", "from": "core", "to": "egress", "label": "/api/pii" },
+    { "id": "egress-to-rec", "from": "egress", "to": "recognizers", "label": "stage 1", "labelDy": -40 },
+    { "id": "egress-to-ner", "from": "egress", "to": "ner", "label": "stage 2", "labelDy": 40 },
+    { "id": "ner-to-verify", "from": "ner", "to": "verify", "labelAt": [764, 248] },
+    { "id": "verify-loop", "from": "verify", "to": "egress", "label": "re-detect", "variant": "security", "fromSide": "bottom", "toSide": "bottom", "via": [[764, 336], [527, 336]], "labelDy": -14 },
+
+    { "id": "core-to-copilot", "from": "core", "to": "copilot", "label": "/api/copilot", "fromSide": "bottom", "toSide": "top" },
+    { "id": "copilot-to-ret", "from": "copilot", "to": "retrieval", "label": "query" },
+    { "id": "ret-to-corpus", "from": "retrieval", "to": "corpus", "labelAt": [764, 464] },
+    { "id": "copilot-to-llm", "from": "copilot", "to": "llm", "labelAt": [527, 466] },
+
+    { "id": "core-to-probe", "from": "core", "to": "probe", "label": "/api/airgap", "variant": "security", "fromSide": "top", "toSide": "bottom", "labelDy": -16 },
+    { "id": "verify-to-ledger", "from": "verify", "to": "ledger", "label": "hash", "variant": "security", "labelDy": -20 },
+    { "id": "ret-to-ledger", "from": "retrieval", "to": "ledger", "label": "audit", "variant": "security" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Why local, and what it produces",
+      "items": [
+        "Sending PII to a cloud model to ask 'is this PII?' is the breach itself",
+        "NPC Circular 16-03: notify NPC and data subjects within 72 hours",
+        "Residual PII escalates to BLOCK; thin retrieval refuses rather than inventing"
+      ]
+    }
+  ]
+}

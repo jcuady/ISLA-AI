@@ -1,0 +1,53 @@
+# KALIX — ignore rules
+
+# --- model weights and binaries: NEVER commit. Fetched by models/download_models.py ---
+models/weights/
+models/llamacpp/
+
+# --- corpus raw source documents: refetched by corpus/fetch_corpus.py ---
+# The processed chunks + index ARE committed so the demo works without a network.
+corpus/raw/*.pdf
+corpus/raw/*.html
+corpus/processed/embeddings.npy
+
+# --- runtime state ---
+data/
+*.log
+
+# --- Python ---
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Node ---
+node_modules/
+apps/web/dist/
+
+# --- UI verification output (screenshots from apps/web/verify-ui.mjs) ---
+apps/web/.verify/
+
+# --- temporary logo renders from scripts/process_logo.py ---
+branding/_*.png
+
+# Unused generation variant. kalix-mark-noir-b.jpg is the source that
+# scripts/process_logo.py actually consumed and is kept as the generation record.
+branding/kalix-mark-noir-a.jpg
+
+# --- retired navy/green identity, superseded by the red-noir mark ---
+# Kept out of the public repository so the shipped identity is unambiguous.
+branding/kalix-logo-primary.jpg
+apps/web/public/kalix-logo.jpg
+apps/web/public/kalix-wordmark-light.svg
+
+# --- local model download artefacts ---
+*.part
+
+# --- editor / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.playwright-mcp/
