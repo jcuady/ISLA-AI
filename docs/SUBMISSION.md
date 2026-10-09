@@ -12,7 +12,7 @@ Run the pre-flight check as close to the slot as possible:
 .venv\Scripts\python.exe scripts\preflight.py
 ```
 
-It prints `PRE-FLIGHT PASSED — 39/39 checks` or the demo should not start.
+It prints `PRE-FLIGHT PASSED — 49/49 checks` or the demo should not start.
 
 ---
 
@@ -31,7 +31,7 @@ It prints `PRE-FLIGHT PASSED — 39/39 checks` or the demo should not start.
 |---|---|
 | **Demo video** | Pending — recorded against `docs/DEMO_SCRIPT.md` after pre-flight passes |
 | **X / LinkedIn video URL** | Pending |
-| **What runs locally** | Egress Guard · DPA Copilot · audit ledger · HMAC pseudonyms · air-gap socket probe · both web surfaces · 463-test suite (355 Python + 108 UI) · the whole evaluation harness. Every published number was produced locally. |
+| **What runs locally** | Egress Guard · DPA Copilot · audit ledger · HMAC pseudonyms · air-gap socket probe · both web surfaces · 490-test suite (382 Python + 108 UI) · the whole evaluation harness. Every published number was produced locally. |
 | **What requires internet** | **Build time only**: model weight download (Qwen2.5-3B GGUF, multilingual-e5 ONNX, optional GLiNER) and corpus fetch from public NPC / lawphil mirrors. **Runtime: nothing.** No customer data leaves the machine and no cloud service is called; the only outbound traffic is the air-gap probe's own empty TCP handshake. Both web surfaces ship `default-src 'none'`. |
 
 ## The disclosures
@@ -106,7 +106,7 @@ In short:
 | Logo and brand kit | [`../branding/brand.md`](../branding/brand.md) |
 | README, threat model, licensing, roadmap | [`../README.md`](../README.md) · [`THREAT_MODEL.md`](THREAT_MODEL.md) · [`LICENSING.md`](LICENSING.md) · [`ROADMAP.md`](ROADMAP.md) |
 | CI reproducing every number | [`.github/workflows/verify.yml`](../.github/workflows/verify.yml) |
-| Pre-flight self-check | `scripts/preflight.py` — 39 assertions |
+| Pre-flight self-check | `scripts/preflight.py` — 49 assertions |
 
 ## Blocked on a human — cannot be automated
 

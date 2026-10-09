@@ -18,7 +18,7 @@ track, not a prediction of the result.
 |---|---|---|---|---|
 | 25% | Problem & Usefulness | **Strong, with one real exposure** | Narrow, named, regulation-backed user | "Would the general public benefit?" — they would not, and we cannot pretend otherwise |
 | 25% | Local AI Implementation | **Vulnerable** | Local inference is *architecturally* necessary | Our own ablation says the local AI is roughly tied with a lexical baseline |
-| 20% | Technical Execution | **Strong** | 355 Python + 108 UI tests, honest claims, bugs published | Corpus is 12 documents but BSP and SEC are unreachable; small-sample metrics |
+| 20% | Technical Execution | **Strong** | 382 Python + 108 UI tests, honest claims, bugs published | Corpus is 12 documents but BSP and SEC are unreachable; small-sample metrics |
 | 15% | Innovation | **Strong** | Refusing to be wrong; correct-refusal and named coverage gaps as a feature | Verifying your own redactor is good practice, not a novel idea |
 | 15% | Product & Demo Quality | **Medium-strong** | Real console, zero fake buttons | Demo video still pending — that is 15% with a hole in it |
 
@@ -37,7 +37,7 @@ there a realistic use case? · Would the general public actually benefit?*
 privacy officer. The problem is not invented — it is 2023 NPC Advisory 2024-04
 plus BSP circulars, obligations that already bind every bank in the country. And
 the strongest evidence is that the seven legal instruments the product cites are
-the *same* seven instruments those banks are bound by. The problem statement and
+the *same* eleven instruments those banks are bound by. The problem statement and
 the solution are drawn from one source of truth.
 
 **Strongest objection.** The rubric's fourth bullet is *"Would the general
@@ -140,7 +140,7 @@ we have earned it and it is the correct framing.
 technically sophisticated is the implementation? · Is it reliable enough for a
 live demonstration?*
 
-**Strongest case.** 129 Python tests + 99 UI tests, all passing. `tsc --noEmit`
+**Strongest case.** 382 Python tests + 108 UI tests, all passing. `tsc --noEmit`
 clean. Zero npm vulnerabilities. Every published metric regenerates from
 committed datasets by running committed code, in CI, on every push. Both web
 surfaces ship `default-src 'none'` and CI asserts zero external requests. The
@@ -226,7 +226,7 @@ navigation, an honest health chip that reflects a real socket probe, a four-
 channel status system (hue, form, icon, label) enforced by a single primitive,
 self-hosted fonts under `default-src 'none'`, and four surfaces verified for
 console errors, overflow and external requests on every run. `preflight.py`
-asserts 39 claims against a live server.
+asserts 49 claims against a live server.
 
 **Strongest objection — and this one is a hole, not an argument.**
 

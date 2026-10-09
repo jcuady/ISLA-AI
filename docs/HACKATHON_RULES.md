@@ -92,8 +92,8 @@ part; the gap is stated. **NOT MET**: does not hold.
 | # | Requirement | Status | Evidence — how a judge verifies it |
 |---|---|---|---|
 | **R1** | Substantially built during the hackathon | **MET** | `git log --format='%ad' --date=iso` → both commits dated 2026-10-09, the event day. Precise framing: the repository was initialised *during* the event, which is why the history is 2 commits rather than 200. What the history does not show is the stronger evidence — every component (PII engine, hybrid retrieval, corpus pipeline, console, evaluation harness, CI) is original work described in the README, built on nothing but the standard library plus named open-source models.
-| **R2** | A meaningful part of AI inference executes locally | **MET** | Three neural components run on-device, none in a cloud: `multilingual-e5-small` int8 **ONNX** encoder (112 MB, 223×384 embeddings, `dense_ready: true`), optional GLiNER NER, optional Qwen2.5-3B via **llama.cpp**. Proof: `GET /api/health` → `models.embeddings.available`; `python eval/run_eval.py` prints `dense leg on: cached (223, 384)`. See §5 for the honest limit of this claim. |
-| **R3** | A working product, demonstrated | **MET** | `python scripts/preflight.py` → **39/39**, asserting every claim the demo makes against a live server. CI regenerates the scoreboard on every push (`.github/workflows/verify.yml`, 3 jobs). See [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md). |
+| **R2** | A meaningful part of AI inference executes locally | **MET** | Three neural components run on-device, none in a cloud: `multilingual-e5-small` int8 **ONNX** encoder (112 MB, 348×384 embeddings, `dense_ready: true`), optional GLiNER NER, optional Qwen2.5-3B via **llama.cpp**. Proof: `GET /api/health` → `models.embeddings.available`; `python eval/run_eval.py` prints `dense leg on: cached (223, 384)`. See §5 for the honest limit of this claim. |
+| **R3** | A working product, demonstrated | **MET** | `python scripts/preflight.py` → **49/49**, asserting every claim the demo makes against a live server. CI regenerates the scoreboard on every push (`.github/workflows/verify.yml`, 4 jobs). See [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md). |
 | **R4** | Models, APIs, frameworks, and major tools disclosed | **MET** | README "Stack" table; [`DISCLOSURES.md`](DISCLOSURES.md) §5 lists AI-assisted development tooling; `models/registry.yaml` records every model, licence and role; `requirements.txt` and `apps/web/package.json` are the authoritative manifests. |
 | **R5** | Core Local AI functionality works without depending entirely on a cloud AI API | **MET** | **No cloud AI API is installed, required, or reachable at runtime.** `tests/test_airgap_claims.py` asserts no cloud SDK appears in `requirements.txt`, and that no runtime module outside the air-gap probe and the loopback llama.cpp client holds a network primitive. Both web surfaces ship `Content-Security-Policy: default-src 'none'`; `node apps/web/verify-ui.mjs` asserts **0 external requests** on all 4 surfaces and fails CI otherwise. CI job 1 runs the PII eval with **zero pip installs**. The badge is a live socket probe, not a string — pull the cable and it flips. |
 
@@ -101,9 +101,9 @@ part; the gap is stated. **NOT MET**: does not hold.
 
 | Weight | Criterion | Status | Where the evidence lives |
 |---|---|---|---|
-| 25% | **Problem & Usefulness** | **MET** | Target user is named and narrow: a Philippine bank's data-privacy officer. The problem is a 2023 NPC Advisory + BSP circular obligation with no tooling. Not hypothetical — the rules those banks must follow are the same seven instruments Isla AI cites. |
+| 25% | **Problem & Usefulness** | **MET** | Target user is named and narrow: a Philippine bank's data-privacy officer. The problem is a 2023 NPC Advisory + BSP circular obligation with no tooling. Not hypothetical — the rules those banks must follow are the same eleven instruments Isla AI cites. |
 | 25% | **Local AI Implementation** | **MET** | On-device: ONNX embeddings (0.60 weight of the hybrid score), optional llama.cpp generation, deterministic PII engine, HMAC pseudonyms, ledger, both UIs. **Advantage demonstrated, not asserted:** measured 0.2 ms PII p50 and 8 ms copilot p50 on CPU — no network round-trip exists to be slow. The one part that degrades gracefully is disclosed in §5. |
-| 20% | **Technical Execution** | **MET** | 228 tests (129 Python + 99 UI), all passing. Type-clean (`tsc --noEmit`), 0 npm vulnerabilities, verified in a clean minimal env with no model weights. Published metrics regenerate from committed datasets. |
+| 20% | **Technical Execution** | **MET** | 490 tests (382 Python + 108 UI), all passing. Type-clean (`tsc --noEmit`), 0 npm vulnerabilities, verified in a clean minimal env with no model weights. Published metrics regenerate from committed datasets. |
 | 15% | **Innovation** | **MET** | The differentiator is **refusing to be wrong**: a 3-pass verification loop that re-runs the detector over Isla AI's own redaction output and escalates on anything that survives, plus correct-refusal as a first-class outcome (100% measured). A hash-chained ledger that stores counts and verdicts but *never* customer text. |
 | 15% | **Product & Demo Quality** | **MET** | ChatGPT-style console, fully wired to the live API, zero fake buttons, zero mock data. 4/4 surfaces verified for console errors, overflow and external requests. |
 
@@ -121,9 +121,9 @@ Stated here rather than buried, because a judge will find them anyway.
    component were removed?"* — **today, not much.**
    We measured it rather than guessing: `python eval/retrieval_ablation.py`
    reports recall@1 / recall@3 / MRR with the neural leg and with it removed.
-   On this 223-chunk corpus the dense leg is **roughly tied** with BM25 + section
-   matching — slightly ahead on Taglish paraphrases (MRR 0.578 vs 0.572), level on
-   the eval questions (0.585 vs 0.587). The claim we make is that it is correct,
+   On this 348-chunk corpus the dense leg is **roughly tied** with BM25 + section
+   matching — slightly ahead on Taglish paraphrases (MRR 0.671 vs 0.654), slightly behind on
+   the eval questions (0.733 vs 0.767 — marginally worse). The claim we make is that it is correct,
    cheap, and better where phrasing diverges — **not** that it carries the product.
    What genuinely would be lost without local inference is the whole premise: a
    cloud model cannot answer *"is this sensitive personal information?"* without
@@ -136,7 +136,7 @@ Stated here rather than buried, because a judge will find them anyway.
    harming retrieval. Fixed, re-encoded, and re-measured. Published metrics were
    unchanged either way, which is precisely why the ablation was worth writing.
 
-2. **No generative model has ever produced a published answer.** Every number in
+3. **No generative model has ever produced a published answer.** Every number in
    the README was measured with the answer path *extractive* — quoted verbatim
    from cited spans. This is a deliberate design choice (it is why citation
    accuracy is 100% and not "mostly"), and the UI labels such answers

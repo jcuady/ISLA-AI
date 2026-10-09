@@ -8,7 +8,7 @@
 *Walang datos na lumalabas.*
 
 [![Local AI](https://img.shields.io/badge/inference-100%25%20local-107080?style=flat-square)](https://github.com/jcuady/ISLA-AI)
-[![Tests](https://img.shields.io/badge/tests-463%20passed-2fbf87?style=flat-square)](https://github.com/jcuady/ISLA-AI)
+[![Tests](https://img.shields.io/badge/tests-490%20passed-2fbf87?style=flat-square)](https://github.com/jcuady/ISLA-AI)
 [![No cloud calls](https://img.shields.io/badge/cloud%20API%20calls-0-a78bfa?style=flat-square)](https://github.com/jcuady/ISLA-AI)
 
 **AppBuilders PH Hackathon 2026 · Local AI track · Finance vertical**
@@ -28,7 +28,7 @@ controls:
 1. **Egress Guard** — detects and redacts 18 classes of Philippine banking PII *before* it can
    leave, then **re-runs the entire detector over its own output** and escalates rather than
    releasing if anything survives. Fails closed.
-2. **DPA Copilot** — answers Data Privacy Act questions in Taglish from seven real Philippine
+2. **DPA Copilot** — answers Data Privacy Act questions in Taglish from eleven real Philippine
    legal instruments, **quoted from cited spans**, and refuses when the evidence is thin instead of
    inventing a circular number.
 
@@ -310,7 +310,7 @@ Open <http://127.0.0.1:8765> for the landing page, or go straight to the console
 ### Verify it yourself
 
 ```powershell
-# 463 tests: 355 Python + 108 UI
+# 490 tests: 382 Python + 108 UI
 .venv\Scripts\python.exe -m pytest tests/ -q
 npm --prefix apps\web test
 npm --prefix apps\web run typecheck
@@ -332,6 +332,13 @@ python eval\run_eval.py --sparse-only
 
 # 49 assertions covering every claim the demo makes
 .venv\Scripts\python.exe scripts\preflight.py
+
+# Live QA: hostile input against every endpoint, then every documented use case
+.venv\Scripts\python.exe scripts\qa_probe.py
+.venv\Scripts\python.exe scripts\use_case_walk.py
+
+# Front-end QA: drives all four views in a real browser, submits real input
+node apps\web\qa-frontend.mjs
 
 # Both web surfaces: console errors, external requests, overflow, CSP hash
 npm --prefix apps\web install
@@ -390,13 +397,14 @@ isla-ai/
 │  ├─ risk/          indicators.py · assess.py                     Transaction Risk Engine
 │  └─ core/          app.py · airgap.py · ledger.py · llm.py     API + proof
 ├─ corpus/           fetch_corpus.py · chunk_corpus.py           11 instruments + 1 guide → 348 chunks
-├─ eval/             run_eval.py · datasets/ · RESULTS.md        the scoreboard
-├─ tests/            355 Python + 108 UI tests
+├─ eval/             run_eval.py · risk_eval.py · datasets/ · RESULTS.md
+├─ tests/            382 Python + 108 UI tests
 ├─ models/           download_models.py · registry.yaml
-├─ apps/web/         React console + landing page + verify-ui.mjs
+├─ apps/web/         React console + landing page + verify-ui.mjs + qa-frontend.mjs
 ├─ branding/         isla-mark.svg · isla-ai-logo.png · brand.md
-├─ scripts/          bootstrap.ps1 · preflight.py · process_isla_logo.py
+├─ scripts/          bootstrap.ps1 · preflight.py · qa_probe.py · use_case_walk.py
 └─ docs/             architecture · threat model · disclosures · demo script · corpus sources
+                     · HACKATHON_RULES.md (compliance matrix against the published rubric)
                      · JUDGING_AUDIT.md (our own adversarial scoring)
 ```
 
@@ -501,7 +509,7 @@ Stated plainly, because a compliance tool that overstates itself is worse than n
 - **Two legal instruments could not be retrieved.** NPC Circular 2016-03 (outbound transfer) and
   BSP Memorandum M-2024-019 are not publicly reachable; the outbound-transfer question is answered
   from RA-10173 §26 instead. Documented in `docs/CORPUS_SOURCES.md`.
-- **The corpus is seven instruments.** Breadth is the single highest-value improvement available.
+- **The corpus is eleven instruments.** Breadth is the single highest-value improvement available.
 - **The local LLM did not finish downloading** (2,007 of 2,105 MB; Hugging Face throttled this
   host). The product is fully functional without it — every number above was measured without it,
   and extractive answering is the more defensible posture for a compliance tool anyway.

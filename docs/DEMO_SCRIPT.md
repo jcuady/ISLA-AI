@@ -7,7 +7,7 @@ screen. Rehearse three times; time each run.
 
 - [ ] Run the pre-flight self-check. It asserts every claim the demo makes — corpus loaded, dense
       retrieval up, redaction verified clean, the 72-hour answer citable, out-of-domain refusal
-      working, ledger chain intact, 463 tests green (355 Python + 108 UI). **Do not present until it prints
+      working, ledger chain intact, 490 tests green (382 Python + 108 UI). **Do not present until it prints
       `PRE-FLIGHT PASSED`.**
 
   ```powershell
