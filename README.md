@@ -339,6 +339,7 @@ isla-ai/
 ├─ branding/         isla-mark.svg · isla-ai-logo.png · brand.md
 ├─ scripts/          bootstrap.ps1 · preflight.py · process_isla_logo.py
 └─ docs/             architecture · threat model · disclosures · demo script · corpus sources
+                     · JUDGING_AUDIT.md (our own adversarial scoring)
 ```
 
 ---

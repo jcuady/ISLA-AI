@@ -42,7 +42,31 @@ It prints `PRE-FLIGHT PASSED — 39/39 checks` or the demo should not start.
 | **Technologies and frameworks** | Python 3.12 · FastAPI · Uvicorn · Pydantic v2 · React 18 · TypeScript 5.6 · **Vite 8** · Tailwind CSS v4 · Radix UI · lucide-react · Vitest 4 · llama.cpp (Vulkan) · ONNX Runtime · Transformers · PyTorch CPU · rank-bm25 · pytest · Playwright · GitHub Actions → [`DISCLOSURES.md`](DISCLOSURES.md) §3 |
 | **APIs and cloud services** | **No cloud AI API is used at runtime.** None. Hugging Face Hub and lawphil/eLibrary are build-time only. No telemetry, no analytics, no error reporting. → [`DISCLOSURES.md`](DISCLOSURES.md) §2 |
 | **Existing code and assets** | Third-party model weights and llama.cpp binaries (pinned `b11515`), fetched not committed. Legal documents are public primary sources, unmodified, with URLs + SHA-256 in [`CORPUS_SOURCES.md`](CORPUS_SOURCES.md). Evaluation datasets are synthetic — no real customer records. Everything else was written for this project; the logo and brand identity are original. → [`DISCLOSURES.md`](DISCLOSURES.md) §4 |
-| **AI development tools** | **MiniMax Code (`mavis` agent)** — primary development assistant, ran the build end to end. AI image generation for the shield mark (rekeyed and recoloured by script; vector master hand-authored). Archify for the architecture diagram. → [`DISCLOSURES.md`](DISCLOSURES.md) §5 |
+| **AI development tools** | **MiniMax Code (`mavis` agent)** — primary development assistant, ran the build end to end. AI image generation for the island mark and hero photograph (rekeyed and resized by script; the vector reduction is generated, not hand-drawn). Archify for the architecture diagram. → [`DISCLOSURES.md`](DISCLOSURES.md) §5 |
+
+## Repository metadata — set this on GitHub (needs the web UI)
+
+`gh` is unavailable in this environment and no API token is present, so the
+description and topics below still need to be pasted in at
+**github.com/jcuady/ISLA-AI → Settings → General**. They are written here so
+they are reviewable and versioned rather than living in someone's clipboard.
+
+**Description** (311 chars, limit 350):
+
+> On-device AI privacy-compliance copilot for Philippine banks. PII redaction that re-runs its own detector before releasing anything, and Data Privacy Act answers quoted from cited spans. All inference runs on the machine, because a cloud model cannot check whether data is sensitive without first being sent it.
+
+The description is the one piece of GitHub chrome a judge reads before the
+README, so it answers *"why local?"* in its last clause rather than deferring.
+
+**Topics** (19 of a possible 20):
+
+`isla-ai` · `local-ai` · `on-device-ai` · `offline-first` · `privacy` ·
+`data-privacy` · `pii` · `dpa` · `philippines` · `finance` · `banking` ·
+`compliance` · `rag` · `air-gap` · `fastapi` · `react` · `typescript` ·
+`information-security` · `hackathon`
+
+**Website / homepage:** leave empty. The product is not hosted, and a broken
+link in the repo header is worse than no link.
 
 ## Every submission must answer
 
