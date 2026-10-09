@@ -58,8 +58,35 @@ class TestSSS:
         assert "523456789" in spans_for("SSS 523456789", "PH_SSS")
 
     def test_ten_digit_run_is_not_an_sss(self) -> None:
-        # Ten digits is a reference number, not an SSS.
+        # A bare/spaced 10-digit run is a reference or account number, not an
+        # SSS. The canonical Philippine SS Number is 10 digits but is always
+        # written dashed (see test_canonical_ten_digit_form), so the dashed
+        # form is what earns the match here.
         assert "523 456 7890" not in spans_for("SSS 523 456 7890", "PH_SSS")
+
+    @pytest.mark.parametrize(
+        "sss",
+        [
+            "12-3456789-0",  # SSS's own published format: XX-XXXXXXX-X
+            "12345-67890",   # how bank forms and HR systems group it: XXXXX-XXXXX
+            "1234-567890",   # XXXX-XXXXXX
+        ],
+    )
+    def test_canonical_ten_digit_form(self, sss: str) -> None:
+        # The Philippine SS Number is TEN digits, not nine. sss.gov.ph issues it
+        # as a lifetime membership number in the format XX-XXXXXXX-X. A regex
+        # that only knows 9-digit forms silently misses the number every bank
+        # form in the country actually carries.
+        assert sss in spans_for(f"SSN {sss}", "PH_SSS")
+
+    def test_eleven_digit_run_is_not_an_sss(self) -> None:
+        # Guards the boundary: a grouped string that is not ten digits must not
+        # be swept up by the ten-digit form.
+        assert "12-3456-7890-1" not in spans_for("SSN 12-3456-7890-1", "PH_SSS")
+
+    def test_ten_digit_dashed_does_not_collide_with_tin(self) -> None:
+        # Adding the 10-digit form must not steal a legitimate 9-digit TIN.
+        assert "456-789-012" in spans_for("TIN 456-789-012", "PH_TIN")
 
 
 class TestPrecision:

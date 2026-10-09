@@ -152,13 +152,25 @@ GCASH_CONTEXT_RE = re.compile(
     r"paymaya|metrobank\s?wallet|bdminfo|bdo\s?pay|instapay)\b",
     re.IGNORECASE,
 )
-# SSS surface forms seen in the wild: 3-2-4 (canonical), 2-3-4, 3-3-4 with
-# spaces, and bare 9 digits. Anchored so a 10-digit account number never matches.
+# SSS surface forms seen in the wild.
+#
+# The Philippine SS Number is TEN digits, issued by sss.gov.ph as the lifetime
+# membership number in the format XX-XXXXXXX-X (e.g. 12-3456789-0). Bank forms
+# and HR systems also write it 2-5-4-1 (12-3456-7890-1). Those two dashed forms
+# come first: they are the ones that actually appear in Philippine documents,
+# and an earlier version of this regex knew only 9-digit forms, which meant it
+# missed the canonical number outright.
+#
+# The 9-digit forms are kept for legacy/truncated records. Anchored so a longer
+# account number never matches.
 SSS_RE = re.compile(
     r"(?<![\d-])(?:"
-    r"\d{3}-\d{2}-\d{4}"          # 123-45-6789
-    r"|\d{2}-\d{3}-\d{4}"         # 12-345-6789
-    r"|\d{3} \d{3} \d{3}"         # 523 456 7890
+    r"\d{2}-\d{7}-\d"            # 12-3456789-0  (SSS's published format)
+    r"|\d{5}-\d{5}"               # 12345-67890   (bank forms, HR systems)
+    r"|\d{4}-\d{6}"               # 1234-567890
+    r"|\d{3}-\d{2}-\d{4}"        # 123-45-6789
+    r"|\d{2}-\d{3}-\d{4}"        # 12-345-6789
+    r"|\d{3} \d{3} \d{3}"         # 523 456 789
     r"|\d{9}(?![\d-])"            # bare 9
     r")(?![\d-])"
 )
@@ -305,13 +317,12 @@ def detect_regex(text: str) -> list[Entity]:
 
     # SSS before TIN: both accept dashed forms and the shapes overlap, so the
     # higher-precision SSS pattern runs first and claims its span.
-    # Note: an SSS is NINE digits (unlike a US SSN's nine - but commonly written
-    # 3-2-4 or 2-3-4 with dashes), which is why a bare 10-digit guard is wrong here.
+    # Ten digits is the canonical SS Number length; nine is the legacy form.
     for m in SSS_RE.finditer(haystack):
         if claimed_by(m.start(), m.end()):
             continue
         raw = re.sub(r"\D", "", m.group())
-        if len(raw) != 9:
+        if len(raw) not in (9, 10):
             continue
         window = _context_window(haystack, m.start(), m.end())
         sss_ctx = bool(re.search(r"\b(?:sss|social\s+security)\b", window, re.I))
