@@ -3,10 +3,12 @@ name: verify
 # Isla AI claims are reproducible claims. This workflow regenerates the published
 # scoreboard on every push so a reviewer never has to take the README on trust.
 #
-# Three independent jobs, each proving a different degradation claim:
+# Four independent jobs, each proving a different claim:
 #   1. pii-guard      - zero third-party dependencies at all
 #   2. tests + eval   - no model weights, no GPU, BM25 fallback only
 #   3. web build      - the UI type-checks, passes its behaviour suite, compiles
+#   4. live QA        - a running server survives hostile input, and every demo
+#                       use case still returns the answer the demo claims
 
 on:
   push:
@@ -71,9 +73,10 @@ jobs:
         run: python eval/run_eval.py --sparse-only
 
       # Every published gate must hold, in this configuration and in the full-hybrid one.
-      # No metric is exempted: source attribution sits exactly on its 80% target, so a
-      # regression in either direction fails the build. How it reached 80% is
-      # documented in docs/DISCLOSURES.md section 7.
+      # No metric is exempted: a regression in any direction fails the build, whether it
+      # improves or degrades. Source attribution used to sit exactly on its 80% target
+      # and is now 100% after the front-line guide was added; how it moved is documented
+      # in docs/DISCLOSURES.md section 7.
       - name: Fail if any published gate regressed
         run: |
           if grep '| MISS |' eval/RESULTS_SPARSE_ONLY.md; then
@@ -86,6 +89,45 @@ jobs:
         with:
           name: eval-sparse-only
           path: eval/RESULTS_SPARSE_ONLY.md
+
+  live-qa:
+    name: Live QA (hostile input + demo use cases)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install the verification dependency set
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-verify.txt
+
+      # The two scripts below need the app running, so this job starts it. They
+      # cover what the unit tests structurally cannot: that a live server answers
+      # a hostile payload without a 500 or a stack trace, and that every beat in
+      # docs/DEMO_SCRIPT.md still returns the result the demo claims.
+      - name: Start the server
+        run: |
+          python -m uvicorn services.core.app:app --host 127.0.0.1 --port 8765 &
+          for i in $(seq 1 60); do
+            if curl -sf http://127.0.0.1:8765/api/health > /dev/null; then
+              echo "server up after ${i}s"; exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::server did not become healthy"; exit 1
+
+      # Fails the build on any 500, any leaked traceback, any unknown path that
+      # answers 200, or any missing security header.
+      - name: Adversarial probe of every endpoint
+        run: python scripts/qa_probe.py
+
+      # Fails the build if any demo beat stops returning its answer.
+      - name: Walk every documented use case
+        run: python scripts/use_case_walk.py
 
   web-build:
     name: Web UI build
