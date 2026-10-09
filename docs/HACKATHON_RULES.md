@@ -24,7 +24,7 @@ Education · **Finance** · Gaming · Disaster response · Healthcare · Creativ
 · Enterprise tools · Computer vision · Personal assistants · **Privacy tools** ·
 Local agents.
 
-> **KALIX sits in three of these lists at once:** Local AI (local embeddings and
+> **Isla AI sits in three of these lists at once:** Local AI (local embeddings and
 > RAG), Finance, and Privacy tools. That is the intended intersection, not a
 > stretch.
 
@@ -101,10 +101,10 @@ part; the gap is stated. **NOT MET**: does not hold.
 
 | Weight | Criterion | Status | Where the evidence lives |
 |---|---|---|---|
-| 25% | **Problem & Usefulness** | **MET** | Target user is named and narrow: a Philippine bank's data-privacy officer. The problem is a 2023 NPC Advisory + BSP circular obligation with no tooling. Not hypothetical — the rules those banks must follow are the same seven instruments KALIX cites. |
+| 25% | **Problem & Usefulness** | **MET** | Target user is named and narrow: a Philippine bank's data-privacy officer. The problem is a 2023 NPC Advisory + BSP circular obligation with no tooling. Not hypothetical — the rules those banks must follow are the same seven instruments Isla AI cites. |
 | 25% | **Local AI Implementation** | **MET** | On-device: ONNX embeddings (0.60 weight of the hybrid score), optional llama.cpp generation, deterministic PII engine, HMAC pseudonyms, ledger, both UIs. **Advantage demonstrated, not asserted:** measured 0.2 ms PII p50 and 8 ms copilot p50 on CPU — no network round-trip exists to be slow. The one part that degrades gracefully is disclosed in §5. |
-| 20% | **Technical Execution** | **MET** | 101 Python + 95 UI tests, all passing. Type-clean (`tsc --noEmit`), 0 npm vulnerabilities, verified in a clean minimal env with no model weights. Published metrics regenerate from committed datasets. |
-| 15% | **Innovation** | **MET** | The differentiator is **refusing to be wrong**: a 3-pass verification loop that re-runs the detector over KALIX's own redaction output and escalates on anything that survives, plus correct-refusal as a first-class outcome (100% measured). A hash-chained ledger that stores counts and verdicts but *never* customer text. |
+| 20% | **Technical Execution** | **MET** | 207 tests (108 Python + 99 UI), all passing. Type-clean (`tsc --noEmit`), 0 npm vulnerabilities, verified in a clean minimal env with no model weights. Published metrics regenerate from committed datasets. |
+| 15% | **Innovation** | **MET** | The differentiator is **refusing to be wrong**: a 3-pass verification loop that re-runs the detector over Isla AI's own redaction output and escalates on anything that survives, plus correct-refusal as a first-class outcome (100% measured). A hash-chained ledger that stores counts and verdicts but *never* customer text. |
 | 15% | **Product & Demo Quality** | **MET** | ChatGPT-style console, fully wired to the live API, zero fake buttons, zero mock data. 4/4 surfaces verified for console errors, overflow and external requests. |
 
 ---
@@ -160,8 +160,8 @@ Stated here rather than buried, because a judge will find them anyway.
 ## 6. Judge's 90-second path
 
 ```powershell
-git clone https://github.com/jcuady/Kalix-AI---App-Builders-PH-HACKATHON.git
-cd Kalix-AI---App-Builders-PH-HACKATHON
+git clone https://github.com/jcuady/ISLA-AI.git
+cd ISLA-AI
 
 # 1. Does it work? (no models, no GPU, no network)
 pip install -r requirements-verify.txt

@@ -17,7 +17,7 @@ function setup(overrides: Partial<React.ComponentProps<typeof ChatComposer>> = {
       {...overrides}
     />,
   );
-  return { ...view, onSubmit, onChange, onStop, box: screen.getByLabelText("Message KALIX") };
+  return { ...view, onSubmit, onChange, onStop, box: screen.getByLabelText("Message Isla AI") };
 }
 
 describe("ChatComposer", () => {
@@ -75,7 +75,7 @@ describe("ChatComposer", () => {
   it("cancels with Escape while busy, without destroying the draft", async () => {
     const user = userEvent.setup();
     const { onStop, onChange } = setup({ value: "half typed question", busy: true });
-    await user.type(screen.getByLabelText("Message KALIX"), "{Escape}");
+    await user.type(screen.getByLabelText("Message Isla AI"), "{Escape}");
     expect(onStop).toHaveBeenCalledTimes(1);
     expect(onChange).not.toHaveBeenCalledWith("");
   });
@@ -83,7 +83,7 @@ describe("ChatComposer", () => {
   it("does not swallow Escape when idle, so the dialog can still close", async () => {
     const user = userEvent.setup();
     const { onStop } = setup({ value: "half typed question", busy: false });
-    await user.type(screen.getByLabelText("Message KALIX"), "{Escape}");
+    await user.type(screen.getByLabelText("Message Isla AI"), "{Escape}");
     expect(onStop).not.toHaveBeenCalled();
   });
 

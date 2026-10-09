@@ -103,7 +103,7 @@ export default function App() {
   const airGapped = gap?.air_gapped ?? false;
 
   return (
-    <div className="bg-noir-field flex h-screen overflow-hidden text-white">
+    <div className="bg-abyss-field flex h-screen overflow-hidden text-white">
       {/* persistent sidebar from lg up */}
       <AppSidebar
         active={view}
@@ -119,7 +119,7 @@ export default function App() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         {/* top bar */}
-        <header className="flex h-14 shrink-0 items-center gap-3 border-b border-white/8 bg-noir-900/60 px-4 backdrop-blur-sm sm:px-5">
+        <header className="flex h-14 shrink-0 items-center gap-3 border-b border-white/8 bg-abyss-900/60 px-4 backdrop-blur-sm sm:px-5">
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open navigation">

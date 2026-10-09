@@ -87,13 +87,13 @@ def run_probe(bind_host: str = "127.0.0.1") -> ProbeResult:
         )
     elif outbound_blocked:
         note = (
-            "Outbound TCP is blocked but DNS still resolves. KALIX transmits no "
+            "Outbound TCP is blocked but DNS still resolves. Isla AI transmits no "
             "data - the only connections it opens are the empty TCP handshakes "
             "this probe just made - but the host is not fully air-gapped."
         )
     else:
         note = (
-            "An external host was reachable. KALIX itself still transmits nothing, "
+            "An external host was reachable. Isla AI itself still transmits nothing, "
             "but this machine is not air-gapped."
         )
 
@@ -116,7 +116,7 @@ def assert_loopback(bind_host: str) -> None:
     """Refuse to serve on anything but loopback. This is the hard invariant."""
     if bind_host not in LOOPBACK_ONLY:
         raise RuntimeError(
-            f"KALIX refuses to bind {bind_host!r}. The local core is loopback-only "
+            f"Isla AI refuses to bind {bind_host!r}. The local core is loopback-only "
             f"by design - serving regulated inference on a routable interface "
             f"would defeat the product's entire claim."
         )

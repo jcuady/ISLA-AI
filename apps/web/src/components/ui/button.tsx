@@ -11,9 +11,11 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Primary is the crimson brand action.
+        // Primary is the brand action. The glow is the lagoon ramp, not a
+        // literal rgba() - hard-coding it here left a crimson halo behind every
+        // primary button after the rebrand.
         default:
-          "bg-brand-500 text-white shadow-[0_6px_20px_-8px_rgba(239,35,60,0.7)] " +
+          "bg-brand-500 text-white shadow-[0_6px_20px_-8px_rgba(22,163,184,0.75)] " +
           "hover:bg-brand-hot active:scale-[0.97]",
         secondary:
           "bg-white/[0.06] text-white/90 border border-white/10 hover:bg-white/[0.10] " +

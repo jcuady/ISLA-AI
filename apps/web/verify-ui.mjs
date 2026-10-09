@@ -1,5 +1,5 @@
 /**
- * Visual + console verification for the KALIX surfaces.
+ * Visual + console verification for the Isla AI surfaces.
  *
  * A dedicated script rather than the shared MCP browser: this runs in an
  * isolated context, is re-runnable, and cannot be hijacked by another session.

@@ -1,6 +1,6 @@
 """The air-gap claim, stated precisely enough to be enforced.
 
-KALIX's marketing says "no outbound socket". That wording is not literally true
+Isla AI's marketing says "no outbound socket". That wording is not literally true
 and must not stay in the repo: `/api/airgap` opens real TCP connections to fixed
 public DNS addresses, because a judge must be able to falsify the claim by
 pulling the cable.
@@ -139,7 +139,7 @@ def test_no_cloud_ai_sdk_is_installed():
 def test_the_verdict_note_does_not_claim_what_the_probe_itself_disproves():
     """Regression guard on user-facing copy that contradicted the probe."""
     source = (SERVICES / "core" / "airgap.py").read_text(encoding="utf-8")
-    assert "KALIX never opens an outbound socket" not in source
+    assert "Isla AI never opens an outbound socket" not in source
 
 
 @pytest.mark.parametrize(

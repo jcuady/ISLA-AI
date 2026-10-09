@@ -1,6 +1,6 @@
 # Verifying the air-gap claim yourself
 
-KALIX claims that no customer data leaves the machine and that no cloud service is called. It does
+Isla AI claims that no customer data leaves the machine and that no cloud service is called. It does
 **not** claim it opens no socket — section 1 below explains why that would be a dishonest claim.
 This document is how you check the real claim rather than take it on faith. Every step is a
 falsifiable check, and one of them is a test that fails the build.
@@ -16,10 +16,10 @@ Open <http://127.0.0.1:8765> and look at the badge:
 
 | Observed | Meaning |
 |---|---|
-| `NETWORK: CONNECTED` (amber) | An external host was reachable. KALIX still transmits nothing, but this machine is not air-gapped. |
+| `NETWORK: CONNECTED` (amber) | An external host was reachable. Isla AI still transmits nothing, but this machine is not air-gapped. |
 | `NETWORK: AIR-GAPPED` (green) | No external host reachable **and** DNS does not resolve. |
 
-The amber state is the **expected** result on a normal laptop, and KALIX reports it honestly rather
+The amber state is the **expected** result on a normal laptop, and Isla AI reports it honestly rather
 than claiming a green badge it has not earned.
 
 ### Watch it react
@@ -52,7 +52,7 @@ Sample output on a connected machine:
     { "target": "8.8.8.8:443",   "reachable": true,  "error": null },
     { "target": "huggingface.co", "resolved": true, "error": null }
   ],
-  "note": "An external host was reachable. KALIX itself still transmits nothing, but this machine is not air-gapped."
+  "note": "An external host was reachable. Isla AI itself still transmits nothing, but this machine is not air-gapped."
 }
 ```
 
@@ -63,7 +63,7 @@ unconditionally.
 
 ## 3. Confirm the server is loopback-only
 
-KALIX **refuses to start** on a routable address. `services/core/airgap.py`:
+Isla AI **refuses to start** on a routable address. `services/core/airgap.py`:
 
 ```python
 LOOPBACK_ONLY = {"127.0.0.1", "localhost", "::1"}
@@ -79,7 +79,7 @@ Verify it refuses:
 
 ```powershell
 .venv\Scripts\python.exe -m uvicorn services.core.app:app --host 0.0.0.0 --port 8765
-# RuntimeError: KALIX refuses to bind '0.0.0.0'. ...
+# RuntimeError: Isla AI refuses to bind '0.0.0.0'. ...
 ```
 
 Confirm nothing is listening externally while running:
@@ -98,7 +98,7 @@ This is the real test, and it is the one that matters for an air-gapped bank bra
 
 1. **Pre-cache everything while connected:** model weights, corpus, and the built UI.
 2. **Disconnect** the network entirely (Wi-Fi off, cable out).
-3. Start KALIX: `.venv\Scripts\python.exe -m uvicorn services.core.app:app --host 127.0.0.1 --port 8765`
+3. Start Isla AI: `.venv\Scripts\python.exe -m uvicorn services.core.app:app --host 127.0.0.1 --port 8765`
 4. Run the Egress Guard on the sample bank email.
 5. Ask the Copilot: *"Ilang oras dapat ko i-report ang data breach?"*
 
@@ -113,7 +113,7 @@ Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8765/api/copilot/ask `
   -Body '{"text":"Ilang oras dapat ko i-report ang data breach?"}' -ContentType "application/json" |
   ConvertTo-Json -Depth 6 | Out-File connected.json
 
-# ...disconnect the network, restart KALIX, repeat...
+# ...disconnect the network, restart Isla AI, repeat...
 
 # The `answer`, `citations` and `verdict` fields must be byte-identical.
 # Latency will differ slightly; that is expected and is not a parity failure.
@@ -148,7 +148,7 @@ installed. If someone later adds a `requests.get()` to the copilot, the suite go
 
 ## 6. What this does and does not prove
 
-**Proves:** KALIX's core functions run without internet and emit no telemetry.
+**Proves:** Isla AI's core functions run without internet and emit no telemetry.
 
 **Does not prove:** that a determined attacker with physical access to the machine cannot read memory
 or disk. See [`THREAT_MODEL.md`](THREAT_MODEL.md) for the actual trust boundary — encryption at rest

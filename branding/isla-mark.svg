@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Isla AI mark">
+  <title>Isla AI</title>
+  <!--
+    GENERATED FILE - do not edit by hand.
+
+    Emitted by scripts/process_isla_logo.py from ISLAND_CURVES and RING in that
+    file. branding/isla-ai-logo.png is the engraved master; this is the
+    small-size reduction, which is what the web actually loads. See
+    branding/brand.md for why the master cannot be used below ~500px.
+  -->
+  <defs>
+    <linearGradient id="isla-ring" x1="52" y1="34" x2="470" y2="486" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0E7C8C" />
+      <stop offset="0.55" stop-color="#107080" />
+      <stop offset="1" stop-color="#106090" />
+    </linearGradient>
+  </defs>
+  <circle cx="256" cy="256" r="194" fill="none" stroke="url(#isla-ring)" stroke-width="48" />
+  <path fill="url(#isla-ring)" d="M119.2 289.1 C132.2 266.8 153.8 241.9 175.4 222.1 C194.1 204.7 220.0 190.6 239.4 186.4 C264.6 181.5 288.4 194.7 309.3 214.6 C330.2 234.5 352.5 258.5 376.2 275.0 C384.2 280.0 389.9 284.2 388.5 290.8 C381.3 306.5 352.5 316.4 316.5 320.6 C273.3 325.6 215.7 320.6 172.5 309.8 C148.0 304.0 122.1 299.1 119.2 289.1 Z" />
+</svg>

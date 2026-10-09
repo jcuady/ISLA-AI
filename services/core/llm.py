@@ -16,9 +16,9 @@ from pathlib import Path
 import httpx
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-DEFAULT_HOST = os.environ.get("KALIX_LLM_HOST", "127.0.0.1")
-DEFAULT_PORT = int(os.environ.get("KALIX_LLM_PORT", "8080"))
-DEFAULT_TIMEOUT = float(os.environ.get("KALIX_LLM_TIMEOUT", "120"))
+DEFAULT_HOST = os.environ.get("ISLA_LLM_HOST", "127.0.0.1")
+DEFAULT_PORT = int(os.environ.get("ISLA_LLM_PORT", "8080"))
+DEFAULT_TIMEOUT = float(os.environ.get("ISLA_LLM_TIMEOUT", "120"))
 
 
 class LlamaCppClient:

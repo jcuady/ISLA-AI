@@ -2,8 +2,8 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "KALIX — Local-First AI Privacy Copilot",
-    "output": "kalix-architecture.html",
+    "title": "Isla AI — Local-First AI Privacy Copilot",
+    "output": "isla-architecture.html",
     "quality_profile": "showcase",
     "views": [
       {
@@ -28,7 +28,7 @@
   },
   "components": [
     { "id": "browser", "type": "external", "label": "Browser UI", "sublabel": "React SPA", "pos": [40, 280], "size": [120, 54] },
-    { "id": "core", "type": "backend", "label": "KALIX Core", "sublabel": "FastAPI :8765", "pos": [236, 280], "size": [134, 58], "tag": "loopback only" },
+    { "id": "core", "type": "backend", "label": "Isla AI Core", "sublabel": "FastAPI :8765", "pos": [236, 280], "size": [134, 58], "tag": "loopback only" },
     { "id": "probe", "type": "security", "label": "Air-Gap Probe", "sublabel": "real socket test", "pos": [236, 116], "size": [134, 54] },
 
     { "id": "egress", "type": "backend", "label": "Egress Guard", "sublabel": "redaction pipeline", "pos": [460, 186], "size": [134, 58] },

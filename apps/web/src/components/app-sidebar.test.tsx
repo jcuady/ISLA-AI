@@ -6,7 +6,7 @@ import type { AirgapResult, Health } from "@/lib/api";
 
 const health: Health = {
   status: "ok",
-  product: "KALIX",
+  product: "Isla AI",
   tagline: "t",
   bind: { host: "127.0.0.1", port: 8765, loopback_only: true },
   corpus: { chunks: 223, documents: 7, dense_ready: false, total_chars: 1 },

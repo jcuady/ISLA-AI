@@ -15,7 +15,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 MODEL_DIR = REPO_ROOT / "models" / "weights" / "gliner-multi-v2.1"
-THRESHOLD = float(os.environ.get("KALIX_GLINER_THRESHOLD", "0.45"))
+THRESHOLD = float(os.environ.get("ISLA_GLINER_THRESHOLD", "0.45"))
 
 # Philippine banking labels. Kept close to the brief's list, with the wallet and
 # remittance additions that generic NER would miss.
@@ -41,7 +41,7 @@ GLINER_LABELS = [
     "home address",
 ]
 
-# Map GLiNER's free-text labels onto KALIX entity types.
+# Map GLiNER's free-text labels onto Isla AI entity types.
 LABEL_MAP = {
     "customer name": "PERSON",
     "philippine mobile number": "PH_MOBILE",
@@ -87,7 +87,7 @@ class GLiNERBackend:
             self.available = False
 
     def predict(self, text: str) -> list:
-        """Return KALIX Entity objects for contextually-detected spans."""
+        """Return Isla AI Entity objects for contextually-detected spans."""
         from services.pii.recognizers import Entity, EntityType
 
         if not self.available or not text.strip():

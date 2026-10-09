@@ -1,4 +1,4 @@
-# KALIX roadmap
+# Isla AI roadmap
 
 ## What shipped, and what did not
 
@@ -37,7 +37,7 @@ completely beats four that work partially.
 ### Python 3.12 instead of 3.14
 
 The machine ships Python 3.14. PyPI has **zero wheels** for `transformers`, `gliner`,
-`presidio-analyzer`, `sentence-transformers`, `optimum` or `llama-cpp-python` on `cp314`. KALIX
+`presidio-analyzer`, `sentence-transformers`, `optimum` or `llama-cpp-python` on `cp314`. Isla AI
 provisions 3.12 via `uv` and `scripts/bootstrap.ps1` does it automatically.
 
 ### FastAPI + React instead of Tauri
@@ -71,7 +71,7 @@ See [`CORPUS_SOURCES.md`](CORPUS_SOURCES.md).
 
 ### P0 — production hardening (before any real bank data)
 
-1. **Set `KALIX_PSEUDONYM_KEY`** from an OS keystore. The demo fallback is deterministic and must
+1. **Set `ISLA_PSEUDONYM_KEY`** from an OS keystore. The demo fallback is deterministic and must
    not see live data.
 2. **Enforce SHA-256 verification at load**, not just at download.
 3. **Longer pseudonym digests.** The 4-hex suffix is a demo-grade truncation and is not
@@ -97,7 +97,7 @@ See [`CORPUS_SOURCES.md`](CORPUS_SOURCES.md).
 ### P3 — reach
 
 10. **Browser extension** for paste interception at the source, rather than relying on the user to
-    paste into KALIX first.
+    paste into Isla AI first.
 11. **Tauri shell** once a Rust toolchain is available, for the native-window experience.
 12. **OCR and vision** — Qwen2-VL / PaddleOCR for scanned IDs and statements.
 

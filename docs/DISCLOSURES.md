@@ -1,4 +1,4 @@
-# KALIX disclosures
+# Isla AI disclosures
 
 Required by the AppBuilders PH Hackathon 2026 submission checklist: *The disclosures — models used,
 technologies and frameworks, APIs and cloud services, existing code and assets, AI development tools*.
@@ -13,7 +13,7 @@ technologies and frameworks, APIs and cloud services, existing code and assets, 
 | Embeddings | `intfloat/multilingual-e5-small` (int8 ONNX) | 113 MB | MIT | Yes — ONNX Runtime, CPU |
 | Contextual NER (optional) | `urchade/gliner_multi-v2.1` | 1.1 GB | Apache-2.0 | Yes — PyTorch, CPU |
 
-**All inference executes on the user's own device.** No part of KALIX's core function depends on a
+**All inference executes on the user's own device.** No part of Isla AI's core function depends on a
 cloud AI API.
 
 ## 2. Cloud services
@@ -34,7 +34,7 @@ no payload, and it exists so the air-gap claim can be falsified by pulling the c
 see [`AIRGAP_VERIFICATION.md`](AIRGAP_VERIFICATION.md).
 
 > **What requires internet:** the *first* build only — downloading model weights and public legal
-> documents. After that, KALIX runs fully offline, and that is demonstrated live in the demo.
+> documents. After that, Isla AI runs fully offline, and that is demonstrated live in the demo.
 
 ## 3. Frameworks and libraries
 
@@ -53,19 +53,19 @@ Licence details per component: [`LICENSING.md`](LICENSING.md).
   NPC/BSP issuances. Nothing proprietary, nothing requiring clearance. Provenance is recorded per
   document in `corpus/raw/fetch_manifest.json`, including a content-verification step that rejects
   index pages masquerading as documents. See [`CORPUS_SOURCES.md`](CORPUS_SOURCES.md).
-- **The KALIX logo and brand identity are original**, created for this project.
+- **The Isla AI logo and brand identity are original**, created for this project.
 - **The evaluation datasets** (`eval/datasets/`) are hand-built for this project from realistic
   Philippine banking artefacts. They contain **synthetic data only** — no real customer records.
 
 ## 5. AI development tools
 
-KALIX was built with AI-assisted development tooling. This is disclosed per the competition rules.
+Isla AI was built with AI-assisted development tooling. This is disclosed per the competition rules.
 
 | Tool | Role |
 |---|---|
 | **MiniMax Code** (`mavis` agent) | Primary development assistant. Architecture, implementation, debugging, test authoring, the evaluation harness, the UI, and this documentation. Ran the build end to end. |
 | AI image generation (`connector__matrix__generate_image`) | Generated the 4K shield mark. Rekeyed and recoloured by `scripts/process_logo.py`; the vector master is hand-authored. |
-| Archify | Produced `docs/architecture/kalix-architecture.html`. |
+| Archify | Produced `docs/architecture/isla-architecture.html`. |
 
 Supporting automation, not AI: **Playwright** (visual, console-error, external-request and CSP
 verification in `apps/web/verify-ui.mjs`), **pytest**, **uv**, **GitHub Actions**.
@@ -84,7 +84,7 @@ page that would have rendered blank had its CSP hash gone stale.
 
 ## 6. What runs locally but is *optional*
 
-KALIX degrades safely and is honest about it in `/api/health`:
+Isla AI degrades safely and is honest about it in `/api/health`:
 
 | If unavailable | Effect |
 |---|---|

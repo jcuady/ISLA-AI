@@ -45,14 +45,14 @@ def post(path: str, body: dict, timeout: float = 90):
         return json.loads(r.read())
 
 
-print("KALIX pre-flight\n" + "=" * 66)
+print("Isla AI pre-flight\n" + "=" * 66)
 
 # --- artifacts --------------------------------------------------------------
 print("\n[artifacts]")
 check("corpus chunks", (REPO_ROOT / "corpus" / "processed" / "chunks.jsonl").exists())
 check("built UI", (REPO_ROOT / "apps" / "web" / "dist" / "index.html").exists())
 check("landing page", (REPO_ROOT / "apps" / "web" / "dist" / "landing.html").exists())
-check("brand assets", (REPO_ROOT / "branding" / "kalix-mark.svg").exists())
+check("brand assets", (REPO_ROOT / "branding" / "isla-mark.svg").exists())
 check("model weights", (REPO_ROOT / "models" / "weights").exists())
 check("fetch manifest", (REPO_ROOT / "corpus" / "raw" / "fetch_manifest.json").exists())
 
@@ -185,7 +185,15 @@ try:
         root_html = r.read().decode("utf-8", "replace")
         root_headers = dict(r.headers)
     check("landing serves at /", True, f"{len(root_html) // 1024} kB")
-    check("landing is the marketing page", "Privacy compliance" in root_html)
+    # Identify the marketing page structurally, not by copy. The console mounts
+    # React into #root and ships no Open Graph tags; the landing does the
+    # reverse. Matching on a phrase broke the moment the tagline was reworded,
+    # which is a test that fails for a reason unrelated to what it checks.
+    check(
+        "landing is the marketing page",
+        'id="root"' not in root_html and 'property="og:title"' in root_html,
+        f"root-mount={'no' if 'id=\"root\"' not in root_html else 'YES'}, og={'yes' if 'og:title' in root_html else 'NO'}",
+    )
 
     with urllib.request.urlopen(f"{BASE}/app", timeout=30) as r:  # noqa: S310
         app_html = r.read().decode("utf-8", "replace")

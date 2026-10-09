@@ -107,7 +107,7 @@ export function ChatComposer({
     <div className={cn("w-full", className)}>
       <div
         className={cn(
-          "relative rounded-composer border bg-noir-900/80 backdrop-blur-sm transition-colors",
+          "relative rounded-composer border bg-abyss-900/80 backdrop-blur-sm transition-colors",
           disabled
             ? "border-white/8 opacity-60"
             : "border-white/10 focus-within:border-brand-500/50",
@@ -125,7 +125,7 @@ export function ChatComposer({
           rows={1}
           disabled={disabled}
           autoFocus={autoFocus}
-          aria-label="Message KALIX"
+          aria-label="Message Isla AI"
           className="max-h-[200px] overflow-y-auto border-0 bg-transparent px-4 py-3.5 pr-4 text-[15px] leading-relaxed placeholder:text-white/30 focus:outline-none"
           style={{ minHeight: MIN_HEIGHT, height: MIN_HEIGHT }}
         />

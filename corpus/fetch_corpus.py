@@ -316,7 +316,7 @@ def write_manifest() -> None:
 def main() -> int:
     only = set(sys.argv[1:])
     docs = [d for d in SOURCES if not only or d.doc_id in only]
-    print(f"KALIX corpus fetch - {len(docs)} required document(s)\n")
+    print(f"Isla AI corpus fetch - {len(docs)} required document(s)\n")
 
     ok = 0
     for doc in docs:

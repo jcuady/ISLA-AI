@@ -26,7 +26,7 @@ const AIRGAP = {
 
 const HEALTH = {
   status: "ok",
-  product: "KALIX",
+  product: "Isla AI",
   tagline: "",
   bind: { host: "127.0.0.1", port: 8765, loopback_only: true },
   corpus: { chunks: 223, documents: 7, dense_ready: true, total_chars: 1 },

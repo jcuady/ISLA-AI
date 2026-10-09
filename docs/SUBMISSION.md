@@ -20,10 +20,10 @@ It prints `PRE-FLIGHT PASSED — 39/39 checks` or the demo should not start.
 
 | Item | Status |
 |---|---|
-| **Project name** | **KALIX** — *Walang datos na lumalabas.* |
+| **Project name** | **Isla AI** — *Walang datos na lumalabas.* |
 | **Short description** | On-device AI privacy-compliance copilot for Philippine banks. Detects and redacts PH banking PII before staff paste it into external AI, and answers Data Privacy Act questions offline with citations. |
 | **Team members** | Malcolm Joaquin Cuady — Developer · Author. Mark Quiazon — Project Manager. Boundless IT Solutions (BITS). |
-| **Public GitHub repository** | <https://github.com/jcuady/Kalix-AI---App-Builders-PH-HACKATHON> |
+| **Public GitHub repository** | <https://github.com/jcuady/ISLA-AI> |
 
 ## The proof
 
@@ -31,7 +31,7 @@ It prints `PRE-FLIGHT PASSED — 39/39 checks` or the demo should not start.
 |---|---|
 | **Demo video** | Pending — recorded against `docs/DEMO_SCRIPT.md` after pre-flight passes |
 | **X / LinkedIn video URL** | Pending |
-| **What runs locally** | Egress Guard · DPA Copilot · audit ledger · HMAC pseudonyms · air-gap socket probe · both web surfaces · 196-test suite (101 Python + 95 UI) · the whole evaluation harness. Every published number was produced locally. |
+| **What runs locally** | Egress Guard · DPA Copilot · audit ledger · HMAC pseudonyms · air-gap socket probe · both web surfaces · 207-test suite (108 Python + 99 UI) · the whole evaluation harness. Every published number was produced locally. |
 | **What requires internet** | **Build time only**: model weight download (Qwen2.5-3B GGUF, multilingual-e5 ONNX, optional GLiNER) and corpus fetch from public NPC / lawphil mirrors. **Runtime: nothing.** No customer data leaves the machine and no cloud service is called; the only outbound traffic is the air-gap probe's own empty TCP handshake. Both web surfaces ship `default-src 'none'`. |
 
 ## The disclosures
@@ -56,14 +56,14 @@ In short:
    jurisdiction — the act is the breach it is meant to prevent.
 2. **Target environments have no network by design.** Air-gapped core-banking and ISO 27001-sealed
    networks exist precisely because the response window is hours long. The control must work with
-   the cable out, not degrade when it is pulled. KALIX is demonstrated that way.
+   the cable out, not degrade when it is pulled. Isla AI is demonstrated that way.
 3. **Per-paste economics fail at API pricing.** 0.2 ms p50 with no per-call cost is arithmetic we
    already own.
 4. **Regulators are already asking.** NPC Advisory 2024-04 applies the DPA to AI processing personal
    data. Banks can now produce that proof locally, as a hash chain that never stores customer text.
 5. **Confidentiality is auditable or it is not.** "Read our DPA" is a claim; "no module on the
    request path opens a network connection, the CSP forbids off-origin fetches, and both are
-   asserted in CI" is a test. We do not claim KALIX opens no socket at all — the air-gap probe
+   asserted in CI" is a test. We do not claim Isla AI opens no socket at all — the air-gap probe
    deliberately opens empty TCP handshakes so the badge can be falsified live.
 
 ---

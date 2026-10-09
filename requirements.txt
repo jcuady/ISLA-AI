@@ -1,4 +1,4 @@
-# KALIX runtime dependencies.
+# Isla AI runtime dependencies.
 #
 # Python 3.12 required. 3.14 has no wheels for transformers, gliner, presidio,
 # optimum or llama-cpp-python - see scripts/bootstrap.ps1.

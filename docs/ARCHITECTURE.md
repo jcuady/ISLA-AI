@@ -1,6 +1,6 @@
 # Architecture
 
-KALIX is one process, three engines, and no network. This document explains how those parts fit
+Isla AI is one process, three engines, and no network. This document explains how those parts fit
 together and why.
 
 ---
@@ -14,7 +14,7 @@ together and why.
                  └────────────────────┬──────────────────────┘
                                       │ HTTP over loopback only
                  ┌────────────────────▼──────────────────────┐
-                 │  KALIX Local Core  (FastAPI / uvicorn)     │
+                 │  Isla AI Local Core  (FastAPI / uvicorn)     │
                  │                                           │
                  │  ┌─────────────┐  ┌────────────────────┐  │
                  │  │ /api/pii/*  │  │ /api/copilot/ask  │  │

@@ -35,7 +35,7 @@ CASES: list[tuple[str, list[tuple[str, str]]]] = [
     ("Visa 4012888888881881 exp 09/28.", [("CARD_PAN", "4012888888881881")]),
     # 6011000000000004 is a genuine Luhn-valid Mastercard test PAN. Using a real
     # checksum-valid number matters: the Luhn pass-rate gate measures whether the
-    # PANs KALIX flags are genuine, so fabricated 16-digit strings would make the
+    # PANs Isla AI flags are genuine, so fabricated 16-digit strings would make the
     # metric meaningless.
     ("GCash card number 6011000000000004 charged twice.", [("CARD_PAN", "6011000000000004")]),
     # ---------------------------------------------------------------- CVV

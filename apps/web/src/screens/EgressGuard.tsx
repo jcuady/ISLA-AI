@@ -104,7 +104,7 @@ export default function EgressGuard() {
               placeholder="Paste a collections email, a chat message, a payment note…"
               aria-label="Text to scan for personal information"
               rows={9}
-              className="w-full resize-y rounded-lg border border-white/10 bg-noir-950/60 p-3 font-mono text-[12.5px] leading-relaxed text-white/90 placeholder:text-white/25 focus:border-brand-500/60 focus:outline-none"
+              className="w-full resize-y rounded-lg border border-white/10 bg-abyss-950/60 p-3 font-mono text-[12.5px] leading-relaxed text-white/90 placeholder:text-white/25 focus:border-brand-500/60 focus:outline-none"
             />
 
             <div className="flex flex-wrap gap-1.5">
@@ -165,7 +165,7 @@ export default function EgressGuard() {
           <CardHeader>
             <CardTitle>Verdict</CardTitle>
             <CardDescription>
-              After redaction the whole detector runs again over KALIX's own output. Anything that
+              After redaction the whole detector runs again over Isla AI's own output. Anything that
               survives escalates instead of shipping.
             </CardDescription>
           </CardHeader>
@@ -313,7 +313,7 @@ function Pane({
           "font-mono text-[12px] leading-relaxed",
           accent
             ? "border-brand-500/25 bg-brand-500/[0.06] text-white/85"
-            : "border-white/10 bg-noir-950/60 text-white/55",
+            : "border-white/10 bg-abyss-950/60 text-white/55",
         )}
       >
         {text}

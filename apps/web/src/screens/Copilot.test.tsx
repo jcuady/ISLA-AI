@@ -88,7 +88,7 @@ afterEach(() => {
 
 const typeAndSend = async (text: string) => {
   const user = userEvent.setup();
-  const box = screen.getByLabelText("Message KALIX");
+  const box = screen.getByLabelText("Message Isla AI");
   await user.type(box, text);
   await user.type(box, "{Enter}");
 };
@@ -193,7 +193,7 @@ describe("Copilot screen", () => {
     render(<Copilot resetKey={0} />);
     await user.click(screen.getByRole("button", { name: /Breach reporting clock/ }));
 
-    expect(await screen.findByText("KALIX is thinking")).toBeInTheDocument();
+    expect(await screen.findByText("Isla AI is thinking")).toBeInTheDocument();
   });
 
   it("passes an AbortSignal with every request, so Stop is real", async () => {

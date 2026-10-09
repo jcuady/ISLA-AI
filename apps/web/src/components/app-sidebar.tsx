@@ -12,7 +12,7 @@ import {
   CircleAlert,
   ExternalLink,
 } from "lucide-react";
-import { KalixMark } from "@/components/kalix-mark";
+import { IslaMark } from "@/components/isla-mark";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { cn } from "@/lib/utils";
@@ -84,16 +84,16 @@ export function AppSidebar({
   return (
     <aside
       className={cn(
-        "flex h-full w-[280px] shrink-0 flex-col border-r border-white/8 bg-noir-900",
+        "flex h-full w-[280px] shrink-0 flex-col border-r border-white/8 bg-abyss-900",
         className,
       )}
       aria-label="Primary navigation"
     >
       {/* ---- brand ---- */}
       <div className="flex items-center gap-2.5 px-5 pb-5 pt-5">
-        <KalixMark size={26} />
+        <IslaMark size={26} />
         <div className="min-w-0 flex-1">
-          <p className="font-display text-[15px] font-extrabold tracking-[0.14em]">KALIX</p>
+          <p className="font-display text-[15px] font-extrabold tracking-[0.14em]">ISLA AI</p>
           <p className="truncate text-[11px] text-white/40">Walang datos na lumalabas.</p>
         </div>
       </div>

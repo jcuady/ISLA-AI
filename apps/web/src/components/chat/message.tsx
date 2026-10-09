@@ -38,7 +38,7 @@ function CitationChip({ citation }: { citation: Citation }) {
         <span className="truncate">{citation.label}</span>
       </button>
       {open && (
-        <span className="mt-2 block w-full rounded-lg border border-white/10 bg-noir-850 p-3 text-[12px] leading-relaxed text-white/65">
+        <span className="mt-2 block w-full rounded-lg border border-white/10 bg-abyss-850 p-3 text-[12px] leading-relaxed text-white/65">
           <span className="block font-semibold text-white/85">{citation.doc_title}</span>
           <span className="block text-white/45">
             {citation.issuer} · effective {citation.effective_date}

@@ -1,4 +1,4 @@
-# KALIX licensing
+# Isla AI licensing
 
 A regulated buyer cannot ship GPL-viral or research-only licences into production, so every
 component was selected on three criteria: **runs on commodity hardware**, **commercial-use licence**,
@@ -95,7 +95,7 @@ repository.**
 
 ---
 
-## KALIX code and brand
+## Isla AI code and brand
 
-The KALIX source code, the shield logo, and the brand identity are original works created for this
+The Isla AI source code, the shield logo, and the brand identity are original works created for this
 project. The logo derives from *kalasag* (shield) and was designed specifically for this submission.

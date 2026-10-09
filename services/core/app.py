@@ -1,4 +1,4 @@
-"""KALIX local core - FastAPI application.
+"""Isla AI local core - FastAPI application.
 
 Binds 127.0.0.1 ONLY. Serves the React UI and the four API surfaces:
 
@@ -37,8 +37,8 @@ from services.copilot.copilot import DPACopilot  # noqa: E402
 from services.copilot.retrieval import HybridIndex  # noqa: E402
 from services.pii.engine import EgressGuard  # noqa: E402
 
-BIND_HOST = os.environ.get("KALIX_HOST", "127.0.0.1")
-BIND_PORT = int(os.environ.get("KALIX_PORT", "8765"))
+BIND_HOST = os.environ.get("ISLA_HOST", "127.0.0.1")
+BIND_PORT = int(os.environ.get("ISLA_PORT", "8765"))
 DATA_DIR = REPO_ROOT / "data"
 LEDGER_PATH = DATA_DIR / "audit_ledger.jsonl"
 WEB_DIST = REPO_ROOT / "apps" / "web" / "dist"
@@ -72,11 +72,11 @@ def _load_llm():
 
         client = LlamaCppClient()
         if client.available():
-            print(f"[kalix] LLM online: {client.model_name}")
+            print(f"[isla] LLM online: {client.model_name}")
             return client
-        print(f"[kalix] LLM offline: {client.reason} (extractive answers still work)")
+        print(f"[isla] LLM offline: {client.reason} (extractive answers still work)")
     except Exception as exc:  # noqa: BLE001
-        print(f"[kalix] LLM unavailable: {type(exc).__name__}: {exc}")
+        print(f"[isla] LLM unavailable: {type(exc).__name__}: {exc}")
     return None
 
 
@@ -86,28 +86,28 @@ def _load_ner():
 
         backend = GLiNERBackend()
         if backend.available:
-            print("[kalix] GLiNER NER online")
+            print("[isla] GLiNER NER online")
             return backend
-        print(f"[kalix] GLiNER unavailable: {backend.reason} (regex ensemble still active)")
+        print(f"[isla] GLiNER unavailable: {backend.reason} (regex ensemble still active)")
     except Exception as exc:  # noqa: BLE001
-        print(f"[kalix] GLiNER unavailable: {type(exc).__name__}: {exc}")
+        print(f"[isla] GLiNER unavailable: {type(exc).__name__}: {exc}")
     return None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("[kalix] starting local core")
+    print("[isla] starting local core")
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     state.ledger = AuditLedger(LEDGER_PATH)
 
     try:
         state.index = HybridIndex()
     except FileNotFoundError as exc:
-        print(f"[kalix] corpus unavailable: {exc}")
+        print(f"[isla] corpus unavailable: {exc}")
         state.index = None
     else:
         if state.index.enable_dense():
-            print("[kalix] dense retrieval online")
+            print("[isla] dense retrieval online")
         state.copilot = DPACopilot(state.index)
 
     state.ner = _load_ner()
@@ -117,13 +117,13 @@ async def lifespan(app: FastAPI):
         state.copilot.llm = state.llm
 
     state.ledger.append("session_start", {"bind": BIND_HOST, "port": BIND_PORT})
-    print(f"[kalix] ready on http://{BIND_HOST}:{BIND_PORT}")
+    print(f"[isla] ready on http://{BIND_HOST}:{BIND_PORT}")
     yield
     if state.ledger:
         state.ledger.append("session_end", {})
 
 
-app = FastAPI(title="KALIX Local Core", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="Isla AI Local Core", version="1.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -150,9 +150,10 @@ async def security_headers(request, call_next):
     response.headers.setdefault(
         "Content-Security-Policy",
         "default-src 'none'; "
-        "script-src 'self' 'sha256-o670bcmz2zbojK/KnB6kyMDX7nqa5QWSL+wWWOHgcXo='; "
+        "script-src 'self' 'sha256-a/hjoGVM2OiJBb39J6k5BZvTLUf8Hi0mk7nPOIUUhGc='; "
         "style-src 'self' 'unsafe-inline'; "
         "img-src 'self' data:; "
+        "font-src 'self'; "
         "connect-src 'self'; "
         "form-action 'none'; "
         "base-uri 'none'; "
@@ -191,7 +192,7 @@ def health() -> dict:
     index_stats = state.index.stats() if state.index else None
     return {
         "status": "ok",
-        "product": "KALIX",
+        "product": "Isla AI",
         "tagline": "Walang datos na lumalabas.",
         "bind": {"host": BIND_HOST, "port": BIND_PORT, "loopback_only": True},
         "corpus": index_stats,
@@ -387,7 +388,7 @@ else:
     def index_placeholder() -> JSONResponse:
         return JSONResponse(
             {
-                "product": "KALIX",
+                "product": "Isla AI",
                 "message": "UI not built yet. Run: npm --prefix apps/web run build",
                 "api_docs": "/docs",
             }
@@ -397,5 +398,5 @@ else:
 if __name__ == "__main__":
     import uvicorn
 
-    print(f"[kalix] binding to loopback only: {BIND_HOST}:{BIND_PORT}")
+    print(f"[isla] binding to loopback only: {BIND_HOST}:{BIND_PORT}")
     uvicorn.run("services.core.app:app", host=BIND_HOST, port=BIND_PORT, log_level="info")

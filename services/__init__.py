@@ -1,1 +1,1 @@
-"""KALIX services package."""
+"""Isla AI services package."""

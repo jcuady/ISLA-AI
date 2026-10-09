@@ -1,11 +1,11 @@
-# KALIX threat model
+# Isla AI threat model
 
 ## Scope and assumptions
 
-**KALIX protects:** regulated Philippine personal data while it is being inspected, redacted, and
+**Isla AI protects:** regulated Philippine personal data while it is being inspected, redacted, and
 answered about — inside a bank's own network.
 
-**KALIX does NOT protect against:** physical access to the host, a compromised host OS, or an operator
+**Isla AI does NOT protect against:** physical access to the host, a compromised host OS, or an operator
 who deliberately exfiltrates data. Those are baseline infrastructure concerns, not product features.
 Encryption at rest is delegated to the platform (BitLocker on Windows, LUKS/dm-crypt on Linux) and the
 operator owns the key.
@@ -56,7 +56,7 @@ nuisance; it is a misstatement to a regulator.
    within a chunk's scope rather than composing freely.
 2. **Citation enforcement at the generation layer** — a legal claim with no resolvable chunk citation
    is suppressed *before it reaches the user*. Output with no `[DOC section]` tag is rejected.
-3. **Refusal on thin evidence** — below the retrieval threshold KALIX refuses in Taglish and reports
+3. **Refusal on thin evidence** — below the retrieval threshold Isla AI refuses in Taglish and reports
    what it did and did not find. Measured correct-refusal behaviour is in `eval/RESULTS.md`.
 
 **Residual risk.** A cited span can still be *quoted* in a misleading way by an LLM. The verification
@@ -106,11 +106,11 @@ Redaction tokens are **irreversible HMAC-SHA256 pseudonyms**:
 
 ### Key handling
 
-`KALIX_PSEUDONYM_KEY` supplies the key. **If unset, the code falls back to a deterministic per-machine
+`ISLA_PSEUDONYM_KEY` supplies the key. **If unset, the code falls back to a deterministic per-machine
 seed** so demo output is reproducible.
 
 > **Production requirement:** the fallback must not be used on live customer data. Set
-> `KALIX_PSEUDONYM_KEY` to a high-entropy secret held in the OS keystore, and rotate it on a defined
+> `ISLA_PSEUDONYM_KEY` to a high-entropy secret held in the OS keystore, and rotate it on a defined
 > schedule. Rotation breaks joins across the boundary — plan for that.
 
 ---
@@ -121,7 +121,7 @@ seed** so demo output is reproducible.
 |---|---|---|
 | Physical access / memory scraping | Out of scope for an app | Full-disk encryption, locked-down endpoint |
 | Compromised host OS / malware | Out of scope | Standard endpoint hardening |
-| Malicious insider with KALIX access | Cannot be solved in software | OS-level access control, audit review |
+| Malicious insider with Isla AI access | Cannot be solved in software | OS-level access control, audit review |
 | Breach of the corpus index at rest | Delegated to the platform | BitLocker / LUKS with operator-held key |
 | A novel PII format nobody has seen yet | Fundamentally open | Treat verdicts as advisory; human review |
 

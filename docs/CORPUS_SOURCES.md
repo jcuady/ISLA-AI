@@ -1,4 +1,4 @@
-# KALIX corpus sources
+# Isla AI corpus sources
 
 Every document in the corpus is a **public government publication**. Nothing is proprietary and
 nothing required clearance. This file records exactly what was fetched, from where, and how its
@@ -108,5 +108,5 @@ breach-notification rule is quoted verbatim from NPC Circular 16-03 and is prese
 corpus text — which is exactly the kind of thing a reviewer can confirm by running
 `python eval/run_eval.py`.
 
-**KALIX is not a legal authority and not legal advice.** For a binding interpretation, consult the
+**Isla AI is not a legal authority and not legal advice.** For a binding interpretation, consult the
 source circular and a qualified Philippine privacy counsel.

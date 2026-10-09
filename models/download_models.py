@@ -1,4 +1,4 @@
-"""Resilient parallel model downloader for KALIX.
+"""Resilient parallel model downloader for Isla AI.
 
 The single-stream HF transfer on this network stalls at ~8 KB/s. Ranged parallel
 connections reach ~0.33 MB/s, so each asset is fetched as byte ranges, written to
@@ -248,7 +248,7 @@ def _fetch_siblings(asset: Asset, target_dir: Path) -> None:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Fetch KALIX model weights (parallel).")
+    ap = argparse.ArgumentParser(description="Fetch Isla AI model weights (parallel).")
     ap.add_argument("--only", nargs="*", help="subset by key")
     ap.add_argument("--force", action="store_true")
     ap.add_argument("--skip-optional", action="store_true")

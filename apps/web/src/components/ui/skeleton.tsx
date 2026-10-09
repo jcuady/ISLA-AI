@@ -15,7 +15,7 @@ export function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivEl
 }
 
 /** Three dots that indicate a request is in flight. */
-export function TypingDots({ label = "KALIX is thinking" }: { label?: string }) {
+export function TypingDots({ label = "Isla AI is thinking" }: { label?: string }) {
   return (
     <span className="inline-flex items-center gap-2 text-sm text-white/50">
       <span className="flex gap-1" aria-hidden="true">

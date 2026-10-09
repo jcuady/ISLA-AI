@@ -1,0 +1,23 @@
+{
+  "note": "Prompts behind the committed Isla AI brand assets. Re-running image generation from these prompts reproduces branding/_gen/*.jpg, which scripts/process_isla_logo.py then rekeys and resizes into the committed PNGs. The raw 4K sources are gitignored because they are 15 MB of intermediates; the processed masters are tracked.",
+  "requests": [
+    {
+      "prompt": "Minimal premium brand mark for a data-privacy AI product called Isla AI. A single stylised tropical island silhouette centred inside a clean thin circular ring of water. The island is a smooth bold geometric landmass with one gentle peak, rendered in deep lagoon teal, with a small cluster of simple connected node dots forming a subtle network across it suggesting local computation. The surrounding ring reads as a calm protected boundary of ocean. Flat vector emblem, crisp precise edges, very simple bold geometry that stays legible at 16 pixels, generous empty margin around the mark. Isolated on a pure solid white background. No shadow, no gradient mesh, no glow, no text, no lettering, no watermark.",
+      "aspect_ratio": "1:1",
+      "resolution": "4K",
+      "output_file": "branding/_gen/isla-ai-logo-src.jpg",
+      "processed_to": "branding/isla-ai-logo.png"
+    },
+    {
+      "prompt": "Ultra-wide cinematic aerial photograph of a single isolated tropical island at golden hour. Turquoise lagoon water fading into deep teal, bright white sand beach, dense palm trees seen from above, gentle coral reef patterns visible through clear shallow water, a thin line of breaking surf tracing the reef. Vast empty ocean surrounds the island on all sides, conveying isolation, containment and self-sufficiency. Calm premium editorial colour grade built on teal, aqua and warm sand tones with soft golden natural light. No people, no boats, no buildings, no text, no border, no frame. High detail, serene, sharp.",
+      "aspect_ratio": "21:9",
+      "resolution": "4K",
+      "output_file": "branding/_gen/isla-ai-island-bg.jpg",
+      "processed_to": [
+        "apps/web/public/hero-island.jpg",
+        "apps/web/public/hero-tiny.jpg",
+        "branding/isla-ai-island-bg.jpg"
+      ]
+    }
+  ]
+}

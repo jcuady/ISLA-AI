@@ -1,4 +1,4 @@
-# KALIX — 5-minute demo script
+# Isla AI — 5-minute demo script
 
 **Total: 5 minutes.** The demo must end with the network unplugged and every claim verified on
 screen. Rehearse three times; time each run.
@@ -7,14 +7,14 @@ screen. Rehearse three times; time each run.
 
 - [ ] Run the pre-flight self-check. It asserts every claim the demo makes — corpus loaded, dense
       retrieval up, redaction verified clean, the 72-hour answer citable, out-of-domain refusal
-      working, ledger chain intact, 101 Python + 95 UI tests green. **Do not present until it prints
+      working, ledger chain intact, 207 tests green (108 Python + 99 UI). **Do not present until it prints
       `PRE-FLIGHT PASSED`.**
 
   ```powershell
   .venv\Scripts\python.exe scripts\preflight.py
   ```
 
-- [ ] Models downloaded, corpus built, UI built, KALIX running.
+- [ ] Models downloaded, corpus built, UI built, Isla AI running.
 - [ ] Close Chrome, Cursor, and other IDEs — this laptop has 15.2 GB RAM and every free megabyte
       matters during a live demo.
 - [ ] Open <http://127.0.0.1:8765> — this now serves the **landing page**. The console is at
@@ -87,7 +87,7 @@ BLOCK & ESCALATE
 ```
 
 > "Ten entities, detected in milliseconds, entirely on this machine. Card PAN plus CVV plus an account
-> identifier together — that's a complete payment credential bundle, so KALIX blocks rather than
+> identifier together — that's a complete payment credential bundle, so Isla AI blocks rather than
 > redacts and releases."
 
 > "Notice the SSS — twelve-dash-three-four-five-dash-six-seven-eight-nine. That's a two-three-four
@@ -97,7 +97,7 @@ BLOCK & ESCALATE
 
 **Do — the crucial beat:** point at `0.00% residual`.
 
-> "A redactor you haven't verified is a liability. So after redaction, KALIX re-runs the entire
+> "A redactor you haven't verified is a liability. So after redaction, Isla AI re-runs the entire
 > detector over its own output. If anything still trips, it escalates instead of releasing. That
 > number is measured, not claimed — the evaluation is in the repo and anyone can re-run it."
 
@@ -186,7 +186,7 @@ denominator grew from four to five.
 > but because it legally cannot. The data stays inside the shield, because the shield *is* the
 > control.
 >
-> KALIX. Walang datos na lumalabas."
+> Isla AI. Walang datos na lumalabas."
 
 ---
 

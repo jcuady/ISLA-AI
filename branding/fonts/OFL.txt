@@ -1,0 +1,3 @@
+Outfit, Plus Jakarta Sans and JetBrains Mono are licensed under the
+SIL Open Font License 1.1. See https://openfontlicense.org/ for the
+full terms. Self-hosted subsets are committed to apps/web/public/fonts.

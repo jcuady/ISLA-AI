@@ -3,7 +3,7 @@ import { afterEach, vi } from "vitest";
 import { cleanup } from "@testing-library/react";
 
 /**
- * jsdom is not a browser. These are the specific APIs the KALIX console
+ * jsdom is not a browser. These are the specific APIs the Isla AI console
  * touches that jsdom leaves unimplemented; each stub is the minimum a test
  * needs, so a missing behaviour fails loudly instead of silently passing.
  */

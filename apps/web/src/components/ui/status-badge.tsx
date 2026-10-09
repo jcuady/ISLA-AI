@@ -3,10 +3,11 @@ import { CheckCircle2, AlertCircle, ShieldOff, Sparkles, HelpCircle, CircleDashe
 import { cn } from "@/lib/utils";
 
 /**
- * The single place KALIX status colour is decided.
+ * The single place Isla AI status colour is decided.
  *
- * The brand accent is crimson, so BLOCK can no longer be the only red thing in
- * the product. To keep status unambiguous next to brand chrome, every tone is
+ * The brand accent is lagoon teal, which leaves BLOCK the only red thing in the
+ * product. That is the point of the palette: no red chrome can ever be mistaken
+ * for an alarm. To keep status unambiguous next to that chrome, every tone is
  * signalled on FOUR independent channels:
  *
  *   1. hue        a token reserved for this tone

@@ -219,7 +219,7 @@ ORDER_CONTEXT_RE = re.compile(
     re.IGNORECASE,
 )
 
-# KALIX redaction tokens look like ordinary text to every recognizer above.
+# Isla AI redaction tokens look like ordinary text to every recognizer above.
 # Every stage masks these spans BEFORE matching, so the verification pass can
 # never "rediscover" what we already redacted and spin to BLOCK_ESCALATE.
 REDACTION_TOKEN_RE = re.compile(r"\[[A-Z]{2,10}-[0-9A-F]{4,}\]")
@@ -255,7 +255,7 @@ def detect_regex(text: str) -> list[Entity]:
     found: list[Entity] = []
     claimed: list[tuple[int, int]] = []
 
-    # Already-redacted KALIX tokens are masked out so the verification pass can
+    # Already-redacted Isla AI tokens are masked out so the verification pass can
     # never re-detect its own output and escalate to BLOCK_ESCALATE.
     haystack, _token_spans = mask_tokens(text)
 

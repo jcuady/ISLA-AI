@@ -1,1 +1,1 @@
-"""KALIX local core: API, ledger, air-gap probe, LLM client."""
+"""Isla AI local core: API, ledger, air-gap probe, LLM client."""

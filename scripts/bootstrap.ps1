@@ -1,4 +1,4 @@
-# KALIX bootstrap - provisions a clean machine into a running local app.
+# Isla AI bootstrap - provisions a clean machine into a running local app.
 #
 # Windows PowerShell. Safe to re-run: every step is idempotent.
 # Usage:  powershell -ExecutionPolicy Bypass -File scripts\bootstrap.ps1
@@ -16,7 +16,7 @@ function Step-Start($msg) {
     Write-Host "[$script:Step] $msg" -ForegroundColor Cyan
 }
 
-Write-Host "KALIX bootstrap" -ForegroundColor White
+Write-Host "Isla AI bootstrap" -ForegroundColor White
 Write-Host "  $Root"
 
 # 1. Python 3.12 ------------------------------------------------------------
@@ -72,6 +72,6 @@ Step-Start "Self-check"
 
 Write-Host ""
 Write-Host "Ready." -ForegroundColor Green
-Write-Host "  Start KALIX:" -ForegroundColor White
+Write-Host "  Start Isla AI:" -ForegroundColor White
 Write-Host "    .venv\Scripts\python.exe -m uvicorn services.core.app:app --host 127.0.0.1 --port 8765"
 Write-Host "  Then open http://127.0.0.1:8765" -ForegroundColor White

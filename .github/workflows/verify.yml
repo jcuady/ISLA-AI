@@ -1,6 +1,6 @@
 name: verify
 
-# KALIX claims are reproducible claims. This workflow regenerates the published
+# Isla AI claims are reproducible claims. This workflow regenerates the published
 # scoreboard on every push so a reviewer never has to take the README on trust.
 #
 # Three independent jobs, each proving a different degradation claim:

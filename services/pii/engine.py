@@ -29,7 +29,7 @@ from services.pii.recognizers import (
 )
 
 MAX_VERIFICATION_PASSES = 3
-DEFAULT_KEY_ENV = "KALIX_PSEUDONYM_KEY"
+DEFAULT_KEY_ENV = "ISLA_PSEUDONYM_KEY"
 
 
 class Verdict(str, Enum):
@@ -177,7 +177,7 @@ def _key() -> bytes:
         return raw.encode("utf-8")
     # Stable per-machine fallback so demo output is reproducible. Documented in
     # docs/THREAT_MODEL.md: production deployments MUST set the env var.
-    seed = hashlib.sha256(b"kalix-local-pseudonym-key").hexdigest()
+    seed = hashlib.sha256(b"isla-local-pseudonym-key").hexdigest()
     return seed.encode("utf-8")
 
 

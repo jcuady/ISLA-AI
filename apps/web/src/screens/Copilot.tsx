@@ -3,7 +3,7 @@ import { Landmark, Scale, ShieldAlert } from "lucide-react";
 import { api } from "@/lib/api";
 import { ChatComposer } from "@/components/ui/chat-composer";
 import { TypingDots } from "@/components/ui/skeleton";
-import { KalixMark } from "@/components/kalix-mark";
+import { IslaMark } from "@/components/isla-mark";
 import {
   AssistantMessage,
   UserMessage,
@@ -142,7 +142,7 @@ export default function Copilot({ resetKey, externalQuestion }: CopilotProps) {
                   className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg border border-brand-500/35 bg-brand-500/12"
                   aria-hidden="true"
                 >
-                  <KalixMark size={14} />
+                  <IslaMark size={14} />
                 </span>
                 <div className="pt-1">
                   <TypingDots />
@@ -155,7 +155,7 @@ export default function Copilot({ resetKey, externalQuestion }: CopilotProps) {
       </div>
 
       {/* Composer pinned to the bottom, like a modern chat surface. */}
-      <div className="shrink-0 border-t border-white/8 bg-noir-950/80 px-4 pb-4 pt-3 backdrop-blur-sm sm:px-6">
+      <div className="shrink-0 border-t border-white/8 bg-abyss-950/80 px-4 pb-4 pt-3 backdrop-blur-sm sm:px-6">
         <div className="mx-auto w-full max-w-3xl">
           <ChatComposer
             value={draft}
@@ -187,13 +187,13 @@ function EmptyState({ onPick }: { onPick: (q: string) => void }) {
         className="mb-5 flex size-14 items-center justify-center rounded-2xl border border-brand-500/30 bg-brand-500/10"
         aria-hidden="true"
       >
-        <KalixMark size={28} />
+        <IslaMark size={28} />
       </span>
       <h2 className="font-display text-2xl font-semibold tracking-tight text-white sm:text-3xl">
         Ask the law. <span className="text-brand-500">Get the citation.</span>
       </h2>
       <p className="mt-3 max-w-lg text-[14px] leading-relaxed text-white/50">
-        KALIX answers from seven real Philippine privacy instruments, quoted span by span. If the
+        Isla AI answers from seven real Philippine privacy instruments, quoted span by span. If the
         evidence is thin it refuses rather than guessing.
       </p>
 

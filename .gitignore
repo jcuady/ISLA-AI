@@ -1,4 +1,4 @@
-# KALIX — ignore rules
+# Isla AI — ignore rules
 
 # --- model weights and binaries: NEVER commit. Fetched by models/download_models.py ---
 models/weights/
@@ -33,18 +33,13 @@ apps/web/dist/
 apps/web/.verify/
 apps/web/.verify-shots/
 
-# --- temporary logo renders from scripts/process_logo.py ---
+# --- raw image-generation sources from branding/asset-manifest.json ---
+# branding/_gen/ holds ~15 MB of 4K intermediates. They are reproducible from
+# the recorded prompts; the rekeyed, resized masters under branding/ are tracked.
+branding/_gen/
+
+# --- throwaway renders from scripts/process_isla_logo.py ---
 branding/_*.png
-
-# Unused generation variant. kalix-mark-noir-b.jpg is the source that
-# scripts/process_logo.py actually consumed and is kept as the generation record.
-branding/kalix-mark-noir-a.jpg
-
-# --- retired navy/green identity, superseded by the red-noir mark ---
-# Kept out of the public repository so the shipped identity is unambiguous.
-branding/kalix-logo-primary.jpg
-apps/web/public/kalix-logo.jpg
-apps/web/public/kalix-wordmark-light.svg
 
 # --- local model download artefacts ---
 *.part

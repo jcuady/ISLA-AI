@@ -1,6 +1,6 @@
 # Model registry
 
-Pinned model weights for KALIX. **No weights are committed to this repository.**
+Pinned model weights for Isla AI. **No weights are committed to this repository.**
 `models/download_models.py` fetches these files and records their SHA-256.
 
 All licences are commercial-use compatible. See [`docs/LICENSING.md`](../docs/LICENSING.md).

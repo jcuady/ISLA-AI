@@ -6,7 +6,7 @@
   "status": "pass",
   "visualReview": "pending",
   "artifact": {
-    "path": "C:\\Users\\jcuad\\OneDrive\\Documents\\BITS TEAM HACKATHON\\kalix\\docs\\architecture\\kalix-architecture.html",
+    "path": "C:\\Users\\jcuad\\OneDrive\\Documents\\BITS TEAM HACKATHON\\isla\\docs\\architecture\\isla-architecture.html",
     "sha256": "0beb26c36054977c59f49d5da514b504843d820c8d8ed4fc409bdeffcc0e2440",
     "bytes": 816553
   },
@@ -440,7 +440,7 @@
         "viewerChromeActive": true,
         "viewerChromeOk": true,
         "resolvedTheme": "light",
-        "file": "kalix-architecture.visual-check.1440x900.light.png"
+        "file": "isla-architecture.visual-check.1440x900.light.png"
       },
       {
         "width": 1440,
@@ -472,7 +472,7 @@
         "viewerChromeActive": true,
         "viewerChromeOk": true,
         "resolvedTheme": "dark",
-        "file": "kalix-architecture.visual-check.1440x900.dark.png"
+        "file": "isla-architecture.visual-check.1440x900.dark.png"
       },
       {
         "width": 2048,
@@ -504,7 +504,7 @@
         "viewerChromeActive": true,
         "viewerChromeOk": true,
         "resolvedTheme": "light",
-        "file": "kalix-architecture.visual-check.2048x1320.light.png"
+        "file": "isla-architecture.visual-check.2048x1320.light.png"
       },
       {
         "width": 2048,
@@ -536,13 +536,13 @@
         "viewerChromeActive": true,
         "viewerChromeOk": true,
         "resolvedTheme": "dark",
-        "file": "kalix-architecture.visual-check.2048x1320.dark.png"
+        "file": "isla-architecture.visual-check.2048x1320.dark.png"
       }
     ],
-    "contactSheet": "kalix-architecture.visual-check.html"
+    "contactSheet": "isla-architecture.visual-check.html"
   },
   "sidecars": {
-    "receipt": "kalix-architecture.visual-check.json",
-    "contactSheet": "kalix-architecture.visual-check.html"
+    "receipt": "isla-architecture.visual-check.json",
+    "contactSheet": "isla-architecture.visual-check.html"
   }
 }

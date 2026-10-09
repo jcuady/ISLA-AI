@@ -5,7 +5,7 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "node:path";
 
-// The UI is served by the KALIX local core in production. In dev, Vite proxies
+// The UI is served by the Isla AI local core in production. In dev, Vite proxies
 // API calls to the loopback backend so the browser still only ever talks to
 // 127.0.0.1 - the air-gap claim holds in both modes.
 export default defineConfig({

@@ -1,637 +1,708 @@
 <!DOCTYPE html>
 <html lang="en" class="no-js">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KALIX — On-device AI privacy copilot for Philippine banks</title>
-<meta name="description" content="KALIX detects and redacts Philippine banking PII before staff paste it into external AI, and answers Data Privacy Act questions offline with citations. Runs entirely on your hardware.">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Isla AI — Your bank's data never leaves the island</title>
+<meta name="description" content="Isla AI is an on-device AI privacy-compliance copilot for Philippine banks. It redacts PII, cites the Data Privacy Act and writes hash-chained audit proof — entirely on one machine, with no cloud AI API anywhere.">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#000000">
 
-<!-- This product ships no network calls. The CSP is set to deny them outright:
-     if a future edit adds a CDN font or script, the browser blocks it and the
-     air-gap claim stays testable rather than aspirational.
-
-     The inline reveal script is permitted by its exact SHA-256 hash, not by
-     'unsafe-inline', so the policy stays strict. frame-ancestors cannot be
-     delivered in a meta element - it is set as a real response header by
-     services/core/app.py instead. -->
+<!-- Two policies apply and the browser enforces the intersection, so both must
+     permit the same inline script. The reveal script is allowed by its exact
+     SHA-256 rather than 'unsafe-inline'. frame-ancestors cannot be delivered in
+     a meta element; services/core/app.py sets it as a real header. Fonts and the
+     hero photograph are self-hosted and served from 'self' — there is no CDN. -->
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'none';
-  style-src 'unsafe-inline';
-  script-src 'sha256-o670bcmz2zbojK/KnB6kyMDX7nqa5QWSL+wWWOHgcXo=';
+  style-src 'self' 'unsafe-inline';
+  font-src 'self';
+  script-src 'sha256-a/hjoGVM2OiJBb39J6k5BZvTLUf8Hi0mk7nPOIUUhGc=';
   img-src 'self' data:;
   form-action 'none';
   base-uri 'none'">
 
-<meta property="og:title" content="KALIX — On-device AI privacy copilot for Philippine banks">
-<meta property="og:description" content="Walang datos na lumalabas. Detect, redact and defend Philippine banking PII entirely inside your perimeter.">
+<meta property="og:title" content="Isla AI — Your bank's data never leaves the island">
+<meta property="og:description" content="On-device AI privacy compliance for Philippine banks. Redaction, citation and audit proof that never leaves the machine.">
 <meta property="og:type" content="website">
-
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/isla-mark-180.png">
 
 <style>
-/* ============================================================================
-   Tokens — mirrored from apps/web/src/kalix-theme.css so brand cannot drift.
-   ========================================================================== */
+/* ══════════════════════════════════════════════════════════════════════════
+   ISLA AI — brand tokens
+   The palette is sampled from the mark itself (lagoon #107080) and the hero
+   photograph, not invented. Brand is TEAL, which is the whole point of the
+   rebrand: BLOCK is red, so a crimson brand used to fight its own status
+   colours. Teal and coral-red are far apart, and the four-channel status rule
+   (hue, form, icon, label) still carries the rest.
+   ══════════════════════════════════════════════════════════════════════════ */
 :root{
-  --crimson:#ef233c; --crimson-hot:#ff3b52; --crimson-deep:#c4102a;
-  --crimson-wash:rgba(239,35,60,.08);
-  --void:#000; --ink:#070203; --card:rgba(255,255,255,.025); --card-hover:rgba(255,255,255,.05);
-  --line:rgba(255,255,255,.10); --line-strong:rgba(255,255,255,.20); --line-faint:rgba(255,255,255,.05);
-  --text:#fff; --text-2:#a1a1aa; --text-3:#71717a; --text-inv:#0a0a0a;
-  --safe:#2fbf87; --safe-bg:rgba(47,191,135,.12); --safe-line:rgba(47,191,135,.42);
-  --caution:#f0a92b; --caution-bg:rgba(240,169,43,.12);
-  --block:#ff2d40; --block-bg:rgba(255,45,64,.16); --block-line:rgba(255,45,64,.55);
-  --refuse:#a78bfa; --refuse-bg:rgba(167,139,250,.12); --refuse-line:rgba(167,139,250,.40);
-  --font-display:"Manrope","Segoe UI Variable Display","Segoe UI",-apple-system,BlinkMacSystemFont,sans-serif;
-  --font-ui:"Inter","Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,sans-serif;
+  /* -- lagoon: the brand ----------------------------------------------- */
+  --lagoon-300:#2FBECC; --lagoon-400:#16A3B8; --lagoon-500:#0E8A9C;
+  --lagoon-600:#107080; --lagoon-700:#0B5A68; --lagoon-800:#083F49;
+
+  /* -- abyss: the water, and the dark surface stack -------------------- */
+  --abyss-700:#063038; --abyss-800:#04242B; --abyss-900:#021A20; --abyss-950:#010F14;
+
+  /* -- sand: light surfaces and the warm counterweight ------------------ */
+  --sand-100:#F6EFE3; --sand-200:#EDE2CE; --sand-300:#DFCFB2;
+
+  /* -- coral: the one warm accent, used only for action ----------------- */
+  --coral-400:#FF7F5C; --coral-500:#FF5F3D; --coral-600:#E8441F;
+
+  /* -- semantic status. Deliberately NOT brand colours. ----------------- */
+  --safe:#2fbf87; --safe-bg:rgba(47,191,135,.13); --safe-line:rgba(47,191,135,.42);
+  --caution:#f0a92b; --caution-bg:rgba(240,169,43,.13); --caution-line:rgba(240,169,43,.42);
+  --block:#ff3b4e; --block-bg:rgba(255,59,78,.15); --block-line:rgba(255,59,78,.55);
+  --refuse:#a78bfa; --refuse-bg:rgba(167,139,250,.13); --refuse-line:rgba(167,139,250,.40);
+
+  /* -- ink ------------------------------------------------------------- */
+  --card:rgba(255,255,255,.035); --card-hover:rgba(255,255,255,.06);
+  --line:rgba(255,255,255,.11); --line-strong:rgba(255,255,255,.22); --line-faint:rgba(255,255,255,.05);
+  --text:#fff; --text-2:#9FB6BC; --text-3:#6B838A; --text-inv:#04242B;
+
+  --font-display:"Outfit","Segoe UI Variable Display","Segoe UI",-apple-system,sans-serif;
+  --font-ui:"Plus Jakarta Sans","Segoe UI Variable Text","Segoe UI",-apple-system,sans-serif;
   --font-mono:"JetBrains Mono","SF Mono","Cascadia Mono",Consolas,monospace;
   --ease:cubic-bezier(.4,0,.2,1); --ease-out:cubic-bezier(.16,1,.3,1);
+  --radius:16px;
 }
+
+/* ---- self-hosted variable fonts (no CDN, no runtime request) ---------- */
+@font-face{font-family:"Outfit";src:url("/fonts/outfit.woff2") format("woff2");
+  font-weight:100 900;font-display:swap}
+@font-face{font-family:"Plus Jakarta Sans";src:url("/fonts/plus-jakarta-sans.woff2") format("woff2");
+  font-weight:100 900;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url("/fonts/jetbrains-mono.woff2") format("woff2");
+  font-weight:100 900;font-display:swap}
+
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
-  margin:0; background:var(--void); color:var(--text);
-  font-family:var(--font-ui); -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
-  overflow-x:hidden;
+  margin:0;background:var(--abyss-950);color:var(--text);
+  font-family:var(--font-ui);-webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;overflow-x:hidden;
 }
-::selection{background:var(--crimson);color:#fff}
+::selection{background:var(--lagoon-500);color:#fff}
 a{color:inherit;text-decoration:none}
-h1,h2,h3{font-family:var(--font-display);letter-spacing:-.03em;margin:0}
+h1,h2,h3,h4{font-family:var(--font-display);letter-spacing:-.03em;margin:0}
 p{margin:0}
-:focus-visible{outline:2px solid var(--crimson-hot);outline-offset:3px;border-radius:4px}
-.wrap{width:100%;max-width:1280px;margin-inline:auto;padding-inline:24px}
-.skip{position:absolute;left:-9999px;top:0;z-index:200;background:var(--crimson);color:#fff;padding:12px 20px;border-radius:0 0 8px 0}
+img{max-width:100%;display:block}
+:focus-visible{outline:2px solid var(--lagoon-400);outline-offset:3px;border-radius:6px}
+.wrap{width:100%;max-width:1200px;margin-inline:auto;padding-inline:28px}
+.skip{position:absolute;left:-9999px;top:0;z-index:200;background:var(--lagoon-500);
+  color:#fff;padding:12px 22px;border-radius:0 0 10px 0}
 .skip:focus{left:0}
+.mono{font-family:var(--font-mono)}
 
-/* ---- motion ------------------------------------------------------------ */
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes starDrift{from{transform:translateY(0)}to{transform:translateY(-2000px)}}
-@keyframes borderSpin{to{--angle:360deg}}
-@keyframes ping{0%{transform:scale(1);opacity:.75}80%,100%{transform:scale(2.6);opacity:0}}
-@keyframes sweep{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-@property --angle{syntax:"<angle>";initial-value:0deg;inherits:false}
+/* ---- motion ----------------------------------------------------------- */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes drift{from{transform:scale(1.06) translateY(0)}to{transform:scale(1.12) translateY(-18px)}}
+@keyframes ping{0%{transform:scale(1);opacity:.7}80%,100%{transform:scale(2.8);opacity:0}}
 .reveal{opacity:1}
-/* Content is hidden ONLY when the reveal script is actually running. If the
-   script is blocked - a CSP hash mismatch, JS disabled - the page degrades to
-   fully visible rather than to a blank screen. */
+/* Hidden only when the reveal script actually ran. If it is blocked - CSP hash
+   mismatch, JS off - the page degrades to fully readable, never to blank. */
 .js .reveal{opacity:0}
-.js .reveal.in{animation:fadeUp .8s var(--ease-out) forwards}
+.js .reveal.in{animation:fadeUp .85s var(--ease-out) forwards}
 @media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;
+    transition-duration:.001ms!important;scroll-behavior:auto!important}
   .reveal{opacity:1}
 }
 
-/* ---- background -------------------------------------------------------- */
-.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.bg__wash{position:absolute;inset:0;background:linear-gradient(to bottom,#1a0508,#000 45%)}
-.bg__stars{position:absolute;top:0;left:0;width:1px;height:1px}
-.bg__glow{position:absolute;top:50%;left:50%;width:800px;height:800px;margin:-400px 0 0 -400px;
-  background:radial-gradient(circle,rgba(239,35,60,.07),transparent 70%);filter:blur(120px)}
-.bg__grid{position:absolute;inset:0;
-  background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
-  background-size:40px 40px;
-  -webkit-mask-image:radial-gradient(circle at center,#000 40%,transparent 80%);
-  mask-image:radial-gradient(circle at center,#000 40%,transparent 80%)}
-.stars1{box-shadow:234px 124px #fff,654px 345px #fff,876px 12px #fff,1200px 800px #fff,400px 1500px #fff,1800px 200px #fff,100px 1000px #fff,900px 1900px #fff,500px 600px #fff,1400px 100px #fff,300px 400px #fff,1600px 1200px #fff}
-.stars2{box-shadow:123px 456px #fff,789px 234px #fff,456px 890px #fff,1100px 300px #fff,200px 1200px #fff,1500px 500px #fff,600px 1700px #fff,1300px 900px #fff}
+/* ══ HERO — full-bleed island photograph, text in the lower 40% ══════════ */
+.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;
+  justify-content:flex-end;overflow:hidden;isolation:isolate}
+.hero__bg{position:absolute;inset:0;z-index:-2;background:var(--abyss-900)}
+.hero__bg img{width:100%;height:100%;object-fit:cover;
+  animation:drift 26s var(--ease) infinite alternate}
+/* Two overlays: a vertical one to seat the text, a teal one to bind the photo
+   to the brand. Without the teal wash the sand reads as a different product. */
+.hero__scrim{position:absolute;inset:0;z-index:-1;
+  background:
+    linear-gradient(to top,var(--abyss-950) 2%,rgba(1,15,20,.72) 34%,rgba(1,15,20,.28) 62%,rgba(1,15,20,.62) 100%),
+    linear-gradient(115deg,rgba(4,36,43,.80) 0%,rgba(14,138,156,.22) 52%,transparent 78%)}
+.hero__inner{padding-bottom:clamp(48px,8vh,96px);padding-top:120px}
+.hero__eyebrow{display:inline-flex;align-items:center;gap:10px;margin-bottom:26px;
+  padding:8px 16px;border:1px solid var(--lagoon-600);border-radius:999px;
+  background:rgba(14,138,156,.12);backdrop-filter:blur(8px);
+  font-family:var(--font-mono);font-size:.7rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--lagoon-300)}
+.hero__eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--lagoon-400);
+  box-shadow:0 0 0 0 var(--lagoon-400);animation:ping 2.4s ease-out infinite}
+.hero h1{font-size:clamp(2.6rem,7.2vw,5.6rem);font-weight:800;line-height:1.02;
+  max-width:16ch;text-wrap:balance}
+.hero h1 em{font-style:normal;color:var(--coral-400)}
+.hero__lede{margin-top:26px;max-width:60ch;font-size:clamp(1.02rem,1.5vw,1.2rem);
+  line-height:1.65;color:var(--text-2)}
+.hero__cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:38px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:15px 28px;border-radius:999px;
+  font-family:var(--font-display);font-weight:600;font-size:.98rem;border:1px solid transparent;
+  transition:transform .2s var(--ease),background .2s var(--ease),border-color .2s var(--ease)}
+.btn--primary{background:var(--coral-500);color:#2A0B03;
+  box-shadow:0 14px 34px -12px rgba(255,95,61,.7)}
+.btn--primary:hover{background:var(--coral-400);transform:translateY(-2px)}
+.btn--ghost{border-color:var(--line-strong);color:var(--text);background:rgba(2,26,32,.45);
+  backdrop-filter:blur(8px)}
+.btn--ghost:hover{border-color:var(--lagoon-400);transform:translateY(-2px)}
+.hero__proof{margin-top:40px;display:flex;flex-wrap:wrap;gap:12px 28px;
+  font-family:var(--font-mono);font-size:.72rem;color:var(--text-3);letter-spacing:.04em}
+.hero__proof b{color:var(--lagoon-300);font-weight:500}
 
-/* ---- navbar ------------------------------------------------------------ */
-.topblur{position:fixed;top:0;left:0;right:0;height:120px;z-index:40;pointer-events:none;
-  background:linear-gradient(to bottom,rgba(0,0,0,.85),transparent);backdrop-filter:blur(8px)}
-header{position:fixed;top:0;left:0;width:100%;z-index:50;padding:24px 16px 0}
-.nav{max-width:1024px;margin-inline:auto;display:flex;align-items:center;justify-content:space-between;
-  gap:16px;background:rgba(0,0,0,.6);backdrop-filter:blur(24px);border:1px solid var(--line);
-  border-radius:999px;padding:12px 24px;box-shadow:0 24px 60px -20px rgba(0,0,0,.9)}
-.brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.brand svg{width:22px;height:22px;color:var(--crimson);display:block}
-.brand span{font-family:var(--font-display);font-weight:800;font-size:1.06rem;letter-spacing:.02em}
-.nav__links{display:none;align-items:center;gap:32px}
-@media (min-width:768px){.nav__links{display:flex}}
-.nav__links a{font-size:.875rem;font-weight:500;color:var(--text-2);transition:color .2s var(--ease)}
-.nav__links a:hover{color:var(--text)}
-.nav__right{display:flex;align-items:center;gap:16px}
-.nav__status{display:none;align-items:center;gap:7px;font-size:.7rem;font-weight:600;letter-spacing:.08em;
-  text-transform:uppercase;color:var(--safe);font-family:var(--font-mono)}
-@media (min-width:768px){.nav__status{display:inline-flex}}
-.nav__status .dot{width:6px;height:6px;border-radius:50%;background:var(--safe)}
+/* ---- nav -------------------------------------------------------------- */
+.topblur{position:fixed;top:0;left:0;right:0;height:130px;z-index:40;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(1,15,20,.9),transparent);backdrop-filter:blur(10px)}
+header{position:fixed;top:0;left:0;width:100%;z-index:50;padding:20px 16px 0}
+.nav{max-width:1120px;margin-inline:auto;display:flex;align-items:center;justify-content:space-between;
+  gap:16px;background:rgba(2,26,32,.62);backdrop-filter:blur(24px);border:1px solid var(--line);
+  border-radius:999px;padding:10px 12px 10px 20px;box-shadow:0 24px 60px -24px rgba(0,0,0,.9)}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.brand img{width:34px;height:34px;flex-shrink:0}
+.brand span{font-family:var(--font-display);font-weight:800;font-size:1.02rem;
+  letter-spacing:.03em;white-space:nowrap}
+.brand small{display:block;font-size:.6rem;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--text-3);font-family:var(--font-mono)}
+.nav__links{display:flex;align-items:center;gap:4px}
+.nav__links a{padding:9px 15px;border-radius:999px;font-size:.9rem;font-weight:500;
+  color:var(--text-2);transition:all .2s var(--ease)}
+.nav__links a:hover{color:var(--text);background:rgba(255,255,255,.06)}
+.nav__cta{padding:11px 22px;border-radius:999px;background:var(--lagoon-500);color:#fff;
+  font-family:var(--font-display);font-weight:600;font-size:.9rem;white-space:nowrap;
+  transition:background .2s var(--ease)}
+.nav__cta:hover{background:var(--lagoon-400)}
 
-/* ---- buttons ----------------------------------------------------------- */
-.shiny{position:relative;overflow:hidden;border-radius:999px;padding:16px 40px;cursor:pointer;
-  background:linear-gradient(#000,#000) padding-box,
-    conic-gradient(from var(--angle),transparent 0%,#ef233c 5%,#ef233c 15%,#ef233c 30%,transparent 40%,transparent 100%) border-box;
-  border:2px solid transparent;isolation:isolate;animation:borderSpin 2.5s linear infinite;
-  font-family:var(--font-ui);font-size:1rem;font-weight:500;color:#fff;transition:transform .2s var(--ease)}
-.shiny:active{transform:scale(.97)}
-.shiny::before{content:"";position:absolute;inset:0;z-index:0;
-  background:radial-gradient(circle at 50% 50%,#fff .5px,transparent 0);background-size:4px 4px;opacity:.1}
-.shiny>*{position:relative;z-index:1}
-.ghost{display:inline-flex;align-items:center;gap:10px;padding:16px 32px;border-radius:999px;
-  background:#18181b;border:1px solid rgba(255,255,255,.08);color:var(--text-2);font-weight:500;
-  transition:all .2s var(--ease)}
-.ghost:hover{color:#fff;background:#27272a;border-color:var(--line-strong)}
-.btn-red{position:relative;display:inline-flex;align-items:center;justify-content:center;overflow:hidden;
-  border-radius:999px;background:rgba(255,255,255,.05);border:1px solid var(--line);
-  padding:8px 24px;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--text);font-family:var(--font-ui);cursor:pointer;transition:all .2s var(--ease)}
-.btn-red::before{content:"";position:absolute;inset:-100%;opacity:0;transition:opacity .3s;
-  background:conic-gradient(from 90deg at 50% 50%,transparent 0%,transparent 75%,#ef233c 100%);
-  animation:borderSpin 3s linear infinite}
-.btn-red:hover{border-color:transparent;transform:scale(.98)}
-.btn-red:hover::before{opacity:1}
-.btn-red>*{position:relative;z-index:2}
-.btn-red::after{content:"";position:absolute;inset:1px;border-radius:999px;background:#000;z-index:1}
-.icon{width:14px;height:14px;flex-shrink:0}
+/* ---- generic section chrome ------------------------------------------- */
+section{position:relative;padding:clamp(72px,11vh,128px) 0}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;margin-bottom:20px;
+  font-family:var(--font-mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--lagoon-300)}
+.eyebrow::before{content:"";width:22px;height:1px;background:var(--lagoon-500)}
+h2.sec{font-size:clamp(1.9rem,4.2vw,3.2rem);font-weight:800;line-height:1.08;max-width:20ch;
+  text-wrap:balance}
+.sec__lede{margin-top:20px;max-width:62ch;font-size:1.05rem;line-height:1.68;color:var(--text-2)}
+.sec__head{max-width:760px;margin-bottom:56px}
 
-/* ---- hero -------------------------------------------------------------- */
-.hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:140px 24px 80px;position:relative;z-index:10}
-.hero__inner{text-align:center;max-width:1024px;margin-inline:auto}
-.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;
-  background:rgba(255,255,255,.05);border:1px solid var(--line);backdrop-filter:blur(12px);margin-bottom:32px}
-.pill__dot{position:relative;display:flex;width:8px;height:8px}
-.pill__dot::before{content:"";position:absolute;inset:0;border-radius:50%;background:#f87171;
-  animation:ping 2s var(--ease) infinite}
-.pill__dot::after{content:"";position:relative;width:8px;height:8px;border-radius:50%;background:var(--crimson)}
-.pill span{font-family:var(--font-display);font-size:.75rem;font-weight:500;color:rgba(254,202,202,.9);letter-spacing:.02em}
-.hero h1{font-size:clamp(2.75rem,8vw,6rem);font-weight:600;line-height:1.06;margin-bottom:32px}
-.hero h1 em{font-style:normal;color:transparent;background:linear-gradient(to bottom,#fff 25%,rgba(255,255,255,.4));
-  -webkit-background-clip:text;background-clip:text}
-.hero h1 .accent{color:var(--crimson);position:relative;display:inline-block}
-.hero h1 .accent svg{position:absolute;width:100%;height:12px;left:0;bottom:-8px;color:var(--crimson);opacity:.6}
-.hero p.lede{font-size:clamp(1.05rem,2.2vw,1.4rem);color:var(--text-2);max-width:640px;margin:0 auto 48px;line-height:1.65}
-.hero__cta{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
-@media (min-width:768px){.hero__cta{flex-direction:row;gap:24px}}
-.hero__meta{margin-top:32px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-3);letter-spacing:.06em}
+/* ---- proof strip ------------------------------------------------------ */
+.strip{background:var(--abyss-900);border-block:1px solid var(--line)}
+.strip__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:1px;background:var(--line-faint)}
+.strip__item{padding:30px 24px;background:var(--abyss-900);display:flex;flex-direction:column;gap:6px}
+.strip__val{font-family:var(--font-display);font-weight:800;font-size:1.9rem;
+  line-height:1;letter-spacing:-.02em;color:var(--lagoon-300)}
+.strip__lab{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--text-3)}
 
-/* ---- credibility strip -------------------------------------------------- */
-.strip{width:100%;border-top:1px solid var(--line-faint);border-bottom:1px solid var(--line-faint);
-  background:rgba(255,255,255,.02);backdrop-filter:blur(4px);padding:40px 0;opacity:.7;
-  transition:opacity .3s var(--ease)}
-.strip:hover{opacity:1}
-.strip__row{display:flex;flex-direction:column;align-items:center;gap:32px}
-@media (min-width:768px){.strip__row{flex-direction:row;gap:64px}}
-.strip__label{font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text-3);flex-shrink:0}
-.strip__items{display:flex;flex-wrap:wrap;justify-content:center;gap:24px 48px;align-items:center;width:100%}
-.strip__item{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:600;font-size:.95rem;color:var(--text-2)}
-.strip__item svg{width:18px;height:18px;color:var(--crimson);opacity:.8;flex-shrink:0}
+/* ---- "why local" ------------------------------------------------------ */
+.why{background:
+  radial-gradient(900px 420px at 12% 0%,rgba(14,138,156,.14),transparent 65%),
+  var(--abyss-950)}
+.why__grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(310px,1fr))}
+.why__card{padding:30px;border:1px solid var(--line);border-radius:var(--radius);
+  background:var(--card);transition:border-color .25s var(--ease),transform .25s var(--ease)}
+.why__card:hover{border-color:var(--lagoon-600);transform:translateY(-3px)}
+.why__n{font-family:var(--font-mono);font-size:.72rem;color:var(--lagoon-400);letter-spacing:.1em}
+.why__card h3{margin:14px 0 10px;font-size:1.16rem;font-weight:700}
+.why__card p{font-size:.95rem;line-height:1.68;color:var(--text-2)}
+.why__card code{font-family:var(--font-mono);font-size:.85em;color:var(--lagoon-300)}
 
-/* ---- sections ----------------------------------------------------------- */
-.section{padding:120px 24px;position:relative;z-index:10}
-.section__head{text-align:center;max-width:768px;margin:0 auto 64px}
-.section__head h2{font-size:clamp(2rem,4.5vw,3rem);font-weight:600;margin-bottom:24px;line-height:1.15}
-.section__head h2 span{color:var(--crimson)}
-.section__head p{font-size:1.1rem;color:var(--text-2);font-weight:300;line-height:1.6}
+/* ---- capabilities ----------------------------------------------------- */
+.caps{background:var(--abyss-900)}
+.caps__grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.cap{padding:34px;border:1px solid var(--line);border-radius:var(--radius);
+  background:linear-gradient(180deg,var(--card),transparent);display:flex;flex-direction:column;gap:16px;
+  transition:border-color .25s var(--ease),transform .25s var(--ease)}
+.cap:hover{border-color:var(--lagoon-600);transform:translateY(-3px)}
+.cap__icon{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;
+  border:1px solid var(--lagoon-700);background:rgba(14,138,156,.14);color:var(--lagoon-300)}
+.cap h3{font-size:1.24rem;font-weight:700}
+.cap p{font-size:.95rem;line-height:1.68;color:var(--text-2);flex:1}
+.cap__metric{margin-top:6px;padding-top:16px;border-top:1px solid var(--line);
+  font-family:var(--font-mono);font-size:.72rem;color:var(--lagoon-300);letter-spacing:.03em}
 
-/* ---- bento -------------------------------------------------------------- */
-.bento{display:grid;grid-template-columns:1fr;gap:16px}
-@media (min-width:768px){.bento{grid-template-columns:repeat(2,1fr)}}
-@media (min-width:1024px){.bento{grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(190px,auto)}}
-.card{position:relative;overflow:hidden;padding:32px;border:1px solid var(--line);
-  background:var(--card);border-radius:12px;transition:border-color .3s var(--ease),background .3s var(--ease)}
-.card:hover{border-color:var(--line-strong);background:var(--card-hover)}
-.card--hero{grid-column:span 2}
-@media (max-width:1023px){.card--hero{grid-column:span 1}}
-/* The hero card takes two of four columns. The last two cards split the second
-   row two-and-two so the grid closes cleanly instead of trailing empty tracks. */
-.card--wide{grid-column:span 2}
-@media (max-width:1023px){.card--wide{grid-column:span 1}}
-.card__icon{display:inline-flex;padding:12px;border-radius:8px;background:rgba(255,255,255,.05);
-  border:1px solid var(--line);margin-bottom:16px}
-.card__icon svg{width:22px;height:22px;color:var(--crimson)}
-.card h3{font-size:1.35rem;font-weight:600;margin-bottom:12px}
-.card--hero h3{font-size:1.9rem}
-.card p{color:var(--text-2);line-height:1.65}
-.card--hero p{font-size:1.05rem}
-.card__more{display:flex;align-items:center;justify-content:space-between;margin-top:24px;
-  opacity:0;transform:translateY(8px);transition:all .3s var(--ease)}
-.card:hover .card__more{opacity:1;transform:translateY(0)}
-.card__more span{font-family:var(--font-mono);font-size:.68rem;color:var(--crimson);letter-spacing:.1em}
-.card__more svg{width:16px;height:16px;color:var(--crimson)}
-.card::after{content:"";position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .35s;
-  background:radial-gradient(circle at top right,var(--crimson),transparent 70%)}
-.card:hover::after{opacity:.1}
-.tag{display:inline-block;margin-top:20px;padding:4px 10px;border-radius:999px;
-  font-family:var(--font-mono);font-size:.68rem;letter-spacing:.06em;
-  background:var(--crimson-wash);border:1px solid rgba(239,35,60,.3);color:#fca5a5}
+/* ---- scoreboard ------------------------------------------------------- */
+.score{background:var(--abyss-950)}
+.score__grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.score__cell{padding:26px;border:1px solid var(--line);border-radius:var(--radius);
+  background:var(--card);display:flex;flex-direction:column}
+.score__val{font-family:var(--font-display);font-weight:800;font-size:2.5rem;line-height:1;
+  letter-spacing:-.03em;color:#fff}
+.score__val small{font-size:.42em;color:var(--text-3);margin-left:6px;font-weight:600}
+.score__sub{margin-top:auto;padding-top:14px;font-family:var(--font-mono);font-size:.68rem;
+  letter-spacing:.06em;color:var(--text-3)}
+.score__note{margin-top:26px;padding:20px 24px;border:1px solid var(--caution-line);
+  border-left-width:3px;border-radius:12px;background:var(--caution-bg);
+  font-size:.92rem;line-height:1.65;color:#F5D9A6}
 
-/* ---- scoreboard --------------------------------------------------------- */
-.scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
-.score{padding:28px;border:1px solid var(--line);border-radius:12px;background:var(--card);
-  display:flex;flex-direction:column;gap:6px}
-.score__val{font-family:var(--font-display);font-size:2.6rem;font-weight:800;line-height:1;
-  background:linear-gradient(to bottom,#fff,rgba(255,255,255,.55));
-  -webkit-background-clip:text;background-clip:text;color:transparent}
-.score__val.is-best{background:linear-gradient(to bottom,#fff 40%,var(--crimson));-webkit-background-clip:text;background-clip:text}
-.score__label{font-size:.9rem;color:var(--text-2);line-height:1.5}
-.score__sub{font-family:var(--font-mono);font-size:.68rem;color:var(--text-3);letter-spacing:.05em;margin-top:auto;padding-top:12px}
-.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;
-  font-size:.7rem;font-weight:600;letter-spacing:.04em;font-family:var(--font-mono)}
-.badge--pass{background:var(--safe-bg);border:1px solid var(--safe-line);color:var(--safe)}
-.badge--warn{background:var(--caution-bg);border:1px solid rgba(240,169,43,.42);color:var(--caution)}
+/* ---- judging criteria ------------------------------------------------- */
+.judge{background:var(--abyss-900)}
+.judge__list{display:grid;gap:14px}
+.judge__row{display:grid;grid-template-columns:88px 1fr;gap:26px;align-items:start;
+  padding:26px 28px;border:1px solid var(--line);border-radius:var(--radius);background:var(--card)}
+.judge__w{font-family:var(--font-display);font-weight:800;font-size:1.7rem;line-height:1;
+  color:var(--lagoon-300);letter-spacing:-.03em}
+.judge__row h3{font-size:1.1rem;font-weight:700;margin-bottom:8px}
+.judge__row p{font-size:.94rem;line-height:1.66;color:var(--text-2)}
+.judge__tag{display:inline-block;margin-top:12px;padding:5px 12px;border-radius:999px;
+  font-family:var(--font-mono);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;
+  border:1px solid var(--safe-line);background:var(--safe-bg);color:var(--safe)}
+.judge__tag--caveat{border-color:var(--caution-line);background:var(--caution-bg);color:var(--caution)}
 
-/* ---- demo panel --------------------------------------------------------- */
-.demo{display:grid;gap:16px;grid-template-columns:1fr}
-@media (min-width:1024px){.demo{grid-template-columns:1.05fr .95fr}}
-.term{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#080305;
-  font-family:var(--font-mono);font-size:.8rem}
-.term__bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.02)}
-.term__dot{width:10px;height:10px;border-radius:50%}
-.term__title{margin-left:8px;color:var(--text-3);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
-.term__body{padding:20px;line-height:1.9;overflow-x:auto}
-.term__q{color:var(--text-2)}
-.term__q::before{content:"› ";color:var(--crimson)}
-.term__a{color:var(--text);display:block;margin:6px 0 4px}
-.term__cite{color:#fca5a5;font-size:.72rem}
-.term__meta{display:flex;gap:16px;flex-wrap:wrap;padding:12px 20px;border-top:1px solid var(--line);
-  background:rgba(255,255,255,.02);font-size:.72rem;color:var(--text-3)}
-.term__meta b{color:var(--text-2);font-weight:600}
-.feats{display:flex;flex-direction:column;gap:12px}
-.feat{display:flex;gap:16px;padding:20px;border:1px solid var(--line);border-radius:12px;background:var(--card);
-  transition:border-color .3s var(--ease)}
-.feat:hover{border-color:var(--line-strong)}
-.feat__icon{display:flex;align-items:center;justify-content:center;width:38px;height:38px;flex-shrink:0;
-  border-radius:8px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
-.feat__icon svg{width:18px;height:18px;color:var(--crimson)}
-.feat h4{margin:0 0 4px;font-family:var(--font-display);font-size:1rem;font-weight:600}
-.feat p{font-size:.875rem;color:var(--text-2);line-height:1.6}
+/* ---- team ------------------------------------------------------------- */
+.team{background:var(--abyss-950)}
+.team__grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.person{padding:32px;border:1px solid var(--line);border-radius:var(--radius);
+  background:linear-gradient(180deg,var(--card),transparent);display:flex;gap:20px;align-items:flex-start}
+.person__av{width:62px;height:62px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;
+  font-family:var(--font-display);font-weight:800;font-size:1.3rem;
+  background:linear-gradient(140deg,var(--lagoon-500),var(--lagoon-700));color:#fff;
+  border:1px solid var(--lagoon-600)}
+.person h3{font-size:1.1rem;font-weight:700}
+.person .role{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--lagoon-300);margin-top:6px}
+.person p{margin-top:14px;font-size:.92rem;line-height:1.62;color:var(--text-2)}
 
-/* ---- manifesto ---------------------------------------------------------- */
-.manifesto{width:100%;background:var(--crimson);padding:80px 24px}
-.manifesto__inner{max-width:896px;margin-inline:auto;text-align:center}
-.manifesto__stars{display:flex;justify-content:center;gap:4px;color:#000;margin-bottom:24px}
-.manifesto__stars svg{width:24px;height:24px}
-.manifesto h2{font-family:var(--font-display);font-size:clamp(1.6rem,4vw,2.75rem);font-weight:800;color:#000;line-height:1.2;margin-bottom:32px}
-.manifesto__sig{display:flex;align-items:center;justify-content:center;gap:16px}
-.manifesto__sig svg{width:40px;height:40px;color:#000}
-.manifesto__sig div{text-align:left}
-.manifesto__sig strong{display:block;color:#000;font-family:var(--font-display);font-size:1.05rem}
-.manifesto__sig span{color:rgba(0,0,0,.7);font-weight:500;font-size:.9rem}
+/* ---- closing CTA ------------------------------------------------------ */
+.cta{position:relative;overflow:hidden;background:var(--abyss-900);text-align:center}
+.cta::before{content:"";position:absolute;inset:0;z-index:-1;
+  background:radial-gradient(760px 340px at 50% 0%,rgba(14,138,156,.20),transparent 70%)}
+.cta h2{font-size:clamp(2.1rem,5.4vw,3.6rem);font-weight:800;line-height:1.06;
+  max-width:18ch;margin-inline:auto;text-wrap:balance}
+.cta__lede{margin:22px auto 0;max-width:58ch;font-size:1.03rem;line-height:1.68;color:var(--text-2)}
+.cta__row{margin-top:40px;display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
+.cta__note{margin-top:30px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-3)}
 
-/* ---- CTA ---------------------------------------------------------------- */
-.cta{text-align:center;background:rgba(9,9,11,.4)}
-.cta__inner{max-width:768px;margin-inline:auto}
-.cta h2{font-family:var(--font-display);font-size:clamp(2.25rem,6vw,4rem);font-weight:700;letter-spacing:-.04em;margin-bottom:32px}
-.cta h2 span{color:var(--crimson)}
-.cta p{font-size:1.15rem;color:var(--text-2);margin-bottom:40px;line-height:1.6}
-.cta__actions{display:flex;flex-direction:column;gap:16px;align-items:center}
-@media (min-width:640px){.cta__actions{flex-direction:row;justify-content:center}}
-.cta__note{margin-top:32px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-3)}
+/* ---- footer ----------------------------------------------------------- */
+footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:64px;overflow:hidden}
+.foot__grid{display:flex;flex-wrap:wrap;gap:44px;justify-content:space-between;
+  padding-bottom:52px}
+.foot__brand{display:flex;align-items:center;gap:12px}
+.foot__brand img{width:40px;height:40px}
+.foot__brand span{font-family:var(--font-display);font-weight:800;font-size:1.3rem;letter-spacing:.04em}
+.foot__col h4{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--text-3);margin-bottom:14px;font-weight:600}
+.foot__col a,.foot__col p{display:block;font-size:.9rem;color:var(--text-2);
+  margin-bottom:9px;line-height:1.6}
+.foot__col a:hover{color:var(--lagoon-300)}
+/* the one oversized type moment on the page */
+.foot__word{font-family:var(--font-display);font-weight:800;font-size:16vw;line-height:.82;
+  letter-spacing:-.05em;text-align:center;
+  background:linear-gradient(180deg,rgba(47,190,204,.30),rgba(47,190,204,.02));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  user-select:none;pointer-events:none;margin-bottom:-2vw}
+.foot__legal{padding:22px 0;border-top:1px solid var(--line-faint);
+  display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;
+  font-family:var(--font-mono);font-size:.68rem;color:var(--text-3)}
 
-/* ---- footer ------------------------------------------------------------- */
-footer{border-top:1px solid rgba(255,255,255,.06);padding:80px 24px 40px;position:relative;z-index:10;background:var(--void)}
-.foot{grid-template-columns:1fr;gap:48px;margin-bottom:80px}
-@media (min-width:768px){.foot{display:grid;grid-template-columns:2fr 1fr 1fr}}
-.foot__brand{display:flex;align-items:center;gap:10px;margin-bottom:20px}
-.foot__brand svg{width:26px;height:26px;color:var(--crimson)}
-.foot__brand span{font-family:var(--font-display);font-size:1.4rem;font-weight:800;letter-spacing:.02em}
-.foot p{max-width:340px;color:var(--text-3);line-height:1.7}
-.foot h4{font-size:.7rem;font-weight:700;color:var(--crimson);text-transform:uppercase;letter-spacing:.16em;margin:0 0 24px}
-.foot ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px}
-.foot a{color:var(--text-2);font-size:.9rem;transition:color .2s var(--ease)}
-.foot a:hover{color:#fff}
-/* The wordmark is a watermark, so it must stay legible without competing with
-   the content above it. Stroke only - no fill - and no opacity on the wrapper:
-   an opacity here would multiply with the stroke alpha and drop the effective
-   contrast to roughly 2%, which is invisible. */
-.foot__word{display:flex;justify-content:center;padding:40px 0;pointer-events:none}
-.foot__word h2{font-family:var(--font-display);font-size:15vw;line-height:1;font-weight:700;letter-spacing:-.04em;
-  color:rgba(255,255,255,.03);-webkit-text-stroke:1px rgba(255,255,255,.18);user-select:none}
-.foot__bar{display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:16px;
-  border-top:1px solid rgba(255,255,255,.06);padding-top:32px;color:var(--text-3);
-  font-size:.68rem;text-transform:uppercase;letter-spacing:.14em}
-@media (min-width:768px){.foot__bar{flex-direction:row}}
-.foot__bar nav{display:flex;gap:24px;margin-top:0}
-@media (min-width:768px){.foot__bar nav{margin-top:0}}
+/* ---- responsive ------------------------------------------------------- */
+@media (max-width:900px){
+  .nav__links{display:none}
+  .hero__proof{gap:10px 18px;font-size:.68rem}
+  .judge__row{grid-template-columns:1fr;gap:12px}
+  .judge__w{font-size:1.4rem}
+}
+@media (max-width:560px){
+  .wrap{padding-inline:20px}
+  .brand small{display:none}
+  .hero h1{font-size:clamp(2.2rem,9vw,3rem)}
+  .btn{width:100%;justify-content:center}
+  .foot__word{font-size:22vw}
+}
 </style>
 </head>
-
-<body class="kx-selection-red">
+<body>
 <a class="skip" href="#main">Skip to content</a>
 
-<div class="bg" aria-hidden="true">
-  <div class="bg__wash"></div>
-  <div class="bg__stars stars1" style="animation:starDrift 50s linear infinite"></div>
-  <div class="bg__stars stars2" style="animation:starDrift 80s linear infinite"></div>
-  <div class="bg__glow"></div>
-  <div class="bg__grid"></div>
-</div>
 <div class="topblur" aria-hidden="true"></div>
-
 <header>
   <nav class="nav" aria-label="Primary">
-    <a class="brand" href="/" aria-label="KALIX home">
-      <svg viewBox="0 0 512 512" aria-hidden="true"><use href="#mark"/></svg>
-      <span>KALIX</span>
+    <a class="brand" href="#top">
+      <img src="/isla-mark.svg" alt="" width="34" height="34">
+      <span>ISLA AI<small>On-device compliance</small></span>
     </a>
     <div class="nav__links">
-      <a href="#product">Product</a>
-      <a href="#proof">Proof</a>
-      <a href="#corpus">Corpus</a>
-      <a href="#open">Console</a>
+      <a href="#why">Why local</a>
+      <a href="#capabilities">Capabilities</a>
+      <a href="#scoreboard">Numbers</a>
+      <a href="#judging">Judging</a>
+      <a href="#team">Team</a>
     </div>
-    <div class="nav__right">
-      <span class="nav__status"><span class="dot"></span>On-device</span>
-      <a class="btn-red" href="/app"><span>Open console</span></a>
-    </div>
+    <a class="nav__cta" href="/app">Open console</a>
   </nav>
 </header>
 
 <main id="main">
-  <!-- ============================ HERO ============================ -->
-  <section class="hero">
-    <div class="hero__inner">
-      <div class="pill reveal">
-        <span class="pill__dot" aria-hidden="true"></span>
-        <span>AppBuilders PH 2026 &middot; Local AI track &middot; Finance</span>
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </div>
 
-      <h1 class="reveal">
-        <em>Privacy compliance</em><br>
-        <em>that physically</em> <span class="accent">cannot leave.
-          <svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><path d="M0 5 Q 50 10 100 5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+<!-- ═══ 1 · HERO — centred low over a full-bleed island photograph ═══ -->
+<section class="hero" id="top">
+  <div class="hero__bg">
+    <img src="/hero-island.jpg" alt="A single tropical island ringed by turquoise reef, surrounded by open ocean"
+         width="2560" height="1086" fetchpriority="high" decoding="async">
+  </div>
+  <div class="hero__scrim" aria-hidden="true"></div>
+
+  <div class="wrap hero__inner">
+    <span class="hero__eyebrow reveal"><span class="dot" aria-hidden="true"></span>
+      AppBuilders PH 2026 · Local AI · Finance</span>
+
+    <h1 class="reveal">Your bank&#8217;s data stays <em>on the island</em>.</h1>
+
+    <p class="hero__lede reveal">Philippine banks are already AI companies under the Data Privacy Act —
+      credit scoring, KYC, collections — and already forbidden from handing that data to a cloud
+      vendor. Isla AI is the copilot that works anyway: redaction, cited answers and hash-chained
+      audit proof, all on one machine, with no cloud AI API in the path.</p>
+
+    <div class="hero__cta reveal">
+      <a class="btn btn--primary" href="/app">Open the console</a>
+      <a class="btn btn--ghost" href="#why">Why it has to be local</a>
+    </div>
+
+    <div class="hero__proof reveal">
+      <span><b>0</b> outbound sockets at runtime</span>
+      <span><b>7</b> Philippine instruments</span>
+      <span><b>0.2 ms</b> PII scan p50</span>
+      <span><b>8 ms</b> cited answer p50</span>
+      <span><b>127.0.0.1</b> only</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 2 · PROOF STRIP ═══ -->
+<section class="strip" style="padding:0">
+  <div class="wrap">
+    <div class="strip__grid reveal">
+      <div class="strip__item"><span class="strip__val">1.0000</span>
+        <span class="strip__lab">PII macro-F1</span></div>
+      <div class="strip__item"><span class="strip__val">100%</span>
+        <span class="strip__lab">Citation accuracy</span></div>
+      <div class="strip__item"><span class="strip__val">0.00%</span>
+        <span class="strip__lab">Residual leakage</span></div>
+      <div class="strip__item"><span class="strip__val">100%</span>
+        <span class="strip__lab">Correct refusal</span></div>
+      <div class="strip__item"><span class="strip__val">207</span>
+        <span class="strip__lab">Tests, all green</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 3 · WHY LOCAL — the required answer, given room ═══ -->
+<section class="why" id="why">
+  <div class="wrap">
+    <div class="sec__head reveal">
+      <span class="eyebrow">Why running the AI locally</span>
+      <h2 class="sec">A cloud model cannot check a secret without being told it.</h2>
+      <p class="sec__lede">Asking an external model &#ldquo;is this sensitive personal
+        information?&#rdquo; is itself a disclosure to a third party in a foreign jurisdiction — the
+        act is the breach it exists to prevent. Local inference is not a preference here. It is the
+        only arrangement that answers the question at all.</p>
+    </div>
+
+    <div class="why__grid">
+      <article class="why__card reveal">
+        <span class="why__n">01</span>
+        <h3>The disclosure problem</h3>
+        <p>Redaction is the one AI task that cannot be outsourced, because performing it requires
+          handing over the exact data it exists to protect. Isla AI runs 18 Philippine entity
+          detectors — Luhn-validated card and account numbers, SSS, TIN, GCash — on the machine in
+          front of you, then re-runs the whole detector over its own output before anything moves.</p>
+      </article>
+
+      <article class="why__card reveal">
+        <span class="why__n">02</span>
+        <h3>Air-gapped banks are the norm</h3>
+        <p>Core-banking estates and ISO&nbsp;27001-sealed networks exist precisely because the breach
+          window is measured in hours. Isla AI is demonstrated with the cable pulled: the status chip
+          is a live socket probe, so pulling the network mid-demo changes the answer in front of you.
+          A control that degrades when the WAN blinks was never a control.</p>
+      </article>
+
+      <article class="why__card reveal">
+        <span class="why__n">03</span>
+        <h3>Economics that survive scale</h3>
+        <p>Every paste a compliance officer scans is a per-call invoice at a cloud vendor — for a task
+          that takes <code>0.2 ms</code> on a CPU already in the building. There is no marginal cost
+          per scan, and no vendor sitting between the bank and its own regulator&#8217;s questions.</p>
+      </article>
+
+      <article class="why__card reveal">
+        <span class="why__n">04</span>
+        <h3>Regulators already asked</h3>
+        <p>NPC Advisory 2024-04 applies the Data Privacy Act to AI systems processing personal data.
+          The evidence is now producible locally, as a SHA-256 hash chain that stores entity counts,
+          verdicts and latency — and <strong>never the customer text</strong>. Answering
+          &#8220;what did you collect on the fifteenth?&#8221; does not itself become a breach.</p>
+      </article>
+
+      <article class="why__card reveal">
+        <span class="why__n">05</span>
+        <h3>Confidentiality you can audit</h3>
+        <p>&#8220;Read our DPA&#8221; is a contractual promise. &#8220;No module on the request path holds a
+          network primitive, the browser is forbidden from fetching off-origin by a
+          <code>default-src &#39;none&#39;</code> policy, and both are asserted on every CI push&#8221;
+          is a test. A CI job runs the PII engine with <strong>zero</strong> pip installs to prove the
+          hot path is standard library only.</p>
+      </article>
+
+      <article class="why__card reveal">
+        <span class="why__n">06</span>
+        <h3>The honest counterweight</h3>
+        <p>Local does not automatically mean better. A 3B model is a 3B model. Isla AI&#8217;s
+          correctness comes from <strong>retrieval, not scale</strong>: answers are quoted verbatim from
+          cited spans, so the worst case is an irrelevant chunk rather than an invented section
+          number. Measured both ways, and the trade is documented rather than implied.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 4 · CAPABILITIES ═══ -->
+<section class="caps" id="capabilities">
+  <div class="wrap">
+    <div class="sec__head reveal">
+      <span class="eyebrow">What ships</span>
+      <h2 class="sec">Three controls, one process, no network.</h2>
+      <p class="sec__lede">Each one is a distinct control a bank has to evidence separately, and
+        each one produces its own proof in the ledger.</p>
+    </div>
+
+    <div class="caps__grid">
+      <article class="cap reveal">
+        <span class="cap__icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/></svg>
         </span>
-      </h1>
+        <h3>Egress Guard</h3>
+        <p>Paste anything a staff member might send to an external AI. Eighteen Philippine entity
+          types are detected, redacted, then re-detected by a verification pass. Anything that
+          survives escalation escalates — it is never allowed to ship.</p>
+        <span class="cap__metric">macro-F1 1.0000 · residual 0.00% · 0.2 ms p50</span>
+      </article>
 
-      <p class="lede reveal">
-        KALIX detects Philippine banking PII before staff paste it into an external AI, and answers
-        Data Privacy Act questions offline &mdash; from the statute, with citations.
-        No cloud inference. No egress. No policy promise.
-      </p>
+      <article class="cap reveal">
+        <span class="cap__icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            <path d="M9 7h7M9 11h5"/></svg>
+        </span>
+        <h3>DPA Copilot</h3>
+        <p>Ask the Data Privacy Act in Taglish or English. Hybrid retrieval over seven real
+          instruments returns quoted spans with resolvable citations — and refuses outright when the
+          evidence is too thin, because a wrong circular number is worse than no answer.</p>
+        <span class="cap__metric">citation accuracy 100% · correct refusal 100%</span>
+      </article>
 
-      <div class="hero__cta reveal">
-        <a class="shiny" href="/app">
-          <span style="display:flex;align-items:center;gap:8px">
-            Launch the console
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </span>
-        </a>
-        <a class="ghost" href="#proof">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:18px;height:18px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-          Read the scoreboard
-        </a>
-      </div>
-
-      <p class="hero__meta reveal">Binds 127.0.0.1 only &middot; 0 cloud calls &middot; CPU-only</p>
+      <article class="cap reveal">
+        <span class="cap__icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/>
+            <path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>
+        </span>
+        <h3>Audit Ledger</h3>
+        <p>Every action writes a SHA-256 hash-chained record. Each entry links to the last, so altering
+          one invalidates everything after it and a single pass detects it. Counts and verdicts only —
+          the customer text is never written to disk.</p>
+        <span class="cap__metric">verified in one pass · contains no raw PII</span>
+      </article>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ========================== CREDIBILITY ========================== -->
-  <section class="strip" aria-label="Bundled Philippine legal corpus">
-    <div class="wrap strip__row">
-      <p class="strip__label">Grounded in</p>
-      <div class="strip__items">
-        <div class="strip__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>RA 10173</div>
-        <div class="strip__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>IRR 2016</div>
-        <div class="strip__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>NPC Circ. 16-03</div>
-        <div class="strip__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>NPC Circ. 2022-01</div>
-        <div class="strip__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>NPC Circ. 2022-04</div>
-        <div class="strip__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>NPC Circ. 2023-04</div>
-        <div class="strip__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>NPC Adv. 2024-04</div>
-      </div>
+<!-- ═══ 5 · SCOREBOARD ═══ -->
+<section class="score" id="scoreboard">
+  <div class="wrap">
+    <div class="sec__head reveal">
+      <span class="eyebrow">Measured, not claimed</span>
+      <h2 class="sec">Every number is regenerated from committed code.</h2>
+      <p class="sec__lede">CI re-runs the evaluation on every push — twice, once with the model
+        weights present and once with none installed at all. If a published figure moved, the build
+        goes red.</p>
     </div>
-  </section>
 
-  <!-- ============================ BENTO ============================ -->
-  <section class="section" id="product">
-    <div class="wrap">
-      <div class="section__head reveal">
-        <h2>Two controls that replace<br><span>a policy nobody follows</span></h2>
-        <p>Staff will paste a customer record into an AI tool. The only control that holds is one
-           that runs where the data already is &mdash; and verifies its own work.</p>
-      </div>
-
-      <div class="bento">
-        <article class="card card--hero reveal">
-          <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-          <h3>Egress Guard</h3>
-          <p>Detects 18 classes of Philippine banking PII &mdash; SSS in its three real
-             layouts, TIN, GCash numbers that are just mobiles with no marker, card PANs
-             validated by Luhn, remittance references &mdash; then redacts with stable
-             pseudonyms. It re-runs the entire detector over its own output before releasing
-             a single character.</p>
-          <span class="tag">fail-closed on residual &rarr; BLOCK</span>
-          <div class="card__more"><span>SCAN &amp; REDACT</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-        </article>
-
-        <article class="card reveal">
-          <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-          <h3>DPA Copilot</h3>
-          <p>Taglish in, cited statute out. Hybrid dense + BM25 retrieval over 223 citable
-             chunks. It refuses when the evidence is thin rather than inventing a circular number.</p>
-          <div class="card__more"><span>ASK</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-        </article>
-
-        <article class="card reveal">
-          <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
-          <h3>Audit ledger</h3>
-          <p>Hash-chained records of every action &mdash; SHA-256, each entry linked to the last.
-             Stores counts and verdicts, never customer text.</p>
-        </article>
-
-        <article class="card card--wide reveal">
-          <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 2l20 20M8.6 8.6a4 4 0 0 0 5.7 5.7M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></div>
-          <h3>Real air-gap, not a badge that says so</h3>
-          <p>The status chip reports an actual socket probe against public resolvers. Pull the cable
-             mid-demo and the answer changes in front of the judges. Nothing in this page can reach
-             the network either — the Content-Security-Policy is <code style="font-family:var(--font-mono);font-size:.9em">default-src 'none'</code>,
-             so a future edit that adds a CDN dependency fails loudly instead of quietly leaking.</p>
-        </article>
-
-        <article class="card card--wide reveal">
-          <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
-          <h3>Refuses when it must</h3>
-          <p>Correct refusal is a feature, not a fallback. Ask it something outside the corpus and it
-             answers in Taglish that it has no basis, and cites nothing — measured at 100% on
-             out-of-domain questions. That is the behaviour that stops a model inventing a circular
-             number. In this industry a confident wrong answer is worse than no answer.</p>
-          <span class="tag">100% correct-refusal on out-of-domain</span>
-        </article>
-      </div>
+    <div class="score__grid">
+      <div class="score__cell reveal"><span class="score__val">18</span>
+        <span class="score__lab strip__lab">PH entity types</span>
+        <span class="score__sub">detected · validated · redacted</span></div>
+      <div class="score__cell reveal"><span class="score__val">3</span>
+        <span class="score__lab strip__lab">Verification passes</span>
+        <span class="score__sub">the detector re-runs over its own output</span></div>
+      <div class="score__cell reveal"><span class="score__val">227</span>
+        <span class="score__lab strip__lab">Citable chunks</span>
+        <span class="score__sub">from 7 verified instruments</span></div>
+      <div class="score__cell reveal"><span class="score__val">80%</span>
+        <span class="score__lab strip__lab">Source attribution</span>
+        <span class="score__sub">our weakest published metric</span></div>
     </div>
-  </section>
 
-  <!-- ========================== THE NUMBERS ========================== -->
-  <section class="section" id="proof" style="background:rgba(9,9,11,.4);border-top:1px solid var(--line-faint);border-bottom:1px solid var(--line-faint)">
-    <div class="wrap">
-      <div class="section__head reveal">
-        <h2>The rubric asks whether it<br><span>actually works.</span></h2>
-        <p>Every number below is generated by running the committed code against a published
-           dataset. One command reproduces it.</p>
-      </div>
+    <div class="score__note reveal"><strong>Where it still falls short.</strong> One question in five
+      attributes its answer to the wrong instrument — NPC Circular 2022-04 should answer the AI
+      registration question, and the bundled corpus does not contain the phrase
+      &#8220;credit scoring&#8221; that triggers it. The citation returned is still real and the section is
+      still real; what is missing is corpus breadth. We did not tune BM25 until this case flipped,
+      because that is fitting to the evaluation. Two instruments we wanted could not be retrieved
+      from any public source at all.</div>
+  </div>
+</section>
 
-      <div class="scores">
-        <div class="score reveal">
-          <span class="score__val is-best">1.0000</span>
-          <span class="score__label">Macro-F1 across Philippine entity types</span>
-          <span class="badge badge--pass" style="align-self:flex-start;margin-top:8px">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>PASS</span>
-          <span class="score__sub">40 labelled cases &middot; 36 expected spans</span>
-        </div>
-        <div class="score reveal">
-          <span class="score__val">100%</span>
-          <span class="score__label">High-risk recall and precision on SSS, PAN, TIN, GCash</span>
-          <span class="badge badge--pass" style="align-self:flex-start;margin-top:8px">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>PASS</span>
-          <span class="score__sub">0.00% residual leakage</span>
-        </div>
-        <div class="score reveal">
-          <span class="score__val">100%</span>
-          <span class="score__label">Citation accuracy &mdash; every answer traceable to a section</span>
-          <span class="badge badge--pass" style="align-self:flex-start;margin-top:8px">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>PASS</span>
-          <span class="score__sub">correct-refusal 100%</span>
-        </div>
-        <div class="score reveal">
-          <span class="score__val">80%</span>
-          <span class="score__label">Correct source document attribution</span>
-          <span class="badge badge--warn" style="align-self:flex-start;margin-top:8px">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>WEAKEST</span>
-          <span class="score__sub">4 of 5 &middot; published, not hidden</span>
-        </div>
-      </div>
-
-      <div class="demo" style="margin-top:64px">
-        <div class="term reveal" aria-label="Copilot session transcript">
-          <div class="term__bar">
-            <span class="term__dot" style="background:#ff5f57"></span>
-            <span class="term__dot" style="background:#febc2e"></span>
-            <span class="term__dot" style="background:#28c840"></span>
-            <span class="term__title">KALIX &mdash; DPA Copilot</span>
-          </div>
-          <div class="term__body">
-            <span class="term__q">Ilang oras dapat ko i-report ang data breach?</span>
-            <span class="term__a">Within 72 hours from knowledge of the personal data breach,
-              based on available information.</span>
-            <span class="term__cite">[NPC-CIRC-16-03 &sect;25]</span>
-            <span class="term__q" style="margin-top:14px;display:block">Pwede ba ipasa ang CDR ng customer ko sa vendor namin sa Singapore?</span>
-            <span class="term__a">A personal information controller is accountable for
-              information transferred to a third party, whether domestically or internationally.</span>
-            <span class="term__cite">[RA-10173 &sect;21]</span>
-            <span class="term__q" style="margin-top:14px;display:block">Who won the 2025 FIFA World Cup?</span>
-            <span class="term__a" style="color:var(--refuse)">Hindi ito tanong tungkol sa Data Privacy Act
-              o mga patakaran ng NPC, kaya wala akong maibibigay na batayan sa loob ng corpus na 'to.</span>
-          </div>
-          <div class="term__meta">
-            <span><b>0.2 ms</b> PII scan p50</span>
-            <span><b>8 ms</b> copilot p50</span>
-            <span><b>0</b> cloud calls</span>
-            <span><b>66</b> tests green</span>
-          </div>
-        </div>
-
-        <div class="feats">
-          <div class="feat reveal">
-            <div class="feat__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-            <div><h4>Verification pass, not a claim</h4><p>A redactor you have not verified is a liability. Residual PII escalates instead of shipping.</p></div>
-          </div>
-          <div class="feat reveal">
-            <div class="feat__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h18M12 3v18"/></svg></div>
-            <div><h4>Proves itself without weights</h4><p>The Egress Guard imports nothing outside the Python standard library. CI runs it with zero dependencies installed.</p></div>
-          </div>
-          <div class="feat reveal">
-            <div class="feat__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 15h6"/></svg></div>
-            <div><h4>Evidence, disclosed</h4><p>Two legal instruments were unreachable from public sources. That, and the one metric we miss, are documented rather than hidden.</p></div>
-          </div>
-        </div>
-      </div>
+<!-- ═══ 6 · JUDGING CRITERIA ═══ -->
+<section class="judge" id="judging">
+  <div class="wrap">
+    <div class="sec__head reveal">
+      <span class="eyebrow">Against the rubric</span>
+      <h2 class="sec">Where we believe we score, and where we do not.</h2>
+      <p class="sec__lede">Judged honestly, including the two places a strict reading would push
+        back. Both are documented in full in the repository rather than left for a reviewer to
+        discover.</p>
     </div>
-  </section>
 
-  <!-- ============================ MANIFESTO ============================ -->
-  <section class="manifesto">
-    <div class="manifesto__inner">
-      <div class="manifesto__stars" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
-      </div>
-      <h2>&ldquo;It does not leave because it has nowhere to leave to.
-             The shield is not a policy. It is the perimeter.&rdquo;</h2>
-      <div class="manifesto__sig">
-        <svg viewBox="0 0 512 512" aria-hidden="true"><use href="#mark"/></svg>
-        <div><strong>KALIX</strong><span>Walang datos na lumalabas.</span></div>
-      </div>
-    </div>
-  </section>
+    <div class="judge__list">
+      <article class="judge__row reveal">
+        <span class="judge__w">25%</span>
+        <div><h3>Problem &amp; Usefulness</h3>
+          <p>A named, narrow, real obligation: a Philippine bank&#8217;s data-privacy officer has NPC
+            advisories, circulars and BSP memos to satisfy, and no tooling that produces evidence
+            without leaking the evidence. Every published number comes from running this repository.
+            The strict reading of &#8220;would the general public benefit&#8221; is weaker — the buyer is
+            a regulated institution, not a consumer.</p>
+          <span class="judge__tag judge__tag--caveat">strong, with one caveat</span></div>
+      </article>
 
-  <!-- ============================== CTA ============================== -->
-  <section class="section cta" id="open">
-    <div class="wrap cta__inner">
-      <h2 class="reveal">See it <span>refuse.</span></h2>
-      <p class="reveal">Every Philippine bank is already an AI company under NPC Advisory 2024-04.
-         Almost none can prove compliance for their own AI. Open the console and try to make it wrong.</p>
-      <div class="cta__actions reveal">
-        <a class="shiny" href="/app"><span style="display:flex;align-items:center;gap:8px">Open the console
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
-        <a class="ghost" href="#proof">Read the scoreboard</a>
-      </div>
-      <p class="cta__note">Runs on 127.0.0.1 &middot; no account, no telemetry, no data leaving the machine</p>
+      <article class="judge__row reveal">
+        <span class="judge__w">25%</span>
+        <div><h3>Local AI Implementation</h3>
+          <p>A multilingual encoder runs locally in the retrieval path, PII detection runs locally with
+            zero third-party dependencies, and no cloud AI API is installed or reachable. Measured
+            rather than asserted: the ablation shows the published metrics are <em>unchanged</em> with
+            the embedding model removed, because 227 chunks is small enough for lexical retrieval to
+            cope. What genuinely disappears without local inference is the ability to do the work at
+            all without disclosure.</p>
+          <span class="judge__tag judge__tag--caveat">measured, honestly caveated</span></div>
+      </article>
+
+      <article class="judge__row reveal">
+        <span class="judge__w">20%</span>
+        <div><h3>Technical Execution</h3>
+          <p>207 tests green, type-clean, zero npm vulnerabilities, CSP hash asserted on every push,
+            evaluation reproducible from committed datasets in a clean environment with no model
+            weights. Three CI jobs prove three separate degradation claims rather than one.</p>
+          <span class="judge__tag">demonstrable</span></div>
+      </article>
+
+      <article class="judge__row reveal">
+        <span class="judge__w">15%</span>
+        <div><h3>Innovation</h3>
+          <p>The differentiator is refusing to be confidently wrong: a verification pass that re-runs
+            the detector over Isla AI&#8217;s own redaction and escalates on any survivor, and correct
+            refusal treated as a first-class success rather than a fallback. The ledger stores counts
+            and verdicts but never customer text — provable, not promised.</p>
+          <span class="judge__tag">meaningfully different</span></div>
+      </article>
+
+      <article class="judge__row reveal">
+        <span class="judge__w">15%</span>
+        <div><h3>Product &amp; Demo Quality</h3>
+          <p>A chat console wired to the live API with no mock data and no decorative controls,
+            verified for console errors, overflow and external requests on four surfaces. The written
+            demo script covers the four hard questions a judge is likely to ask.</p>
+          <span class="judge__tag">ready to run</span></div>
+      </article>
     </div>
-  </section>
+  </div>
+</section>
+
+<!-- ═══ 7 · TEAM ═══ -->
+<section class="team" id="team">
+  <div class="wrap">
+    <div class="sec__head reveal">
+      <span class="eyebrow">The team</span>
+      <h2 class="sec">Built by Boundless IT Solutions.</h2>
+    </div>
+    <div class="team__grid">
+      <article class="person reveal">
+        <span class="person__av" aria-hidden="true">MC</span>
+        <div><h3>Malcolm Joaquin Cuady</h3>
+          <p class="role">Developer · Author</p>
+          <p>Built the PII engine, the hybrid retrieval stack, the citation enforcement and the
+            console. Owns the evaluation harness and the claims it makes.</p></div>
+      </article>
+      <article class="person reveal">
+        <span class="person__av" aria-hidden="true">MQ</span>
+        <div><h3>Mark Quiazon</h3>
+          <p class="role">Project Manager</p>
+          <p>Owns scope, the regulatory problem framing and the submission. Keeps the roadmap honest
+            about what is measured versus what is aspirational.</p></div>
+      </article>
+      <article class="person reveal">
+        <span class="person__av" aria-hidden="true">BI</span>
+        <div><h3>Boundless IT Solutions</h3>
+          <p class="role">Organisation · BITS</p>
+          <p>The team behind the build. Everything here was written for this project on top of named
+            open-source models — nothing was scaffolded from an existing app.</p></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 8 · CLOSING CTA ═══ -->
+<section class="cta">
+  <div class="wrap">
+    <h2 class="reveal">Pull the cable. Ask a question. Watch it work.</h2>
+    <p class="cta__lede reveal">Everything below runs on one machine, on one port, with the network
+      disconnected. Clone it, build it, and check the claim yourself.</p>
+    <div class="cta__row reveal">
+      <a class="btn btn--primary" href="/app">Open the console</a>
+      <a class="btn btn--ghost" href="https://github.com/jcuady/ISLA-AI">Read the source</a>
+    </div>
+    <p class="cta__note reveal">Runs on 127.0.0.1 · no account, no telemetry, no data leaving the machine</p>
+  </div>
+</section>
+
 </main>
 
 <footer>
-  <div class="wrap foot">
-    <div>
-      <div class="foot__brand"><svg viewBox="0 0 512 512" aria-hidden="true"><use href="#mark"/></svg><span>KALIX</span></div>
-      <p>An on-device AI privacy-compliance copilot for Philippine banks. Built so that customer
-         data never has to leave the building to be defended.</p>
-    </div>
-    <div>
-      <h4>Product</h4>
-      <ul>
-        <li><a href="#product">Egress Guard</a></li>
-        <li><a href="#product">DPA Copilot</a></li>
-        <li><a href="#product">Audit ledger</a></li>
-        <li><a href="#proof">Scoreboard</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4>Evidence</h4>
-      <ul>
-        <li><a href="#corpus">Corpus sources</a></li>
-        <li><a href="#proof">Disclosures</a></li>
-        <li><a href="#proof">Evaluation harness</a></li>
-        <li><a href="/app">Console</a></li>
-      </ul>
+  <div class="wrap">
+    <div class="foot__grid">
+      <div class="foot__brand">
+        <img src="/isla-mark.svg" alt="Isla AI" width="40" height="40">
+        <span>ISLA AI</span>
+      </div>
+      <div class="foot__col">
+        <h4>Product</h4>
+        <a href="#capabilities">Egress Guard</a>
+        <a href="#capabilities">DPA Copilot</a>
+        <a href="#capabilities">Audit Ledger</a>
+        <a href="/app">Open console</a>
+      </div>
+      <div class="foot__col">
+        <h4>Evidence</h4>
+        <a href="#scoreboard">Scoreboard</a>
+        <a href="#judging">Judging criteria</a>
+        <p>Regenerated by CI on every push.</p>
+      </div>
+      <div class="foot__col">
+        <h4>Team</h4>
+        <p>Malcolm Joaquin Cuady — Developer</p>
+        <p>Mark Quiazon — Project Manager</p>
+        <p>Boundless IT Solutions (BITS)</p>
+      </div>
     </div>
   </div>
-
-  <div class="foot__word" aria-hidden="true"><h2>KALIX</h2></div>
-
-  <div class="wrap foot__bar">
-    <p>&copy; 2026 KALIX &middot; AppBuilders PH Hackathon</p>
-    <nav aria-label="Footer">
-      <a href="#product">Product</a><a href="#proof">Proof</a><a href="/app">Console</a>
-    </nav>
+  <div class="foot__word" aria-hidden="true">ISLA</div>
+  <div class="wrap">
+    <div class="foot__legal">
+      <span>AppBuilders PH 2026 · Local AI track · Finance</span>
+      <span>Not legal advice. Verify every citation before relying on it.</span>
+    </div>
   </div>
 </footer>
 
-<!-- The mark is inlined once and referenced, so the logo costs no request and
-     stays themeable via currentColor. -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-  <symbol id="mark" viewBox="0 0 512 512">
-    <defs>
-      <mask id="knockout" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
-        <rect width="512" height="512" fill="#fff"/>
-        <g fill="#000">
-          <rect x="168" y="240" width="176" height="150" rx="22"/>
-          <path d="M198 248 V198 a58 58 0 0 1 116 0 v50 h-36 v-50 a22 22 0 0 0 -44 0 v50 z"/>
-        </g>
-      </mask>
-    </defs>
-    <path fill="currentColor" mask="url(#knockout)" d="M256 18 C182 18 112 42 58 84 C45 94 38 109 38 126 L38 250 C38 346 128 432 256 480 C384 432 474 346 474 250 L474 126 C474 109 467 94 454 84 C400 42 330 18 256 18 Z"/>
-  </symbol>
-</svg>
-
 <script>
-  // Scroll reveal. Inline and dependency-free because this page must make zero
-  // network requests; IntersectionObserver is native, no polyfill needed.
+// Scroll reveal. Inline and dependency-free because this page must reach the
+  // network for nothing: fonts and the hero photograph are served from this
+  // origin, and IntersectionObserver is native, so no polyfill is needed.
   //
   // The `js` class is what actually enables hiding. Without it the page is
   // already visible, so a blocked script degrades to readable, not blank.

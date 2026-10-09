@@ -1,39 +1,85 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   KALIX design tokens — "red noir", expressed as a Tailwind v4 @theme.
+   ISLA AI design tokens — "lagoon and abyss", expressed as a Tailwind v4
+   @theme.
 
-   The brand accent is crimson, so BLOCK cannot be the only red thing in the
-   product. Status is therefore carried on THREE independent channels, never
-   hue alone (WCAG 2.2 SC 1.4.1):
+   The brand accent is lagoon teal, and that is a correctness decision rather
+   than a decorative one. BLOCK has to be red: it is the one status a privacy
+   officer must never misread as "fine". The previous crimson brand therefore
+   put the product's own alarm colour at its centre. Teal and coral-red are far
+   apart, so the brand stops competing with the thing it is warning about.
+
+   Status is carried on THREE independent channels, never hue alone
+   (WCAG 2.2 SC 1.4.1):
      1. hue      2. filled surface vs stroked   3. a distinct ICON + label
-   The <StatusBadge> primitive below is the single place that enforces this;
-   screen code must not hand-roll status colours.
+   The <StatusBadge> primitive is the single place that enforces this; screen
+   code must not hand-roll status colours. The four semantic tokens below are
+   deliberately NOT brand colours and must not be re-tinted.
+
+   Naming: `brand-*` is the Tailwind-facing alias for the lagoon ramp used by
+   both web surfaces, and `abyss-*` is the dark surface stack. Both are the
+   same values the landing page declares in apps/web/public/landing.html.
    ========================================================================== */
 
+/* Self-hosted variable fonts, latin subset.
+   `default-src 'none'` forbids a font CDN, which is the point: the product
+   claims nothing is fetched externally, so its own typeface must not be.
+   Served from public/fonts -> dist/fonts, permitted by `font-src 'self'`. */
+@font-face {
+  font-family: "Outfit";
+  src: url("/fonts/outfit.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("/fonts/plus-jakarta-sans.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/jetbrains-mono.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 @theme {
-  /* -- brand ------------------------------------------------------------ */
-  --color-brand-50: #fff1f2;
-  --color-brand-100: #ffe4e6;
-  --color-brand-200: #fecdd3;
-  --color-brand-300: #fda4af;
-  --color-brand-400: #fb7185;
-  --color-brand-500: #ef233c;
-  --color-brand-600: #d91a33;
-  --color-brand-700: #c4102a;
-  --color-brand-800: #a20f25;
-  --color-brand-900: #881020;
-  --color-brand-hot: #ff3b52;
+  /* -- lagoon: the brand ------------------------------------------------ */
+  --color-brand-50: #eaf9f9;
+  --color-brand-100: #c9eeef;
+  --color-brand-200: #96dee0;
+  --color-brand-300: #5fc9cd;
+  --color-brand-400: #2fbecc;
+  --color-brand-500: #16a3b8;
+  --color-brand-600: #0e8a9c;
+  --color-brand-700: #107080;
+  --color-brand-800: #0b5a68;
+  --color-brand-900: #083f49;
+  /* Bright aqua, used only where something must stay visible on abyss: focus
+     rings and the hover edge. Not a text colour on a light surface. */
+  --color-brand-hot: #2fbecc;
 
-  /* -- noir surfaces ---------------------------------------------------- */
-  --color-noir-950: #000000;
-  --color-noir-900: #070203;
-  --color-noir-850: #0c0306;
-  --color-noir-800: #12050a;
-  --color-noir-700: #1b0a10;
-  --color-noir-600: #2a1017;
+  /* -- sand: the warm counterweight -------------------------------------- */
+  --color-sand-100: #f6efe3;
+  --color-sand-200: #ede2ce;
+  --color-sand-300: #dfcfb2;
 
-  /* -- semantic status layer -------------------------------------------
+  /* -- coral: the one warm accent ---------------------------------------- */
+  --color-coral-400: #ff7f5c;
+  --color-coral-500: #ff5f3d;
+  --color-coral-600: #e8441f;
+
+  /* -- abyss surfaces ---------------------------------------------------- */
+  --color-abyss-600: #17505f;
+  --color-abyss-700: #063038;
+  --color-abyss-800: #04242b;
+  --color-abyss-850: #032026;
+  --color-abyss-900: #021a20;
+  --color-abyss-950: #010f14;
+
+  /* -- semantic status layer ---------------------------------------------
      Statuses are deliberately named, not numbered, so a reviewer can grep
      for `semantic-safe` and find every place green is allowed.               */
   --color-semantic-safe: #2fbf87;
@@ -43,8 +89,8 @@
   --color-semantic-cite: #a78bfa;
 
   /* -- type ------------------------------------------------------------- */
-  --font-display: "Manrope", "Segoe UI Variable Display", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Inter", "Segoe UI Variable Text", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", "Segoe UI Variable Display", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Segoe UI Variable Text", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "SF Mono", "Cascadia Mono", Consolas, monospace;
 
   /* -- motion ----------------------------------------------------------- */
@@ -60,7 +106,7 @@
 
 @layer base {
   * {
-    border-color: color-mix(in oklab, var(--color-brand-500) 12%, transparent);
+    border-color: color-mix(in oklab, var(--color-brand-500) 14%, transparent);
   }
 
   html {
@@ -68,22 +114,25 @@
   }
 
   body {
-    background-color: var(--color-noir-950);
+    background-color: var(--color-abyss-950);
     color: var(--color-white);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
-  /* Every focus ring must be visible on a noir surface. */
+  /* Every focus ring must be visible on an abyss surface. */
   :focus-visible {
     outline: 2px solid var(--color-brand-hot);
     outline-offset: 2px;
     border-radius: 4px;
   }
 
+  /* brand-800, not brand-500: white on #0e8a9c is only 3.7:1, and the
+     previous crimson selection background was 4.2:1. Both fail AA for body
+     text. brand-800 gives 7.9:1. */
   ::selection {
-    background: var(--color-brand-500);
+    background: var(--color-brand-800);
     color: #fff;
   }
 
@@ -120,12 +169,12 @@
 }
 
 @layer utilities {
-  /* The noir wash behind the whole app. */
-  .bg-noir-field {
+  /* The lagoon wash behind the whole app. */
+  .bg-abyss-field {
     background-image:
-      radial-gradient(circle at 18% -10%, rgba(239, 35, 60, 0.10), transparent 55%),
-      radial-gradient(circle at 88% 8%, rgba(239, 35, 60, 0.05), transparent 45%),
-      linear-gradient(to bottom, var(--color-noir-800), var(--color-noir-950) 42%);
+      radial-gradient(circle at 18% -10%, rgba(22, 163, 184, 0.16), transparent 55%),
+      radial-gradient(circle at 88% 8%, rgba(14, 138, 156, 0.10), transparent 45%),
+      linear-gradient(to bottom, var(--color-abyss-800), var(--color-abyss-950) 42%);
   }
 
   .text-gradient-brand {
