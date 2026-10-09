@@ -7,15 +7,17 @@ import { StatusBadge } from "./components/ui/status-badge";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "./components/ui/sheet";
 import Copilot from "./screens/Copilot";
 import EgressGuard from "./screens/EgressGuard";
+import FraudRisk from "./screens/FraudRisk";
 import Ledger from "./screens/Ledger";
 
 const TITLES: Record<ViewId, { title: string; sub: string }> = {
   copilot: { title: "DPA Copilot", sub: "Citation-first answers from Philippine privacy law" },
   egress: { title: "Egress Guard", sub: "Detect and redact before data leaves" },
+  risk: { title: "Fraud & AML", sub: "Screen a transaction for red flags, locally and deterministically" },
   ledger: { title: "Audit Ledger", sub: "Cryptographic proof that never stores customer text" },
 };
 
-const VIEWS: ViewId[] = ["copilot", "egress", "ledger"];
+const VIEWS: ViewId[] = ["copilot", "egress", "risk", "ledger"];
 
 /**
  * The active control lives in the URL, so an officer can send a colleague a
@@ -179,6 +181,11 @@ export default function App() {
           {view === "egress" && (
             <div className="h-full overflow-y-auto">
               <EgressGuard />
+            </div>
+          )}
+          {view === "risk" && (
+            <div className="h-full overflow-y-auto">
+              <FraudRisk />
             </div>
           )}
           {view === "ledger" && (

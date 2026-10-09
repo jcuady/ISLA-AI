@@ -3,6 +3,7 @@ import {
   ShieldCheck,
   MessageSquareText,
   ScanLine,
+  Radar,
   ScrollText,
   Plus,
   Landmark,
@@ -18,7 +19,7 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { cn } from "@/lib/utils";
 import type { AirgapResult, Health } from "@/lib/api";
 
-export type ViewId = "copilot" | "egress" | "ledger";
+export type ViewId = "copilot" | "egress" | "risk" | "ledger";
 
 interface NavItem {
   id: ViewId;
@@ -40,6 +41,12 @@ export const NAV_ITEMS: NavItem[] = [
     label: "Egress Guard",
     hint: "Scan before you paste",
     icon: ScanLine,
+  },
+  {
+    id: "risk",
+    label: "Fraud & AML",
+    hint: "Screen a suspicious scenario",
+    icon: Radar,
   },
   {
     id: "ledger",

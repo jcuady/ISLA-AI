@@ -47,8 +47,14 @@ function setup(props: Partial<React.ComponentProps<typeof AppSidebar>> = {}) {
 }
 
 describe("AppSidebar", () => {
-  it("offers exactly the three shipped controls", () => {
-    expect(NAV_ITEMS.map((n) => n.id)).toEqual(["copilot", "egress", "ledger"]);
+  it("offers exactly the four shipped controls", () => {
+    expect(NAV_ITEMS.map((n) => n.id)).toEqual(["copilot", "egress", "risk", "ledger"]);
+  });
+
+  it("every navigation item has a hint, so nothing is a bare icon", () => {
+    for (const item of NAV_ITEMS) {
+      expect(item.hint.length).toBeGreaterThan(0);
+    }
   });
 
   it("marks the active view with aria-current", () => {

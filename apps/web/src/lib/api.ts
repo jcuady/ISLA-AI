@@ -123,6 +123,70 @@ async function get<T>(path: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+export interface RiskCitation {
+  doc_id: string;
+  doc_title: string;
+  issuer: string;
+  section: string;
+  url: string;
+  doc_type: string;
+  label: string;
+  text: string;
+  /** A window centred on the anchor phrase, so the reader sees the words that
+   *  fired the indicator rather than the head of the section. */
+  excerpt?: string;
+  score: number;
+  /** False when the anchor was not present and the span is a near match. */
+  anchor_in_text: boolean;
+}
+
+export interface RiskLegalHook {
+  doc_id: string;
+  anchor: string;
+  note: string;
+  /** True when the governing rule sits with a regulator this build could not
+   *  retrieve. Such a hook is never presented as a citation. */
+  is_gap: boolean;
+}
+
+export interface RiskFlag {
+  id: string;
+  label: string;
+  tier: string;
+  exposure: string[];
+  evidence: string;
+  why: string;
+  action: string;
+  regulator: string;
+  legal_hook: RiskLegalHook;
+  citation: RiskCitation | null;
+}
+
+export interface RiskAssessment {
+  tier: string;
+  risk_tier: string;
+  exposed: string[];
+  red_flags: RiskFlag[];
+  required_actions: string[];
+  summary: string;
+  coverage_gap: string[];
+  citation_count: number;
+  degraded: boolean;
+  footer: string;
+  latency_ms: number;
+}
+
+export interface RiskIndicator {
+  id: string;
+  label: string;
+  tier: string;
+  exposure: string[];
+  why: string;
+  action: string;
+  regulator: string;
+  legal_hook: { doc_id: string; anchor: string; note: string; is_gap: boolean };
+}
+
 export const api = {
   health: () => get<Health>("/api/health"),
   airgap: () => get<AirgapResult>("/api/airgap"),
@@ -132,6 +196,12 @@ export const api = {
     post<ScanResult>("/api/pii/scan", { text }, signal),
   ask: (text: string, signal?: AbortSignal) =>
     post<CopilotAnswer>("/api/copilot/ask", { text }, signal),
+  assess: (text: string, signal?: AbortSignal) =>
+    post<RiskAssessment>("/api/risk/assess", { text }, signal),
+  indicators: () =>
+    get<{ count: number; indicators: RiskIndicator[]; coverage_gap: string[] }>(
+      "/api/risk/indicators",
+    ),
   audit: (limit = 50) =>
     get<{
       entries: LedgerEntry[];
