@@ -152,10 +152,14 @@ failure:
   contains no occurrence of "registration" at all — two of the query's content words match nothing
   anywhere in the corpus.
 - BM25 is then decided by the token `ai`, which occurs five times in the competing Advisory chunk
-  (score 6.11) while the correct chunk matches `regist` three times (score 2.48).
-- The dense leg cannot break the tie: the entire result set for this query sits inside a
-  0.813–0.830 similarity band. That compressed floor is the same measured property that motivated
-  the strict lexical refusal gate.
+  while the correct chunk matches `regist` three times.
+- The dense leg cannot break the tie: the entire top-8 result set for this query sits inside a
+  **0.881–0.912** cosine band, with the *wrong* document holding the single highest similarity
+  (0.9118 on a RA-10173 chunk). That compressed, non-discriminative band is the same measured
+  property that motivated the strict lexical refusal gate.
+
+  *(Re-measured after the mean→CLS pooling fix described in
+  [`HACKATHON_RULES.md`](HACKATHON_RULES.md) §5. The pre-fix band was 0.813–0.830.)*
 
 The citation returned is real and the section is real; nothing is invented. What is missing is
 breadth — the bundled corpus is seven Philippine instruments, and BSP Memorandum M-2024-019 and
