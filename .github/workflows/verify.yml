@@ -6,7 +6,7 @@ name: verify
 # Three independent jobs, each proving a different degradation claim:
 #   1. pii-guard      - zero third-party dependencies at all
 #   2. tests + eval   - no model weights, no GPU, BM25 fallback only
-#   3. web build      - the UI type-checks and compiles
+#   3. web build      - the UI type-checks, passes its behaviour suite, compiles
 
 on:
   push:
@@ -101,6 +101,13 @@ jobs:
           node-version: "20"
 
       - run: npm ci
+
+      # Type errors and behaviour tests both fail the build. The UI suite is
+      # the only place the four-channel status rule is enforced, so it is a
+      # correctness gate rather than a nice-to-have.
+      - run: npm run typecheck
+      - run: npm test
+
       - run: npm run build
 
       # The landing page permits its inline reveal script only by SHA-256 hash,

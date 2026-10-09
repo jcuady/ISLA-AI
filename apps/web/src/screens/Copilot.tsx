@@ -1,150 +1,222 @@
-import { useState } from "react";
-import { api, type CopilotAnswer } from "../lib/api";
+import * as React from "react";
+import { Landmark, Scale, ShieldAlert } from "lucide-react";
+import { api } from "@/lib/api";
+import { ChatComposer } from "@/components/ui/chat-composer";
+import { TypingDots } from "@/components/ui/skeleton";
+import { KalixMark } from "@/components/kalix-mark";
+import {
+  AssistantMessage,
+  UserMessage,
+  type ChatMessageData,
+} from "@/components/chat/message";
+import { cn } from "@/lib/utils";
 
-const DEMO_QUERIES = [
-  "Pwede ba ipasa ang CDR ng customer ko sa vendor namin sa Singapore?",
-  "Ilang oras dapat ko i-report ang data breach?",
-  "Kailangan ba mag-register ng AI credit scoring model ang banko namin?",
-  "May karapatang humingi ng data ng customer ko ang collection agency?",
-  "Ilang taon dapat itinatago ang transaction records?",
-  "Can our call center use AI to score our agents?",
+/** Questions that exercise the parts of the system worth seeing first. */
+const SUGGESTIONS = [
+  {
+    icon: ShieldAlert,
+    title: "Breach reporting clock",
+    q: "Ilang oras dapat ko i-report ang data breach?",
+  },
+  {
+    icon: Landmark,
+    title: "Outsourcing to a vendor",
+    q: "Pwede ba ipasa ang CDR ng customer ko sa vendor namin sa Singapore?",
+  },
+  {
+    icon: Scale,
+    title: "Rules for automated decisions",
+    q: "Can our call center use AI to score our agents?",
+  },
 ];
 
-const OUT_OF_CORPUS = [
-  "Ano ang stock price ng BDO ngayong araw?",
-  "Who won the 2025 FIFA World Cup?",
-];
+let seq = 0;
+const nextId = () => `m${Date.now().toString(36)}-${(seq += 1)}`;
 
-export default function Copilot() {
-  const [question, setQuestion] = useState(DEMO_QUERIES[0]);
-  const [answer, setAnswer] = useState<CopilotAnswer | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+export interface CopilotProps {
+  /** Bumped by the shell when "New conversation" is pressed. */
+  resetKey: number;
+  /** Question injected by a sidebar starter click. */
+  externalQuestion?: { q: string; nonce: number } | null;
+}
 
-  async function ask(q: string) {
-    setQuestion(q);
+export default function Copilot({ resetKey, externalQuestion }: CopilotProps) {
+  const [messages, setMessages] = React.useState<ChatMessageData[]>([]);
+  const [draft, setDraft] = React.useState("");
+  const [busy, setBusy] = React.useState(false);
+  const abortRef = React.useRef<AbortController | null>(null);
+
+  const scrollRef = React.useRef<HTMLDivElement | null>(null);
+  const endRef = React.useRef<HTMLDivElement | null>(null);
+
+  // New conversation: clear the thread and release any in-flight request.
+  React.useEffect(() => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setMessages([]);
+    setDraft("");
+    setBusy(false);
+  }, [resetKey]);
+
+  // Pin to the newest message as the thread grows.
+  React.useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages]);
+
+  const send = React.useCallback(async (question: string) => {
+    const trimmed = question.trim();
+    if (!trimmed) return;
+
+    const userMsg: ChatMessageData = { id: nextId(), role: "user", content: trimmed };
+    setMessages((prev) => [...prev, userMsg]);
     setBusy(true);
-    setError(null);
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     try {
-      setAnswer(await api.ask(q));
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-      setAnswer(null);
+      const answer = await api.ask(trimmed, controller.signal);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: nextId(),
+          role: "assistant",
+          content: answer.answer,
+          citations: answer.citations,
+          refused: answer.refused,
+          confidence: answer.confidence,
+          latencyMs: answer.latency_ms,
+          retrievalMode: answer.retrieval_mode,
+          llmUsed: answer.llm_used,
+          footer: answer.footer,
+        },
+      ]);
+    } catch (err) {
+      if ((err as Error)?.name === "AbortError") return;
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: nextId(),
+          role: "assistant",
+          content: "",
+          error: err instanceof Error ? err.message : String(err),
+        },
+      ]);
     } finally {
+      abortRef.current = null;
       setBusy(false);
     }
-  }
+  }, []);
+
+  // A starter clicked in the sidebar arrives here.
+  React.useEffect(() => {
+    if (externalQuestion) void send(externalQuestion.q);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [externalQuestion?.nonce]);
+
+  const stop = React.useCallback(() => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setBusy(false);
+  }, []);
+
+  const empty = messages.length === 0;
 
   return (
-    <>
-      <div className="card" style={{ marginBottom: 16 }}>
-        <h2>DPA Copilot</h2>
-        <p className="hint">
-          Answers strictly from the local Philippine privacy corpus, in Taglish, with a citation
-          on every legal claim. Ask something outside the corpus and it will refuse.
-        </p>
-
-        <div className="muted" style={{ marginTop: 4, marginBottom: 4 }}>
-          Demo questions
-        </div>
-        <div className="chips">
-          {DEMO_QUERIES.map((q) => (
-            <button key={q} className="chip" onClick={() => void ask(q)}>
-              {q.length > 62 ? `${q.slice(0, 62)}…` : q}
-            </button>
-          ))}
-        </div>
-
-        <div className="muted" style={{ marginBottom: 4 }}>
-          Out of corpus — must refuse
-        </div>
-        <div className="chips">
-          {OUT_OF_CORPUS.map((q) => (
-            <button key={q} className="chip" onClick={() => void ask(q)}>
-              {q}
-            </button>
-          ))}
-        </div>
-
-        <div className="row" style={{ marginTop: 8 }}>
-          <input
-            type="text"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && question.trim()) void ask(question);
-            }}
-            placeholder="Magtanong sa Taglish o English…"
-          />
-          <button
-            className="btn"
-            onClick={() => void ask(question)}
-            disabled={busy || !question.trim()}
-          >
-            {busy ? "Retrieving…" : "Ask"}
-          </button>
-        </div>
-
-        {error && <div className="err">{error}</div>}
+    <div className="flex h-full min-h-0 flex-col">
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
+        {empty ? (
+          <EmptyState onPick={(q) => void send(q)} />
+        ) : (
+          <div className="mx-auto w-full max-w-3xl py-4">
+            {messages.map((m) =>
+              m.role === "user" ? (
+                <UserMessage key={m.id} message={m} />
+              ) : (
+                <AssistantMessage key={m.id} message={m} />
+              ),
+            )}
+            {busy && (
+              <div className="flex gap-3 px-4 py-4 sm:px-6">
+                <span
+                  className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg border border-brand-500/35 bg-brand-500/12"
+                  aria-hidden="true"
+                >
+                  <KalixMark size={14} />
+                </span>
+                <div className="pt-1">
+                  <TypingDots />
+                </div>
+              </div>
+            )}
+            <div ref={endRef} />
+          </div>
+        )}
       </div>
 
-      {answer && (
-        <div className="card">
-          <div className={`verdict ${answer.refused ? "redact" : "safe"}`}>
-            <span className="vlabel">
-              {answer.refused ? "REFUSED — NO CORPUS BASIS" : "GROUNDED ANSWER"}
-            </span>
-            <span className="muted">
-              confidence {answer.confidence.toFixed(2)} · {answer.retrieval_mode}
-              {answer.llm_used ? " · LLM" : " · extractive"}
-            </span>
-            <span className="vmeta">{answer.latency_ms.toFixed(0)} ms</span>
-          </div>
-
-          <div className={answer.refused ? "refusal answer" : "answer"}>{answer.answer}</div>
-
-          {answer.citations.length > 0 && (
-            <>
-              <div className="muted" style={{ marginTop: 16, marginBottom: 6 }}>
-                Citations
-              </div>
-              <div>
-                {answer.citations.map((c) => (
-                  <span key={c.id} className="cite" title={`${c.doc_title} — ${c.section}`}>
-                    {c.label}
-                  </span>
-                ))}
-              </div>
-              <table style={{ marginTop: 12 }}>
-                <thead>
-                  <tr>
-                    <th>Document</th>
-                    <th>Issuer</th>
-                    <th>Section</th>
-                    <th>Effective</th>
-                    <th>Score</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {answer.citations.map((c) => (
-                    <tr key={c.id}>
-                      <td>{c.doc_title.slice(0, 58)}</td>
-                      <td className="muted">{c.issuer}</td>
-                      <td className="mono">{c.section.slice(0, 40)}</td>
-                      <td className="mono muted">{c.effective_date}</td>
-                      <td className="mono">{c.score.toFixed(2)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </>
-          )}
-
-          <div className="muted" style={{ marginTop: 16, fontStyle: "italic" }}>
-            {answer.footer}
-          </div>
+      {/* Composer pinned to the bottom, like a modern chat surface. */}
+      <div className="shrink-0 border-t border-white/8 bg-noir-950/80 px-4 pb-4 pt-3 backdrop-blur-sm sm:px-6">
+        <div className="mx-auto w-full max-w-3xl">
+          <ChatComposer
+            value={draft}
+            onChange={setDraft}
+            onSubmit={(q) => void send(q)}
+            onStop={stop}
+            busy={busy}
+            placeholder="Ask about the Data Privacy Act, in Taglish or English…"
+            footer={
+              <p className="mt-2 text-center text-[11px] leading-relaxed text-white/30">
+                Answers are quoted from cited spans in {7} Philippine instruments. Not legal advice.
+              </p>
+            }
+          />
         </div>
+      </div>
+    </div>
+  );
+}
+
+function EmptyState({ onPick }: { onPick: (q: string) => void }) {
+  return (
+    <div
+      className={cn(
+        "flex h-full flex-col items-center justify-center px-6 py-12 text-center",
       )}
-    </>
+    >
+      <span
+        className="mb-5 flex size-14 items-center justify-center rounded-2xl border border-brand-500/30 bg-brand-500/10"
+        aria-hidden="true"
+      >
+        <KalixMark size={28} />
+      </span>
+      <h2 className="font-display text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+        Ask the law. <span className="text-brand-500">Get the citation.</span>
+      </h2>
+      <p className="mt-3 max-w-lg text-[14px] leading-relaxed text-white/50">
+        KALIX answers from seven real Philippine privacy instruments, quoted span by span. If the
+        evidence is thin it refuses rather than guessing.
+      </p>
+
+      <div className="mt-8 grid w-full max-w-2xl gap-2 sm:grid-cols-3">
+        {SUGGESTIONS.map((s) => {
+          const Icon = s.icon;
+          return (
+            <button
+              key={s.title}
+              type="button"
+              onClick={() => onPick(s.q)}
+              className="group rounded-xl border border-white/8 bg-white/[0.02] p-4 text-left transition-colors hover:border-brand-500/40 hover:bg-brand-500/[0.07]"
+            >
+              <Icon
+                className="mb-2.5 size-4 text-brand-400 transition-colors group-hover:text-brand-300"
+                aria-hidden="true"
+              />
+              <span className="block text-[13px] font-medium text-white/85">{s.title}</span>
+              <span className="mt-1 block text-[11px] leading-snug text-white/40">{s.q}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }

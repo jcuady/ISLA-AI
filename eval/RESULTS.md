@@ -36,7 +36,7 @@ Overall precision **100.00%**, recall **100.00%**, F1 **1.0000**
 | REMITTANCE_REF | 2 | 100.00% | 100.00% | 1.0000 |
 | SALARY | 3 | 100.00% | 100.00% | 1.0000 |
 
-Latency p50 **0.2 ms**, p95 **0.6 ms**
+Latency p50 **0.2 ms**, p95 **0.7 ms**
 
 ## DPA Copilot (retrieval + citation enforcement)
 
@@ -54,11 +54,11 @@ Latency p50 **0.2 ms**, p95 **0.6 ms**
 
 | Question | Refused | Cited | Source correct | Conf | ms |
 |---|---|---|---|---|---|
-| Ilang oras dapat ko i-report ang data breach? | no | yes | yes | 0.72 | 11 |
-| Pwede ba ipasa ang CDR ng customer ko sa vendo | no | yes | yes | 0.71 | 8 |
-| Can our call center use AI to score our agents | no | yes | yes | 0.70 | 8 |
+| Ilang oras dapat ko i-report ang data breach? | no | yes | yes | 0.72 | 32 |
+| Pwede ba ipasa ang CDR ng customer ko sa vendo | no | yes | yes | 0.71 | 9 |
+| Can our call center use AI to score our agents | no | yes | yes | 0.70 | 7 |
 | Ano ang fine kapag hindi na-notify ang NPC? | no | yes | yes | 0.74 | 6 |
-| Kailangan ba mag-register ng AI credit scoring | no | yes | no | 0.69 | 7 |
+| Kailangan ba mag-register ng AI credit scoring | no | yes | no | 0.69 | 8 |
 
 ### Refusal behaviour (out of domain)
 

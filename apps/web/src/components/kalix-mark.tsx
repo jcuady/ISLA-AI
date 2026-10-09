@@ -12,7 +12,15 @@
  * Geometry matches branding/kalix-mark.svg, the vector master traced from the
  * generated raster in branding/kalix-mark-noir.png.
  */
-export default function KalixMark({ size = 26 }: { size?: number }) {
+export function KalixMark({
+  size = 26,
+  className,
+}: {
+  size?: number;
+  className?: string;
+}) {
+  // The mask id is suffixed by size so two differently-sized marks on the same
+  // page cannot collide - duplicate DOM ids silently break mask references.
   const maskId = `kalix-knockout-${size}`;
   return (
     <svg
@@ -22,6 +30,7 @@ export default function KalixMark({ size = 26 }: { size?: number }) {
       fill="none"
       role="img"
       aria-label="KALIX shield"
+      className={className}
     >
       <defs>
         <mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
@@ -42,3 +51,5 @@ export default function KalixMark({ size = 26 }: { size?: number }) {
     </svg>
   );
 }
+
+export default KalixMark;

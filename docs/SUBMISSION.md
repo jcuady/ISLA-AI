@@ -27,7 +27,7 @@ It prints `PRE-FLIGHT PASSED — 36/36 checks` or the demo should not start.
 |---|---|
 | **Demo video** | Pending — recorded against `docs/DEMO_SCRIPT.md` after pre-flight passes |
 | **X / LinkedIn video URL** | Pending |
-| **What runs locally** | Egress Guard · DPA Copilot · audit ledger · HMAC pseudonyms · air-gap socket probe · both web surfaces · 66-test suite · the whole evaluation harness. Every published number was produced locally. |
+| **What runs locally** | Egress Guard · DPA Copilot · audit ledger · HMAC pseudonyms · air-gap socket probe · both web surfaces · 168-test suite (73 Python + 95 UI) · the whole evaluation harness. Every published number was produced locally. |
 | **What requires internet** | **Build time only**: model weight download (Qwen2.5-3B GGUF, multilingual-e5 ONNX, optional GLiNER) and corpus fetch from public NPC / lawphil mirrors. **Runtime: nothing.** No code path opens an outbound socket; both web surfaces ship `default-src 'none'`. |
 
 ## The disclosures

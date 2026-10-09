@@ -10,6 +10,18 @@
 #   pip install -r requirements-verify.txt
 #   python -m pytest tests/ -q
 #   python eval/run_eval.py
+#
+# fastapi / pydantic are here only because tests/test_audit_events.py exercises
+# the /api/airgap endpoint, which is where the decision "record this probe in the
+# ledger" is actually made. Every other module those tests reach - airgap.py,
+# ledger.py, pii/engine.py, copilot/copilot.py - is standard library.
+#
+# This does NOT weaken the zero-dependency claim. The CI job that proves it
+# (pii-guard) installs nothing at all and runs `eval/run_eval.py --pii-only`,
+# which never imports the API layer. If a future edit ever pulls a real ML
+# dependency into the Egress Guard hot path, that job fails.
 
 pytest>=8.0
 rank-bm25>=0.2.2
+fastapi>=0.115
+pydantic>=2.7

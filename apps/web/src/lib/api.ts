@@ -99,11 +99,14 @@ export interface LedgerEntry {
 
 const JSON_HEADERS = { "Content-Type": "application/json" };
 
-async function post<T>(path: string, body: unknown): Promise<T> {
+async function post<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
   const res = await fetch(path, {
     method: "POST",
     headers: JSON_HEADERS,
     body: JSON.stringify(body),
+    // Enables a real cancel button. Without it, a "Stop" control could only
+    // ignore the response, leaving the request running on the server.
+    signal,
   });
   if (!res.ok) {
     const text = await res.text();
@@ -121,9 +124,12 @@ async function get<T>(path: string): Promise<T> {
 export const api = {
   health: () => get<Health>("/api/health"),
   airgap: () => get<AirgapResult>("/api/airgap"),
-  redact: (text: string) => post<ScanResult>("/api/pii/redact", { text }),
-  scan: (text: string) => post<ScanResult>("/api/pii/scan", { text }),
-  ask: (text: string) => post<CopilotAnswer>("/api/copilot/ask", { text }),
+  redact: (text: string, signal?: AbortSignal) =>
+    post<ScanResult>("/api/pii/redact", { text }, signal),
+  scan: (text: string, signal?: AbortSignal) =>
+    post<ScanResult>("/api/pii/scan", { text }, signal),
+  ask: (text: string, signal?: AbortSignal) =>
+    post<CopilotAnswer>("/api/copilot/ask", { text }, signal),
   audit: (limit = 50) =>
     get<{
       entries: LedgerEntry[];

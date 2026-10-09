@@ -28,6 +28,7 @@ apps/web/dist/
 
 # --- UI verification output (screenshots from apps/web/verify-ui.mjs) ---
 apps/web/.verify/
+apps/web/.verify-shots/
 
 # --- temporary logo renders from scripts/process_logo.py ---
 branding/_*.png

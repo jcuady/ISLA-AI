@@ -1,565 +1,142 @@
-/* KALIX console — "red noir".
-   Tokens live in kalix-theme.css so the console and the landing page cannot
-   drift apart. Class names are unchanged from the previous skin; only the
-   visual layer moved. */
+@import "tailwindcss";
 
-@import "./kalix-theme.css";
+/* ==========================================================================
+   KALIX design tokens — "red noir", expressed as a Tailwind v4 @theme.
 
-* {
-  box-sizing: border-box;
+   The brand accent is crimson, so BLOCK cannot be the only red thing in the
+   product. Status is therefore carried on THREE independent channels, never
+   hue alone (WCAG 2.2 SC 1.4.1):
+     1. hue      2. filled surface vs stroked   3. a distinct ICON + label
+   The <StatusBadge> primitive below is the single place that enforces this;
+   screen code must not hand-roll status colours.
+   ========================================================================== */
+
+@theme {
+  /* -- brand ------------------------------------------------------------ */
+  --color-brand-50: #fff1f2;
+  --color-brand-100: #ffe4e6;
+  --color-brand-200: #fecdd3;
+  --color-brand-300: #fda4af;
+  --color-brand-400: #fb7185;
+  --color-brand-500: #ef233c;
+  --color-brand-600: #d91a33;
+  --color-brand-700: #c4102a;
+  --color-brand-800: #a20f25;
+  --color-brand-900: #881020;
+  --color-brand-hot: #ff3b52;
+
+  /* -- noir surfaces ---------------------------------------------------- */
+  --color-noir-950: #000000;
+  --color-noir-900: #070203;
+  --color-noir-850: #0c0306;
+  --color-noir-800: #12050a;
+  --color-noir-700: #1b0a10;
+  --color-noir-600: #2a1017;
+
+  /* -- semantic status layer -------------------------------------------
+     Statuses are deliberately named, not numbered, so a reviewer can grep
+     for `semantic-safe` and find every place green is allowed.               */
+  --color-semantic-safe: #2fbf87;
+  --color-semantic-caution: #f0a92b;
+  --color-semantic-block: #ff2d40;
+  --color-semantic-refuse: #a78bfa;
+  --color-semantic-cite: #a78bfa;
+
+  /* -- type ------------------------------------------------------------- */
+  --font-display: "Manrope", "Segoe UI Variable Display", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", "Segoe UI Variable Text", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", "Cascadia Mono", Consolas, monospace;
+
+  /* -- motion ----------------------------------------------------------- */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --radius-panel: 0.875rem;
+  --radius-composer: 1rem;
 }
 
-html,
-body,
-#root {
-  height: 100%;
-  margin: 0;
-}
+/* ==========================================================================
+   Base
+   ========================================================================== */
 
-body {
-  background: var(--kalix-void);
-  color: var(--kalix-ink-primary);
-  font-family: var(--kalix-font-ui);
-  font-size: 14px;
-  line-height: 1.55;
-  -webkit-font-smoothing: antialiased;
-  /* Faint noir wash + grid, matching the landing page. */
-  background-image:
-    radial-gradient(circle at 50% 0%, rgba(239, 35, 60, 0.05), transparent 60%),
-    linear-gradient(to bottom, #12050a, #000 40%);
-  background-attachment: fixed;
-}
-
-button {
-  font-family: inherit;
-  font-size: inherit;
-  cursor: pointer;
-}
-
-code,
-pre,
-.mono {
-  font-family: var(--kalix-font-mono);
-}
-
-/* ---------------------------------------------------------------- layout */
-
-.app {
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-}
-
-.topbar {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 12px 20px;
-  background: rgba(0, 0, 0, 0.72);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--kalix-line);
-  position: sticky;
-  top: 0;
-  z-index: 20;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--kalix-font-display);
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  font-size: 15px;
-  flex-shrink: 0;
-}
-
-.brand img,
-.brand svg {
-  width: 26px;
-  height: 26px;
-  color: var(--kalix-crimson);
-}
-
-.tagline {
-  color: var(--kalix-ink-muted);
-  font-size: 12px;
-  letter-spacing: 0.02em;
-  border-left: 1px solid var(--kalix-line);
-  padding-left: 14px;
-  white-space: nowrap;
-}
-
-.spacer {
-  flex: 1;
-  min-width: 0;
-}
-
-/* air-gap badge - driven by a real socket probe, never hardcoded */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 5px 11px;
-  border-radius: 999px;
-  font-family: var(--kalix-font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  border: 1px solid transparent;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.badge.gap {
-  background: var(--kalix-safe-bg);
-  border-color: var(--kalix-safe-line);
-  color: var(--kalix-safe);
-}
-
-.badge.online {
-  background: var(--kalix-caution-bg);
-  border-color: rgba(240, 169, 43, 0.42);
-  color: var(--kalix-caution);
-}
-
-.badge .dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: currentColor;
-  flex-shrink: 0;
-}
-
-.badge.gap .dot {
-  animation: pulse 2.4s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
+@layer base {
+  * {
+    border-color: color-mix(in oklab, var(--color-brand-500) 12%, transparent);
   }
-  50% {
-    opacity: 0.35;
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-noir-950);
+    color: var(--color-white);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Every focus ring must be visible on a noir surface. */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-hot);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: var(--color-brand-500);
+    color: #fff;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.09);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.18);
+    background-clip: content-box;
   }
 }
 
-.tabs {
-  display: flex;
-  gap: 2px;
-  padding: 0 20px;
-  background: rgba(0, 0, 0, 0.5);
-  border-bottom: 1px solid var(--kalix-line);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.tabs::-webkit-scrollbar {
-  display: none;
-}
-
-.tab {
-  padding: 12px 16px;
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--kalix-ink-secondary);
-  font-weight: 600;
-  font-size: 13px;
-  white-space: nowrap;
-  transition: color 0.15s ease, border-color 0.15s ease;
-}
-
-.tab:hover {
-  color: var(--kalix-ink-primary);
-}
-
-.tab.active {
-  color: var(--kalix-ink-primary);
-  border-bottom-color: var(--kalix-crimson);
-}
-
-.content {
-  flex: 1;
-  padding: 20px;
-  max-width: 1240px;
-  width: 100%;
-  margin: 0 auto;
-}
-
-.grid-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-@media (max-width: 900px) {
-  .grid-2 {
-    grid-template-columns: 1fr;
+/* Reduced motion: the pulse, shimmer and reveal animations run continuously,
+   which is a genuine vestibular trigger. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
-.card {
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid var(--kalix-line);
-  border-radius: 12px;
-  padding: 16px;
-  transition: border-color 0.2s ease;
-}
-
-.card:hover {
-  border-color: var(--kalix-line-strong);
-}
-
-.card h2 {
-  margin: 0 0 4px;
-  font-family: var(--kalix-font-display);
-  font-size: 13px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--kalix-ink-secondary);
-}
-
-.card p.hint {
-  margin: 0 0 12px;
-  color: var(--kalix-ink-muted);
-  font-size: 12.5px;
-}
-
-textarea,
-input[type="text"] {
-  width: 100%;
-  background: rgba(0, 0, 0, 0.45);
-  border: 1px solid var(--kalix-line-strong);
-  border-radius: 8px;
-  color: var(--kalix-ink-primary);
-  padding: 10px 12px;
-  font-family: inherit;
-  font-size: 13px;
-  resize: vertical;
-}
-
-textarea:focus,
-input[type="text"]:focus {
-  outline: none;
-  border-color: var(--kalix-crimson);
-}
-
-.btn {
-  background: var(--kalix-crimson);
-  border: 1px solid var(--kalix-crimson-hot);
-  color: #fff;
-  padding: 9px 18px;
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: 13px;
-  transition: background 0.15s ease, transform 0.15s ease;
-}
-
-.btn:hover:not(:disabled) {
-  background: var(--kalix-crimson-hot);
-}
-
-.btn:active:not(:disabled) {
-  transform: scale(0.97);
-}
-
-.btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.btn.ghost {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: var(--kalix-line);
-  color: var(--kalix-ink-secondary);
-}
-
-.btn.ghost:hover:not(:disabled) {
-  border-color: var(--kalix-crimson);
-  color: var(--kalix-ink-primary);
-}
-
-.row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-/* verdict — the semantic status layer.
-   Status is never carried by hue alone: each state is a filled surface AND has
-   an icon AND a written label in the component. See kalix-theme.css. */
-
-.verdict {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border-radius: 8px;
-  border: 1px solid;
-  margin: 14px 0;
-}
-
-.verdict.safe {
-  background: var(--kalix-safe-bg);
-  border-color: var(--kalix-safe-line);
-}
-
-.verdict.redact {
-  background: var(--kalix-caution-bg);
-  border-color: rgba(240, 169, 43, 0.42);
-}
-
-.verdict.block {
-  background: var(--kalix-block-bg);
-  border-color: var(--kalix-block-line);
-  border-left-width: 3px;
-}
-
-.verdict .vicon {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-}
-
-.verdict .vlabel {
-  font-family: var(--kalix-font-display);
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  font-size: 13px;
-}
-
-.verdict.safe .vlabel {
-  color: var(--kalix-safe);
-}
-
-.verdict.redact .vlabel {
-  color: var(--kalix-caution);
-}
-
-.verdict.block .vlabel {
-  color: var(--kalix-block);
-}
-
-.verdict .vmeta {
-  margin-left: auto;
-  font-family: var(--kalix-font-mono);
-  font-size: 11.5px;
-  color: var(--kalix-ink-muted);
-}
-
-/* diff view */
-
-.diff {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-}
-
-.pane {
-  background: rgba(0, 0, 0, 0.45);
-  border: 1px solid var(--kalix-line);
-  border-radius: 8px;
-  padding: 12px;
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-family: var(--kalix-font-mono);
-  font-size: 12.5px;
-  line-height: 1.65;
-  max-height: 340px;
-  overflow-y: auto;
-}
-
-.pane .label {
-  display: block;
-  font-family: var(--kalix-font-ui);
-  font-size: 10.5px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--kalix-ink-muted);
-  margin-bottom: 8px;
-}
-
-mark {
-  background: rgba(239, 35, 60, 0.24);
-  color: #ffd7db;
-  border-radius: 3px;
-  padding: 1px 3px;
-  border-bottom: 1px solid var(--kalix-crimson);
-}
-
-.token {
-  background: rgba(239, 35, 60, 0.16);
-  color: #ff8a96;
-  border-radius: 3px;
-  padding: 1px 4px;
-  font-weight: 600;
-}
-
-.cite {
-  display: inline-block;
-  font-family: var(--kalix-font-mono);
-  font-size: 11px;
-  background: rgba(167, 139, 250, 0.14);
-  border: 1px solid var(--kalix-refuse-line);
-  color: var(--kalix-ink-primary);
-  border-radius: 4px;
-  padding: 1px 6px;
-  margin: 2px 3px 2px 0;
-}
-
-/* stats */
-
-.stats {
-  display: flex;
-  gap: 18px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
-
-.stat .k {
-  font-size: 10.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--kalix-ink-muted);
-}
-
-.stat .v {
-  font-family: var(--kalix-font-mono);
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--kalix-ink-primary);
-}
-
-.stat .v.good {
-  color: var(--kalix-safe);
-}
-
-.stat .v.warn {
-  color: var(--kalix-caution);
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12.5px;
-}
-
-th,
-td {
-  text-align: left;
-  padding: 8px;
-  border-bottom: 1px solid var(--kalix-line-faint);
-}
-
-th {
-  color: var(--kalix-ink-muted);
-  font-size: 10.5px;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  font-weight: 600;
-}
-
-td.mono {
-  font-family: var(--kalix-font-mono);
-  font-size: 11.5px;
-}
-
-.answer {
-  white-space: pre-wrap;
-  line-height: 1.7;
-  font-size: 13.5px;
-}
-
-.refusal {
-  background: var(--kalix-refuse-bg);
-  border-left: 3px solid var(--kalix-refuse);
-  padding: 12px 14px;
-  border-radius: 0 8px 8px 0;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 8px 0 12px;
-}
-
-.chip {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--kalix-line);
-  color: var(--kalix-ink-secondary);
-  border-radius: 999px;
-  padding: 5px 12px;
-  font-size: 12px;
-  transition: all 0.15s ease;
-}
-
-.chip:hover {
-  border-color: var(--kalix-crimson);
-  color: var(--kalix-ink-primary);
-}
-
-.muted {
-  color: var(--kalix-ink-muted);
-  font-size: 12px;
-}
-
-.footer-note {
-  padding: 18px 20px 28px;
-  text-align: center;
-  color: var(--kalix-ink-muted);
-  font-size: 11.5px;
-  line-height: 1.8;
-  border-top: 1px solid var(--kalix-line-faint);
-}
-
-.err {
-  background: var(--kalix-block-bg);
-  border: 1px solid var(--kalix-block-line);
-  color: #ffb3ba;
-  padding: 10px 12px;
-  border-radius: 8px;
-  margin: 10px 0;
-  font-size: 12.5px;
-}
-
-/* ------------------------------------------------------------- responsive */
-
-@media (max-width: 720px) {
-  /* The tagline is decorative; the badge is the real signal. Drop the tagline
-     before shrinking the badge so the probe result stays fully legible. */
-  .tagline {
-    display: none;
+@layer utilities {
+  /* The noir wash behind the whole app. */
+  .bg-noir-field {
+    background-image:
+      radial-gradient(circle at 18% -10%, rgba(239, 35, 60, 0.10), transparent 55%),
+      radial-gradient(circle at 88% 8%, rgba(239, 35, 60, 0.05), transparent 45%),
+      linear-gradient(to bottom, var(--color-noir-800), var(--color-noir-950) 42%);
   }
 
-  .topbar {
-    padding: 10px 14px;
-    gap: 10px;
+  .text-gradient-brand {
+    background: linear-gradient(to bottom, #fff 30%, rgba(255, 255, 255, 0.45));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 
-  .tabs,
-  .content {
-    padding-inline: 14px;
-  }
-
-  .badge {
-    font-size: 10px;
-    letter-spacing: 0.06em;
-    padding: 4px 9px;
-    gap: 5px;
-  }
-
-  .footer-note {
-    padding-inline: 14px;
-  }
-}
-
-@media (max-width: 420px) {
-  .brand {
-    font-size: 13px;
-    letter-spacing: 0.1em;
+  /* Thin brand hairline used to separate the shell regions. */
+  .hairline {
+    border-color: rgba(255, 255, 255, 0.08);
   }
 }

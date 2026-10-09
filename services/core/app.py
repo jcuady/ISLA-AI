@@ -54,6 +54,9 @@ class State:
     ledger: AuditLedger | None = None
     llm = None
     ner_available = False
+    # Last observed air-gap state, so the ledger records the CHANGE, not every
+    # health poll. None until the first probe completes.
+    last_air_gapped: bool | None = None
 
 
 state = State()
@@ -217,13 +220,27 @@ def health() -> dict:
 
 @app.get("/api/airgap")
 def airgap() -> dict:
-    """Live socket probe. NOT a hardcoded string - judges can pull the cable."""
+    """Live socket probe. NOT a hardcoded string - judges can pull the cable.
+
+    The probe itself runs on every call because the whole point is that the
+    claim can be falsified live. What the ledger records is a *change* in
+    outbound reachability, not each poll: the console re-probes every 20
+    seconds, and writing all of those would bury the redaction and copilot
+    entries that the audit trail exists to prove, at roughly 4,300 entries a
+    day. An unchanged state is not an auditable event.
+    """
     probe = run_probe(BIND_HOST)
     result = probe.to_dict()
-    if state.ledger:
+    previous = state.last_air_gapped
+    state.last_air_gapped = probe.air_gapped
+    if state.ledger and previous != probe.air_gapped:
         state.ledger.append(
             "airgap_probe",
-            {"air_gapped": probe.air_gapped, "outbound_blocked": probe.outbound_blocked},
+            {
+                "air_gapped": probe.air_gapped,
+                "outbound_blocked": probe.outbound_blocked,
+                "changed": previous is not None,
+            },
         )
     return result
 
