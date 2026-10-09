@@ -170,7 +170,7 @@ async def security_headers(request, call_next):
     response.headers.setdefault(
         "Content-Security-Policy",
         "default-src 'none'; "
-        "script-src 'self' 'sha256-a/hjoGVM2OiJBb39J6k5BZvTLUf8Hi0mk7nPOIUUhGc='; "
+        "script-src 'self' 'sha256-fsLn5wInz7ouxahkytj996L33S+JFK2xCBzK3VaYYMc='; "
         "style-src 'self' 'unsafe-inline'; "
         "img-src 'self' data:; "
         "font-src 'self'; "

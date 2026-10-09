@@ -3,26 +3,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Isla AI — In-Situ Local AI for Philippine bank privacy compliance</title>
-<meta name="description" content="Isla AI is an In-Situ Local AI privacy-compliance copilot for Philippine banks. It redacts PII, cites the Data Privacy Act and writes hash-chained audit proof on the machine the data already lives on.">
+<title>Isla AI — Compliance copilot that runs inside your bank</title>
+<meta name="description" content="Isla AI screens transactions for fraud, answers Philippine privacy law with real citations, and writes tamper-evident proof. It runs on one machine inside your bank, with no cloud AI in the path.">
 <meta name="color-scheme" content="dark">
 
 <!-- Two policies apply and the browser enforces the intersection, so both must
      permit the same inline script. The reveal script is allowed by its exact
      SHA-256 rather than 'unsafe-inline'. frame-ancestors cannot be delivered in
      a meta element; services/core/app.py sets it as a real header. Fonts and the
-     hero photograph are self-hosted and served from 'self' — there is no CDN. -->
+     hero photograph are self-hosted and served from 'self' — there is no CDN,
+     and the tech-stack marks below are inline SVG so they cost no request. -->
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'none';
   style-src 'self' 'unsafe-inline';
   font-src 'self';
-  script-src 'sha256-a/hjoGVM2OiJBb39J6k5BZvTLUf8Hi0mk7nPOIUUhGc=';
+  script-src 'sha256-fsLn5wInz7ouxahkytj996L33S+JFK2xCBzK3VaYYMc=';
   img-src 'self' data:;
   form-action 'none';
   base-uri 'none'">
 
-<meta property="og:title" content="Isla AI — In-Situ Local AI for Philippine bank privacy compliance">
-<meta property="og:description" content="Redaction, citation and audit proof that runs where the data already is. A cloud model cannot check a secret without being sent it.">
+<meta property="og:title" content="Isla AI — Compliance copilot that runs inside your bank">
+<meta property="og:description" content="Fraud screening, cited privacy answers, and tamper-evident proof. All local. No cloud AI in the path.">
 <meta property="og:type" content="website">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/isla-mark-180.png">
@@ -31,47 +32,37 @@
 /* ══════════════════════════════════════════════════════════════════════════
    ISLA AI — brand tokens
    The palette is sampled from the mark itself (lagoon #107080) and the hero
-   photograph, not invented. Brand is TEAL, which is the whole point of the
-   rebrand: BLOCK is red, so a crimson brand used to fight its own status
-   colours. Teal and coral-red are far apart, and the four-channel status rule
-   (hue, form, icon, label) still carries the rest.
+   photograph, not invented. Brand is TEAL: a crimson brand used to fight the
+   product's own BLOCK status colour. Teal and coral-red sit far apart, and the
+   four-channel status rule (hue, form, icon, label) still carries the rest.
    ══════════════════════════════════════════════════════════════════════════ */
 :root{
-  /* -- lagoon: the brand ----------------------------------------------- */
   --lagoon-300:#2FBECC; --lagoon-400:#16A3B8; --lagoon-500:#0E8A9C;
-  --lagoon-600:#107080; --lagoon-700:#0B5A68; --lagoon-800:#083F49;
+  --lagoon-600:#107080; --lagoon-700:#0B5A68;
 
-  /* -- abyss: the water, and the dark surface stack -------------------- */
-  --abyss-700:#063038; --abyss-800:#04242B; --abyss-900:#021A20; --abyss-950:#010F14;
+  --abyss-800:#04242B; --abyss-900:#021A20; --abyss-950:#010F14;
 
-  /* -- sand: light surfaces and the warm counterweight ------------------ */
-  --sand-100:#F6EFE3; --sand-200:#EDE2CE; --sand-300:#DFCFB2;
+  --coral-400:#FF7F5C; --coral-500:#FF5F3D;
 
-  /* -- coral: the one warm accent, used only for action ----------------- */
-  --coral-400:#FF7F5C; --coral-500:#FF5F3D; --coral-600:#E8441F;
-
-  /* -- semantic status. Deliberately NOT brand colours. ----------------- */
+  /* semantic status. Deliberately NOT brand colours. --block is the fill used
+     for rules and borders; --block-text is the lighter tint that carries text
+     on the tinted panels, where #ff3b4e measured 4.2:1 and failed AA. */
   --safe:#2fbf87; --safe-bg:rgba(47,191,135,.13); --safe-line:rgba(47,191,135,.42);
   --caution:#f0a92b; --caution-bg:rgba(240,169,43,.13); --caution-line:rgba(240,169,43,.42);
   --block:#ff3b4e; --block-bg:rgba(255,59,78,.15); --block-line:rgba(255,59,78,.55);
-  --refuse:#a78bfa; --refuse-bg:rgba(167,139,250,.13); --refuse-line:rgba(167,139,250,.40);
+  --block-text:#ff6b7d;
 
-  /* -- ink ------------------------------------------------------------- */
-  --card:rgba(255,255,255,.035); --card-hover:rgba(255,255,255,.06);
-  --line:rgba(255,255,255,.11); --line-strong:rgba(255,255,255,.22); --line-faint:rgba(255,255,255,.05);
-  --text:#fff; --text-2:#9FB6BC; --text-3:#7C979F; --text-inv:#04242B;
-  /* text-3 was #6B838A at 4.47:1 on abyss-950 - just under AA. Lightened to
-     5.4:1. It carries the proof strip, eyebrows and the footer legal line, all
-     of which are small text. */
+  --line:rgba(255,255,255,.11); --line-strong:rgba(255,255,255,.20);
+  --text:#fff; --text-2:#9FB6BC; --text-3:#7C979F; --text-inv:#010F14;
 
   --font-display:"Outfit","Segoe UI Variable Display","Segoe UI",-apple-system,sans-serif;
   --font-ui:"Plus Jakarta Sans","Segoe UI Variable Text","Segoe UI",-apple-system,sans-serif;
   --font-mono:"JetBrains Mono","SF Mono","Cascadia Mono",Consolas,monospace;
-  --ease:cubic-bezier(.4,0,.2,1); --ease-out:cubic-bezier(.16,1,.3,1);
-  --radius:16px;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --radius:14px;
 }
 
-/* ---- self-hosted variable fonts (no CDN, no runtime request) ---------- */
+/* Self-hosted variable fonts. No CDN, no runtime request to a third party. */
 @font-face{font-family:"Outfit";src:url("/fonts/outfit.woff2") format("woff2");
   font-weight:100 900;font-display:swap}
 @font-face{font-family:"Plus Jakarta Sans";src:url("/fonts/plus-jakarta-sans.woff2") format("woff2");
@@ -80,278 +71,271 @@
   font-weight:100 900;font-display:swap}
 
 *,*::before,*::after{box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{
   margin:0;background:var(--abyss-950);color:var(--text);
-  font-family:var(--font-ui);-webkit-font-smoothing:antialiased;
-  text-rendering:optimizeLegibility;overflow-x:hidden;
+  font-family:var(--font-ui);font-size:16px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  overflow-x:hidden;
 }
 ::selection{background:var(--lagoon-500);color:#fff}
 a{color:inherit;text-decoration:none}
-h1,h2,h3,h4{font-family:var(--font-display);letter-spacing:-.03em;margin:0}
+h1,h2,h3{margin:0;font-family:var(--font-display);letter-spacing:-.028em;font-weight:700}
 p{margin:0}
-img{max-width:100%;display:block}
+img,svg{max-width:100%;display:block}
+button{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--lagoon-400);outline-offset:3px;border-radius:6px}
-.wrap{width:100%;max-width:1200px;margin-inline:auto;padding-inline:28px}
-/* See .nav__cta for why the ink is abyss rather than white. */
-.skip{position:absolute;left:-9999px;top:0;z-index:200;background:var(--lagoon-400);
-  color:var(--abyss-950);padding:12px 22px;border-radius:0 0 10px 0}
-.skip:focus{left:0}
-.mono{font-family:var(--font-mono)}
 
-/* ---- motion ----------------------------------------------------------- */
-@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-@keyframes drift{from{transform:scale(1.06) translateY(0)}to{transform:scale(1.12) translateY(-18px)}}
-@keyframes ping{0%{transform:scale(1);opacity:.7}80%,100%{transform:scale(2.8);opacity:0}}
+/* Theme the surfaces the browser ships with, so the page does not look
+   assembled on top of someone else's defaults. */
+*{scrollbar-color:rgba(255,255,255,.18) transparent;scrollbar-width:thin}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--abyss-950)}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:99px;
+  border:3px solid var(--abyss-950)}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.26)}
+::placeholder{color:var(--text-3);opacity:1}
+
+.wrap{width:100%;max-width:1140px;margin-inline:auto;padding-inline:26px}
+.skip{position:absolute;left:-9999px;top:0;z-index:200;background:var(--lagoon-400);
+  color:var(--text-inv);padding:12px 22px;border-radius:0 0 10px 0}
+.skip:focus{left:0}
+
+/* Numbers that change must not shift the layout. */
+.tnum{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+
+/* ══ motion ═══════════════════════════════════════════════════════════════ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes drift{from{transform:scale(1.06) translateY(0)}to{transform:scale(1.1) translateY(-14px)}}
+@keyframes ping{0%{transform:scale(1);opacity:.7}80%,100%{transform:scale(2.6);opacity:0}}
 .reveal{opacity:1}
-/* Hidden only when the reveal script actually ran. If it is blocked - CSP hash
-   mismatch, JS off - the page degrades to fully readable, never to blank. */
+/* Hidden only when the reveal script actually ran. If it is blocked — CSP hash
+   mismatch, JS off — the page degrades to fully readable, never to blank. */
 .js .reveal{opacity:0}
-.js .reveal.in{animation:fadeUp .85s var(--ease-out) forwards}
+.js .reveal.in{animation:fadeUp .8s var(--ease) forwards}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;
     transition-duration:.001ms!important;scroll-behavior:auto!important}
   .reveal{opacity:1}
+  .js .reveal{opacity:1}
 }
 
-/* ══ HERO — full-bleed island photograph, text in the lower 40% ══════════ */
+/* ══ nav ══════════════════════════════════════════════════════════════════ */
+.topblur{position:fixed;top:0;left:0;right:0;height:120px;z-index:40;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(1,15,20,.92),transparent)}
+header{position:fixed;top:0;left:0;width:100%;z-index:50;padding:18px 16px 0}
+.nav{max-width:1080px;margin-inline:auto;display:flex;align-items:center;justify-content:space-between;
+  gap:16px;background:rgba(2,26,32,.66);backdrop-filter:blur(20px);
+  border:1px solid var(--line);border-radius:999px;padding:9px 10px 9px 18px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand img{width:32px;height:32px;flex-shrink:0}
+.brand span{font-family:var(--font-display);font-weight:700;font-size:1rem;
+  letter-spacing:.02em;white-space:nowrap;line-height:1.1}
+.brand small{display:block;font-size:.7rem;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--text-3);font-family:var(--font-mono)}
+.nav__links{display:flex;align-items:center;gap:2px}
+.nav__links a{padding:9px 14px;border-radius:999px;font-size:.88rem;font-weight:500;
+  color:var(--text-2);transition:color .2s var(--ease),background .2s var(--ease)}
+.nav__links a:hover{color:var(--text);background:rgba(255,255,255,.07)}
+/* Lagoon pills take abyss ink rather than white. On lagoon-500 white is 4.1:1
+   and fails AA; on lagoon-400 the same ink is 8:1. */
+.nav__cta{padding:11px 21px;border-radius:999px;background:var(--lagoon-400);
+  color:var(--text-inv);font-weight:600;font-size:.88rem;white-space:nowrap;
+  transition:background .2s var(--ease)}
+.nav__cta:hover{background:var(--lagoon-300)}
+
+/* ══ section chrome ═══════════════════════════════════════════════════════ */
+section{padding:clamp(68px,9vh,112px) 0;position:relative}
+h2.sec{font-size:clamp(1.75rem,3.6vw,2.7rem);line-height:1.1;max-width:19ch;text-wrap:balance}
+.sec__lede{margin-top:16px;max-width:62ch;color:var(--text-2);font-size:1.04rem;line-height:1.62}
+.sec__head{max-width:70ch;margin-bottom:clamp(34px,5vw,56px)}
+.rule{height:1px;background:var(--line);border:0;margin:0}
+
+/* ══ HERO ═════════════════════════════════════════════════════════════════ */
 .hero{position:relative;min-height:100svh;display:flex;flex-direction:column;
-  justify-content:flex-end;overflow:hidden;isolation:isolate}
+  justify-content:flex-end;overflow:hidden;isolation:isolate;padding:0}
 .hero__bg{position:absolute;inset:0;z-index:-2;background:var(--abyss-900)}
-.hero__bg img{width:100%;height:100%;object-fit:cover;
-  animation:drift 26s var(--ease) infinite alternate}
+.hero__bg img{width:100%;height:100%;object-fit:cover;animation:drift 26s ease-in-out infinite alternate}
 /* Two overlays: a vertical one to seat the text, a teal one to bind the photo
    to the brand. Without the teal wash the sand reads as a different product. */
 .hero__scrim{position:absolute;inset:0;z-index:-1;
   background:
-    linear-gradient(to top,var(--abyss-950) 2%,rgba(1,15,20,.72) 34%,rgba(1,15,20,.28) 62%,rgba(1,15,20,.62) 100%),
-    linear-gradient(115deg,rgba(4,36,43,.80) 0%,rgba(14,138,156,.22) 52%,transparent 78%)}
-.hero__inner{padding-bottom:clamp(48px,8vh,96px);padding-top:120px}
-.hero__eyebrow{display:inline-flex;align-items:center;gap:10px;margin-bottom:26px;
-  padding:8px 16px;border:1px solid var(--lagoon-600);border-radius:999px;
-  background:rgba(14,138,156,.12);backdrop-filter:blur(8px);
-  font-family:var(--font-mono);font-size:.7rem;letter-spacing:.13em;
-  text-transform:uppercase;color:var(--lagoon-300)}
-.hero__eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--lagoon-400);
-  box-shadow:0 0 0 0 var(--lagoon-400);animation:ping 2.4s ease-out infinite}
-.hero h1{font-size:clamp(2.6rem,7.2vw,5.6rem);font-weight:800;line-height:1.02;
-  max-width:16ch;text-wrap:balance}
+    linear-gradient(to top,var(--abyss-950) 2%,rgba(1,15,20,.74) 34%,rgba(1,15,20,.3) 62%,rgba(1,15,20,.64) 100%),
+    linear-gradient(115deg,rgba(4,36,43,.82) 0%,rgba(14,138,156,.2) 52%,transparent 78%)}
+.hero__inner{padding-bottom:clamp(44px,7vh,84px);padding-top:130px}
+.hero h1{font-size:clamp(2.3rem,6.4vw,4.6rem);font-weight:800;line-height:1.03;
+  max-width:15ch;text-wrap:balance}
 .hero h1 em{font-style:normal;color:var(--coral-400)}
-.hero__lede{margin-top:26px;max-width:60ch;font-size:clamp(1.02rem,1.5vw,1.2rem);
-  line-height:1.65;color:var(--text-2)}
-.hero__cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:38px}
-/* The acronym is the brand's thesis in four letters, so it sits between the
-   lede and the CTA rather than hiding in the footer - and it carries the gloss
-   with it, so it reads as content rather than as a badge. */
-.hero__acronym{margin-top:30px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;
-  padding-top:20px;border-top:1px solid var(--line);max-width:62ch}
-.hero__acronym b{font-family:var(--font-display);font-weight:800;font-size:1.5rem;
-  letter-spacing:.16em;color:var(--lagoon-300)}
-.hero__acronym span{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.15em;
-  text-transform:uppercase;color:var(--text-3)}
-.hero__acronym .hero__acronym-why{flex-basis:100%;font-family:var(--font-sans);
-  font-size:.88rem;letter-spacing:0;text-transform:none;color:var(--text-2);
-  line-height:1.6;max-width:52ch}
-.btn{display:inline-flex;align-items:center;gap:10px;padding:15px 28px;border-radius:999px;
-  font-family:var(--font-display);font-weight:600;font-size:.98rem;border:1px solid transparent;
+.hero__lede{margin-top:22px;max-width:58ch;font-size:clamp(1rem,1.4vw,1.14rem);
+  line-height:1.62;color:var(--text-2)}
+.hero__cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:14px 26px;border-radius:999px;
+  font-weight:600;font-size:.96rem;border:1px solid transparent;white-space:nowrap;
   transition:transform .2s var(--ease),background .2s var(--ease),border-color .2s var(--ease)}
-.btn--primary{background:var(--coral-500);color:#2A0B03;
-  box-shadow:0 10px 26px -16px rgba(0,0,0,.9)}
-.btn--primary:hover{background:var(--coral-400);transform:translateY(-2px)}
-.btn--ghost{border-color:var(--line-strong);color:var(--text);background:rgba(2,26,32,.45);
-  backdrop-filter:blur(8px)}
-.btn--ghost:hover{border-color:var(--lagoon-400);transform:translateY(-2px)}
-.hero__proof{margin-top:40px;display:flex;flex-wrap:wrap;gap:12px 28px;
-  font-family:var(--font-mono);font-size:.72rem;color:var(--text-3);letter-spacing:.04em}
+.btn--primary{background:var(--coral-500);color:#2A0B03}
+.btn--ghost{border-color:var(--line-strong);color:var(--text);background:rgba(2,26,32,.5)}
+@media (hover:hover){
+  .btn:hover{transform:translateY(-2px)}
+  .btn--primary:hover{background:var(--coral-400)}
+  .btn--ghost:hover{border-color:var(--lagoon-400)}
+}
+.btn:active{transform:scale(.98)}
+.hero__proof{margin-top:34px;padding-top:20px;border-top:1px solid var(--line);
+  max-width:62ch;font-family:var(--font-mono);font-size:.78rem;color:var(--text-3);line-height:1.85}
 .hero__proof b{color:var(--lagoon-300);font-weight:500}
 
-/* ---- nav -------------------------------------------------------------- */
-.topblur{position:fixed;top:0;left:0;right:0;height:130px;z-index:40;pointer-events:none;
-  background:linear-gradient(to bottom,rgba(1,15,20,.9),transparent);backdrop-filter:blur(10px)}
-header{position:fixed;top:0;left:0;width:100%;z-index:50;padding:20px 16px 0}
-.nav{max-width:1120px;margin-inline:auto;display:flex;align-items:center;justify-content:space-between;
-  gap:16px;background:rgba(2,26,32,.62);backdrop-filter:blur(24px);border:1px solid var(--line);
-  border-radius:999px;padding:10px 12px 10px 20px;box-shadow:0 24px 60px -24px rgba(0,0,0,.9)}
-.brand{display:flex;align-items:center;gap:11px;min-width:0}
-.brand img{width:34px;height:34px;flex-shrink:0}
-.brand span{font-family:var(--font-display);font-weight:800;font-size:1.02rem;
-  letter-spacing:.03em;white-space:nowrap}
-.brand small{display:block;font-size:.72rem;font-weight:500;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--text-3);font-family:var(--font-mono)}
-.nav__links{display:flex;align-items:center;gap:4px}
-.nav__links a{padding:9px 15px;border-radius:999px;font-size:.9rem;font-weight:500;
-  color:var(--text-2);transition:all .2s var(--ease)}
-.nav__links a:hover{color:var(--text);background:rgba(255,255,255,.06)}
-/* Both lagoon pills take abyss ink rather than white. On lagoon-500 white is
-   4.1:1 and fails AA; on lagoon-400 the same ink is 8:1, and the brighter fill
-   gives the primary action more presence than the darker one would. */
-.nav__cta{padding:11px 22px;border-radius:999px;background:var(--lagoon-400);color:var(--abyss-950);
-  font-family:var(--font-display);font-weight:600;font-size:.9rem;white-space:nowrap;
+/* ══ THE PRODUCT — the real artifact, not a picture of one ═══════════════ */
+.shelf{display:grid;gap:22px}
+@media (min-width:940px){.shelf{grid-template-columns:1fr 1fr;align-items:start}}
+
+/* A framed console. This is the product's real output, captured from the
+   running API — not a mockup and not an illustration. */
+.term{border:1px solid var(--line-strong);border-radius:var(--radius);
+  background:linear-gradient(180deg,#04222a,#01161c);overflow:hidden;
+  box-shadow:0 26px 60px -34px rgba(0,0,0,.95)}
+.term__bar{display:flex;align-items:center;gap:8px;padding:11px 15px;
+  border-bottom:1px solid var(--line);background:rgba(255,255,255,.028)}
+.term__dot{width:9px;height:9px;border-radius:50%;background:var(--line-strong)}
+.term__name{font-family:var(--font-mono);font-size:.75rem;color:var(--text-3);
+  letter-spacing:.03em;margin-left:4px}
+.term__body{padding:17px;font-family:var(--font-mono);font-size:.775rem;line-height:1.68}
+.term__q{color:var(--lagoon-300)}
+.term__a{color:var(--text);margin-top:9px}
+.term__cite{color:var(--text-3)}
+.term__foot{margin-top:13px;padding-top:11px;border-top:1px solid var(--line);
+  display:flex;flex-wrap:wrap;gap:5px 14px;font-size:.75rem;color:var(--text-3)}
+.term__foot span{white-space:nowrap}
+
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;
+  font-family:var(--font-mono);font-size:.75rem;letter-spacing:.03em;font-weight:500}
+.pill--block{background:var(--block-bg);color:var(--block-text);border:1px solid var(--block-line)}
+.pill--caution{background:var(--caution-bg);color:var(--caution);border:1px solid var(--caution-line)}
+.pill--safe{background:var(--safe-bg);color:var(--safe);border:1px solid var(--safe-line)}
+
+.rf{margin-top:15px;padding:13px 14px;border:1px solid var(--block-line);
+  background:var(--block-bg);border-radius:11px}
+.rf__id{font-weight:600;color:var(--block-text);letter-spacing:.02em}
+.rf__why{margin-top:7px;color:var(--text-2);font-size:.78rem;line-height:1.62}
+.rf__act{margin-top:9px;padding-top:9px;border-top:1px solid var(--block-line);
+  color:var(--text);font-size:.78rem;line-height:1.62}
+.gapnote{margin-top:15px;padding:13px 14px;border:1px dashed var(--line-strong);
+  border-radius:11px;font-size:.75rem;line-height:1.6;color:var(--text-3)}
+.gapnote b{color:var(--caution);font-weight:600}
+
+/* ══ CONTROLS — an offset rail, not a grid of identical cards ════════════ */
+.rail{border-top:1px solid var(--line)}
+.ctl{display:grid;gap:14px 40px;padding:30px 0;border-bottom:1px solid var(--line)}
+@media (min-width:860px){.ctl{grid-template-columns:minmax(0,300px) minmax(0,1fr);align-items:start}}
+.ctl__name{display:flex;align-items:center;gap:11px;font-family:var(--font-display);
+  font-size:1.28rem;font-weight:700;letter-spacing:-.02em}
+.ctl__name svg{flex-shrink:0;color:var(--lagoon-300)}
+.ctl__what{color:var(--text-2);max-width:56ch;margin-bottom:12px}
+.ctl__nums{display:flex;flex-wrap:wrap;gap:6px 8px}
+.num{font-family:var(--font-mono);font-size:.78rem;color:var(--lagoon-300);
+  padding:4px 10px;border:1px solid var(--line);border-radius:999px;white-space:nowrap}
+
+/* ══ APPROACH — how the work was actually done ═══════════════════════════ */
+.approach{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);
+  border-radius:var(--radius);overflow:hidden}
+@media (min-width:760px){.approach{grid-template-columns:1fr 1fr}}
+.how{background:var(--abyss-900);padding:26px 24px}
+.how h3{font-size:1.06rem;font-weight:700;margin-bottom:9px;letter-spacing:-.015em}
+.how p{color:var(--text-2);font-size:.94rem;line-height:1.6}
+.how code{font-family:var(--font-mono);font-size:.85em;color:var(--lagoon-300);
+  background:rgba(14,138,156,.1);padding:1px 5px;border-radius:4px}
+
+/* ══ STACK ═══════════════════════════════════════════════════════════════ */
+.stack{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);
+  border-radius:var(--radius);overflow:hidden}
+@media (min-width:560px){.stack{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:920px){.stack{grid-template-columns:repeat(4,1fr)}}
+.tool{background:var(--abyss-900);padding:20px 18px;
   transition:background .2s var(--ease)}
-.nav__cta:hover{background:var(--lagoon-400)}
+@media (hover:hover){.tool:hover{background:#052830}}
+.tool__mark{width:30px;height:30px;color:var(--text);margin-bottom:11px}
+.tool__name{font-family:var(--font-display);font-weight:600;font-size:.95rem;letter-spacing:-.01em}
+.tool__use{margin-top:3px;font-size:.8rem;color:var(--text-3);line-height:1.5}
 
-/* ---- generic section chrome ------------------------------------------- */
-section{position:relative;padding:clamp(72px,11vh,128px) 0}
-.eyebrow{display:inline-flex;align-items:center;gap:9px;margin-bottom:20px;
-  font-family:var(--font-mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--lagoon-300)}
-.eyebrow::before{content:"";width:22px;height:1px;background:var(--lagoon-500)}
-h2.sec{font-size:clamp(1.9rem,4.2vw,3.2rem);font-weight:800;line-height:1.08;max-width:20ch;
-  text-wrap:balance}
-.sec__lede{margin-top:20px;max-width:62ch;font-size:1.05rem;line-height:1.68;color:var(--text-2)}
-.sec__head{max-width:760px;margin-bottom:56px}
+/* ══ EVIDENCE ═════════════════════════════════════════════════════════════ */
+.ev{width:100%;border-collapse:collapse;font-size:.93rem}
+.ev th,.ev td{text-align:left;padding:13px 14px;border-bottom:1px solid var(--line);
+  vertical-align:top}
+.ev thead th{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--text-3);font-weight:500;padding-bottom:9px}
+.ev tbody th{font-weight:500;color:var(--text-2);width:38%}
+.ev td{font-family:var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text)}
+.ev tr:last-child th,.ev tr:last-child td{border-bottom:0}
+.ev__ok{color:var(--safe)}
+.ev table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 
-/* ---- proof strip ------------------------------------------------------ */
-.strip{background:var(--abyss-900);border-block:1px solid var(--line)}
-.strip__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
-  gap:1px;background:var(--line-faint)}
-.strip__item{padding:30px 24px;background:var(--abyss-900);display:flex;flex-direction:column;gap:6px}
-.strip__val{font-family:var(--font-display);font-weight:800;font-size:1.9rem;
-  line-height:1;letter-spacing:-.02em;color:var(--lagoon-300)}
-.strip__lab{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.09em;
-  text-transform:uppercase;color:var(--text-3)}
+/* ══ TEAM ════════════════════════════════════════════════════════════════ */
+.team{display:grid;gap:22px}
+@media (min-width:720px){.team{grid-template-columns:repeat(3,1fr)}}
+.person__av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(14,138,156,.14);border:1px solid var(--lagoon-700);
+  font-family:var(--font-display);font-weight:700;font-size:.9rem;color:var(--lagoon-300);
+  margin-bottom:13px}
+.person h3{font-size:1.02rem;font-weight:700;letter-spacing:-.01em}
+.person .role{font-family:var(--font-mono);font-size:.78rem;color:var(--lagoon-300);
+  letter-spacing:.03em;margin:4px 0 9px}
+.person p{color:var(--text-2);font-size:.92rem;line-height:1.58}
 
-/* ---- "why local" ------------------------------------------------------ */
-.why{background:
-  radial-gradient(900px 420px at 12% 0%,rgba(14,138,156,.14),transparent 65%),
-  var(--abyss-950)}
-.why__grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(310px,1fr))}
-.why__card{padding:30px;border:1px solid var(--line);border-radius:var(--radius);
-  background:var(--card);transition:border-color .25s var(--ease),transform .25s var(--ease)}
-.why__card:hover{border-color:var(--lagoon-600);transform:translateY(-3px)}
-.why__card h3{margin:0 0 10px;font-size:1.16rem;font-weight:700}
-.why__card p{font-size:.95rem;line-height:1.68;color:var(--text-2)}
-.why__card code{font-family:var(--font-mono);font-size:.85em;color:var(--lagoon-300)}
+/* ══ CTA + FOOTER ════════════════════════════════════════════════════════ */
+.cta{text-align:center;border-top:1px solid var(--line);padding-top:clamp(64px,8vh,104px)}
+.cta h2{font-size:clamp(1.7rem,3.4vw,2.5rem);line-height:1.12;max-width:20ch;
+  margin-inline:auto;text-wrap:balance}
+.cta__lede{margin:16px auto 0;max-width:52ch;color:var(--text-2)}
+.cta__row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:28px}
+.cta__note{margin-top:22px;font-family:var(--font-mono);font-size:.78rem;color:var(--text-3)}
 
-/* ---- capabilities ----------------------------------------------------- */
-.caps{background:var(--abyss-900)}
-.caps__grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
-.cap{padding:34px;border:1px solid var(--line);border-radius:var(--radius);
-  background:linear-gradient(180deg,var(--card),transparent);display:flex;flex-direction:column;gap:16px;
-  transition:border-color .25s var(--ease),transform .25s var(--ease)}
-.cap:hover{border-color:var(--lagoon-600);transform:translateY(-3px)}
-/* Bare line icons, no tile. The icons stay because they are the page's only
-   icon moment and they say which control is which; what goes is the boxed
-   plate above every heading, which is the recognisable generated-UI tell. This
-   matches how the same glyph language already appears in the nav and hero. */
-.cap__icon{display:block;color:var(--lagoon-300)}
-.cap h3{font-size:1.24rem;font-weight:700}
-.cap p{font-size:.95rem;line-height:1.68;color:var(--text-2);flex:1}
-.cap__metric{margin-top:6px;padding-top:16px;border-top:1px solid var(--line);
-  font-family:var(--font-mono);font-size:.72rem;line-height:1.85;color:var(--lagoon-300);
-  letter-spacing:.03em}
+footer{border-top:1px solid var(--line);padding:54px 0 34px;background:var(--abyss-900)}
+.foot{display:grid;gap:34px}
+@media (min-width:720px){.foot{grid-template-columns:1.4fr 1fr 1fr}}
+.foot__brand{display:flex;align-items:center;gap:11px}
+.foot__brand img{width:36px;height:36px}
+.foot__brand span{font-family:var(--font-display);font-weight:700;font-size:1.02rem;
+  line-height:1.15}
+.foot__brand small{display:block;font-family:var(--font-mono);font-size:.7rem;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--text-3)}
+.foot h4{font-family:var(--font-mono);font-size:.84rem;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--text-3);font-weight:500;margin-bottom:13px}
+.foot li,.foot p{color:var(--text-2);font-size:.9rem;line-height:1.75;list-style:none;
+  margin:0;padding:0}
+.foot ul{margin:0;padding:0}
+.foot a:hover{color:var(--text)}
+.foot__legal{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;
+  margin-top:40px;padding-top:22px;border-top:1px solid var(--line);
+  font-size:.75rem;color:var(--text-3)}
 
-/* ---- scoreboard ------------------------------------------------------- */
-.score{background:var(--abyss-950)}
-.score__grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-.score__cell{padding:26px;border:1px solid var(--line);border-radius:var(--radius);
-  background:var(--card);display:flex;flex-direction:column}
-.score__val{font-family:var(--font-display);font-weight:800;font-size:2.5rem;line-height:1;
-  letter-spacing:-.03em;color:#fff}
-.score__val small{font-size:.42em;color:var(--text-3);margin-left:6px;font-weight:600}
-.score__sub{margin-top:auto;padding-top:14px;font-family:var(--font-mono);font-size:.72rem;
-  letter-spacing:.06em;color:var(--text-3)}
-/* A thick accent rule on one edge is the most recognisable tell of generated
-   UI, and the detector flagged the left-edge version here. The callout carries
-   its own weight through the caution tint and the bold lead-in, so the border
-   stays uniform and lets the left edge align with the grid. */
-.score__note{margin-top:26px;padding:20px 24px;border:1px solid var(--caution-line);
-  border-radius:12px;background:var(--caution-bg);
-  font-size:.92rem;line-height:1.65;color:#F5D9A6}
+/* NOTE: an earlier revision applied `content-visibility:auto` to the
+   below-the-fold sections to skip layout and paint. It is deliberately not
+   used. A skipped subtree has no layout box, so the IntersectionObserver never
+   reports its .reveal children as intersecting and they stay at opacity 0 —
+   the page rendered with its entire middle blank. The saving on a 46 kB page
+   was never worth a failure mode that hides the product. */
 
-/* ---- judging criteria ------------------------------------------------- */
-.judge{background:var(--abyss-900)}
-.judge__list{display:grid;gap:14px}
-.judge__row{display:grid;grid-template-columns:88px 1fr;gap:26px;align-items:start;
-  padding:26px 28px;border:1px solid var(--line);border-radius:var(--radius);background:var(--card)}
-.judge__w{font-family:var(--font-display);font-weight:800;font-size:1.7rem;line-height:1;
-  color:var(--lagoon-300);letter-spacing:-.03em}
-.judge__row h3{font-size:1.1rem;font-weight:700;margin-bottom:8px}
-.judge__row p{font-size:.94rem;line-height:1.66;color:var(--text-2)}
-.judge__tag{display:inline-block;margin-top:12px;padding:5px 12px;border-radius:999px;
-  font-family:var(--font-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
-  border:1px solid var(--safe-line);background:var(--safe-bg);color:var(--safe)}
-.judge__tag--caveat{border-color:var(--caution-line);background:var(--caution-bg);color:var(--caution)}
-
-/* ---- team ------------------------------------------------------------- */
-.team{background:var(--abyss-950)}
-.team__grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
-.person{padding:32px;border:1px solid var(--line);border-radius:var(--radius);
-  background:linear-gradient(180deg,var(--card),transparent);display:flex;gap:20px;align-items:flex-start}
-.person__av{width:62px;height:62px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;
-  font-family:var(--font-display);font-weight:800;font-size:1.3rem;
-  background:linear-gradient(140deg,var(--lagoon-500),var(--lagoon-700));color:#fff;
-  border:1px solid var(--lagoon-600)}
-.person h3{font-size:1.1rem;font-weight:700}
-.person .role{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--lagoon-300);margin-top:6px}
-.person p{margin-top:14px;font-size:.92rem;line-height:1.62;color:var(--text-2)}
-
-/* ---- closing CTA ------------------------------------------------------ */
-.cta{position:relative;overflow:hidden;background:var(--abyss-900);text-align:center}
-.cta::before{content:"";position:absolute;inset:0;z-index:-1;
-  background:radial-gradient(760px 340px at 50% 0%,rgba(14,138,156,.20),transparent 70%)}
-.cta h2{font-size:clamp(2.1rem,5.4vw,3.6rem);font-weight:800;line-height:1.06;
-  max-width:18ch;margin-inline:auto;text-wrap:balance}
-.cta__lede{margin:22px auto 0;max-width:58ch;font-size:1.03rem;line-height:1.68;color:var(--text-2)}
-.cta__row{margin-top:40px;display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
-.cta__note{margin-top:30px;font-family:var(--font-mono);font-size:.74rem;color:var(--text-3)}
-
-/* ---- footer ----------------------------------------------------------- */
-footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:64px;overflow:hidden}
-.foot__grid{display:flex;flex-wrap:wrap;gap:44px;justify-content:space-between;
-  padding-bottom:52px}
-.foot__brand{display:flex;align-items:center;gap:12px}
-.foot__brand img{width:40px;height:40px}
-.foot__brand span{font-family:var(--font-display);font-weight:800;font-size:1.3rem;letter-spacing:.04em}
-.foot__brand small{display:block;font-family:var(--font-mono);font-size:.72rem;font-weight:500;
-  letter-spacing:.13em;text-transform:uppercase;color:var(--text-3);margin-top:3px}
-.foot__col h4{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.13em;
-  text-transform:uppercase;color:var(--text-3);margin-bottom:14px;font-weight:600}
-.foot__col a,.foot__col p{display:block;font-size:.9rem;color:var(--text-2);
-  margin-bottom:9px;line-height:1.6}
-.foot__col a:hover{color:var(--lagoon-300)}
-/* the one oversized type moment on the page */
-.foot__word{font-family:var(--font-display);font-weight:800;font-size:16vw;line-height:.82;
-  letter-spacing:-.05em;text-align:center;
-  background:linear-gradient(180deg,rgba(47,190,204,.30),rgba(47,190,204,.02));
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  user-select:none;pointer-events:none;margin-bottom:-2vw}
-.foot__legal{padding:22px 0;border-top:1px solid var(--line-faint);
-  display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;
-  font-family:var(--font-mono);font-size:.72rem;color:var(--text-3)}
-
-/* ---- responsive ------------------------------------------------------- */
-@media (max-width:900px){
-  .nav__links{display:none}
-  .hero__proof{gap:10px 18px;font-size:.72rem}
-  .judge__row{grid-template-columns:1fr;gap:12px}
-  .judge__w{font-size:1.4rem}
-}
 @media (max-width:560px){
-  .wrap{padding-inline:20px}
-  .brand small{display:none}
-  .hero h1{font-size:clamp(2.2rem,9vw,3rem)}
-  .btn{width:100%;justify-content:center}
-  .foot__word{font-size:22vw}
+  .nav__links{display:none}
+  .ev tbody th{width:auto}
 }
 </style>
 </head>
+
 <body>
 <a class="skip" href="#main">Skip to content</a>
-
 <div class="topblur" aria-hidden="true"></div>
+
 <header>
   <nav class="nav" aria-label="Primary">
     <a class="brand" href="#top">
-      <img src="/isla-mark.svg" alt="" width="34" height="34">
+      <img src="/isla-mark.svg" alt="" width="32" height="32">
       <span>ISLA AI<small>In-Situ Local AI</small></span>
     </a>
     <div class="nav__links">
-      <a href="#why">Why local</a>
-      <a href="#capabilities">Capabilities</a>
-      <a href="#scoreboard">Numbers</a>
-      <a href="#judging">Judging</a>
+      <a href="#product">Product</a>
+      <a href="#approach">Approach</a>
+      <a href="#stack">Stack</a>
+      <a href="#evidence">Evidence</a>
       <a href="#team">Team</a>
     </div>
     <a class="nav__cta" href="/app">Open console</a>
@@ -360,7 +344,7 @@ footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:
 
 <main id="main">
 
-<!-- ═══ 1 · HERO — centred low over a full-bleed island photograph ═══ -->
+<!-- ═══ HERO ═══ -->
 <section class="hero" id="top">
   <div class="hero__bg">
     <img src="/hero-island.jpg" alt="A single tropical island ringed by turquoise reef, surrounded by open ocean"
@@ -369,320 +353,502 @@ footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:
   <div class="hero__scrim" aria-hidden="true"></div>
 
   <div class="wrap hero__inner">
-    <span class="hero__eyebrow reveal"><span class="dot" aria-hidden="true"></span>
-      AppBuilders PH 2026 · Local AI · Finance</span>
+    <h1 class="reveal">Your bank's data stays <em>on the island</em>.</h1>
 
-    <h1 class="reveal">Your bank&#8217;s data stays <em>on the island</em>.</h1>
-
-    <p class="hero__lede reveal">Philippine banks are already AI companies under the Data Privacy Act —
-      credit scoring, KYC, collections — and already forbidden from handing that data to a cloud
-      vendor. Isla AI is the copilot that works anyway: redaction, cited answers and hash-chained
-      audit proof, all on one machine, with no cloud AI API in the path.</p>
-
-    <p class="hero__acronym reveal"><b>ISLA</b> <span>In-Situ Local AI</span>
-      <span class="hero__acronym-why">The inference runs on hardware the record already
-        lives on.</span></p>
+    <p class="hero__lede reveal">Isla AI is a compliance copilot for Philippine banks. It screens
+      transactions for fraud, answers privacy and banking law with real citations, and writes
+      tamper-evident proof. Everything runs on one machine inside your bank, with no cloud AI in
+      the path.</p>
 
     <div class="hero__cta reveal">
       <a class="btn btn--primary" href="/app">Open the console</a>
-      <a class="btn btn--ghost" href="#why">Why it has to be local</a>
+      <a class="btn btn--ghost" href="#product">See real output</a>
     </div>
 
-    <div class="hero__proof reveal">
-      <span><b>0</b> customer bytes leave the machine</span>
-      <span><b>7</b> Philippine instruments</span>
-      <span><b>0.2 ms</b> PII scan p50</span>
-      <span><b>8 ms</b> cited answer p50</span>
-      <span><b>127.0.0.1</b> only</span>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ 2 · PROOF STRIP ═══ -->
-<section class="strip" style="padding:0">
-  <div class="wrap">
-    <div class="strip__grid reveal">
-      <div class="strip__item"><span class="strip__val">1.0000</span>
-        <span class="strip__lab">PII macro-F1</span></div>
-      <div class="strip__item"><span class="strip__val">100%</span>
-        <span class="strip__lab">Citation accuracy</span></div>
-      <div class="strip__item"><span class="strip__val">0.00%</span>
-        <span class="strip__lab">Residual leakage</span></div>
-      <div class="strip__item"><span class="strip__val">100%</span>
-        <span class="strip__lab">Correct refusal</span></div>
-      <div class="strip__item"><span class="strip__val">458</span>
-        <span class="strip__lab">Tests, all green</span></div>
+    <div class="hero__proof reveal tnum">
+      <b>0</b> customer bytes leave the machine &nbsp;·&nbsp;
+      <b>11</b> Philippine legal instruments &nbsp;·&nbsp;
+      <b>20</b> fraud typologies &nbsp;·&nbsp;
+      <b>463</b> tests green
     </div>
   </div>
 </section>
 
-<!-- ═══ 3 · WHY LOCAL — the required answer, given room ═══ -->
-<section class="why" id="why">
+<!-- ═══ THE PRODUCT — real captured output ═══ -->
+<section id="product">
   <div class="wrap">
     <div class="sec__head reveal">
-      <span class="eyebrow">Why running the AI locally</span>
-      <h2 class="sec">A cloud model cannot check a secret without being told it.</h2>
-      <p class="sec__lede">Asking an external model &#ldquo;is this sensitive personal
-        information?&#rdquo; is itself a disclosure to a third party in a foreign jurisdiction — the
-        act is the breach it exists to prevent. The question only has an answer on hardware the
-        data already lives on.</p>
+      <h2 class="sec">This is what it actually returns.</h2>
+      <p class="sec__lede">Captured from the running API, not mocked up for a screenshot. Both
+        answers quote the instrument they came from, and the second one names what it cannot
+        verify instead of guessing.</p>
     </div>
 
-    <div class="why__grid">
-      <article class="why__card reveal">
-        <h3>The disclosure problem</h3>
-        <p>Redaction is the one AI task that cannot be outsourced, because performing it requires
-          handing over the exact data it exists to protect. Isla AI runs 18 Philippine entity
-          detectors — Luhn-validated card and account numbers, SSS, TIN, GCash — on the machine in
-          front of you, then re-runs the whole detector over its own output before anything moves.</p>
-      </article>
+    <div class="shelf">
 
-      <article class="why__card reveal">
-        <h3>Air-gapped banks are the norm</h3>
-        <p>Core-banking estates and ISO&nbsp;27001-sealed networks exist precisely because the breach
-          window is measured in hours. Isla AI is demonstrated with the cable pulled: the status chip
-          is a live socket probe, so pulling the network mid-demo changes the answer in front of you.
-          A control that degrades when the WAN blinks was never a control.</p>
-      </article>
+      <!-- Copilot -->
+      <div class="term reveal">
+        <div class="term__bar">
+          <span class="term__dot" aria-hidden="true"></span>
+          <span class="term__name">copilot — local retrieval</span>
+        </div>
+        <div class="term__body">
+          <div class="term__q">Ilang oras dapat ko i-report ang data breach?</div>
+          <div class="term__a">Within 72 hours from knowledge of the personal data breach, based on
+            available information. <span class="term__cite">[NPC-CIRC-16-03 §23]</span></div>
+          <div class="term__a">The Commission and affected data subjects shall be notified by the
+            personal information controller within seventy-two (72) hours upon knowledge of, or when
+            there is reasonable belief that, a personal data breach requiring notification has
+            occurred. <span class="term__cite">[IRR-RA10173 §38. Data Breach Notification.]</span></div>
+          <div class="term__foot tnum">
+            <span>13 ms</span><span>hybrid retrieval</span><span>no LLM called</span>
+            <span>3 citations resolved</span>
+          </div>
+        </div>
+      </div>
 
-      <article class="why__card reveal">
-        <h3>Economics that survive scale</h3>
-        <p>Every paste a compliance officer scans is a per-call invoice at a cloud vendor — for a task
-          that takes <code>0.2 ms</code> on a CPU already in the building. There is no marginal cost
-          per scan, and no vendor sitting between the bank and its own regulator&#8217;s questions.</p>
-      </article>
+      <!-- Risk -->
+      <div class="term reveal">
+        <div class="term__bar">
+          <span class="term__dot" aria-hidden="true"></span>
+          <span class="term__name">risk — transaction screen</span>
+        </div>
+        <div class="term__body">
+          <div class="term__q">A call centre agent asked the customer for the card PIN and CVV.</div>
+          <div style="margin-top:11px;display:flex;flex-wrap:wrap;gap:7px">
+            <span class="pill pill--block">CRITICAL</span>
+            <span class="pill pill--caution">bank + customer exposed</span>
+          </div>
+          <div class="rf">
+            <div class="rf__id">credential_solicitation</div>
+            <div class="rf__why">Evidence quoted: <code>CVV</code>. Whoever holds the PIN, CVV or a
+              one-time code can authorise transactions, so a solicited code is already
+              compromised.</div>
+            <div class="rf__act"><strong>Required action:</strong> decline and do not record. If the
+              customer already disclosed a secret, stop the transaction and escalate the same day.</div>
+          </div>
+          <div class="gapnote"><b>Not covered by this build.</b> BSP, SEC, AMLC reporting and PCI
+            DSS are not in the corpus, so no circular number is invented for them. The engine names
+            the gap instead.</div>
+          <div class="term__foot tnum">
+            <span>6 ms</span><span>deterministic rules</span><span>no model call</span>
+          </div>
+        </div>
+      </div>
 
-      <article class="why__card reveal">
-        <h3>Regulators already asked</h3>
-        <p>NPC Advisory 2024-04 applies the Data Privacy Act to AI systems processing personal data.
-          The evidence is now producible locally, as a SHA-256 hash chain that stores entity counts,
-          verdicts and latency — and <strong>never the customer text</strong>. Answering
-          &#8220;what did you collect on the fifteenth?&#8221; does not itself become a breach.</p>
-      </article>
-
-      <article class="why__card reveal">
-        <h3>Confidentiality you can audit</h3>
-        <p>&#8220;Read our DPA&#8221; is a contractual promise. &#8220;No module outside the air-gap probe
-          holds a network primitive, the browser is forbidden from fetching off-origin by a
-          <code>default-src &#39;none&#39;</code> policy, and both are asserted on every CI push&#8221;
-          is a test. A CI job runs the PII engine with <strong>zero</strong> pip installs to prove the
-          hot path is standard library only.</p>
-      </article>
-
-      <article class="why__card reveal">
-        <h3>The honest counterweight</h3>
-        <p>Local does not automatically mean better. A 3B model is a 3B model. Isla AI&#8217;s
-          correctness comes from <strong>retrieval, not scale</strong>: answers are quoted verbatim from
-          cited spans, so the worst case is an irrelevant chunk rather than an invented section
-          number. Measured both ways, and the trade is documented rather than implied.</p>
-      </article>
     </div>
   </div>
 </section>
 
-<!-- ═══ 4 · CAPABILITIES ═══ -->
-<section class="caps" id="capabilities">
+<!-- ═══ CONTROLS ═══ -->
+<section id="controls">
   <div class="wrap">
     <div class="sec__head reveal">
-      <span class="eyebrow">What ships</span>
-      <h2 class="sec">Three controls, one process, one machine.</h2>
-      <p class="sec__lede">Each one is a distinct control a bank has to evidence separately, and
-        each one produces its own proof in the ledger.</p>
+      <h2 class="sec">Four controls. Each one produces its own evidence.</h2>
+      <p class="sec__lede">A bank has to evidence these separately, so each control writes its own
+        record. Nothing here calls a cloud service, and nothing here needs one.</p>
     </div>
 
-    <div class="caps__grid">
-      <article class="cap reveal">
-        <span class="cap__icon" aria-hidden="true">
+    <div class="rail">
+      <article class="ctl reveal">
+        <h3 class="ctl__name">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-               stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            <path d="M9 12l2 2 4-4"/></svg>
-        </span>
-        <h3>Egress Guard</h3>
-        <p>Paste anything a staff member might send to an external AI. Eighteen Philippine entity
-          types are detected, redacted, then re-detected by a verification pass. Anything that
-          survives verification escalates instead of shipping.</p>
-        <span class="cap__metric">macro-F1 1.0000 · residual 0.00% · 0.2 ms p50</span>
+               stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+          Egress Guard
+        </h3>
+        <div>
+          <p class="ctl__what">Paste anything a staff member might send to an external AI. Eighteen
+            Philippine entity types are found and redacted, then the detector is run again over
+            Isla AI's own output. Anything that survives is escalated instead of sent.</p>
+          <div class="ctl__nums tnum">
+            <span class="num">macro-F1 1.0000</span>
+            <span class="num">residual 0.00%</span>
+            <span class="num">0.2 ms p50</span>
+            <span class="num">zero dependencies</span>
+          </div>
+        </div>
       </article>
 
-      <article class="cap reveal">
-        <span class="cap__icon" aria-hidden="true">
+      <article class="ctl reveal">
+        <h3 class="ctl__name">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-               stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+               stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
             <path d="M9 7h7M9 11h5"/></svg>
-        </span>
-        <h3>DPA Copilot</h3>
-        <p>Ask the Data Privacy Act in Taglish or English. Hybrid retrieval over seven real
-          instruments returns quoted spans with resolvable citations — and refuses outright when the
-          evidence is too thin, because a wrong circular number is worse than no answer.</p>
-        <span class="cap__metric">citation accuracy 100% · correct refusal 100%</span>
+          DPA Copilot
+        </h3>
+        <div>
+          <p class="ctl__what">Ask the Data Privacy Act in Taglish or English. Hybrid retrieval over
+            348 chunks from 11 verified instruments returns quoted spans with resolvable
+            citations, and refuses outright when the evidence is thin. A wrong circular number is
+            worse than no answer.</p>
+          <div class="ctl__nums tnum">
+            <span class="num">citation accuracy 100%</span>
+            <span class="num">correct refusal 100%</span>
+            <span class="num">13 ms p50</span>
+          </div>
+        </div>
       </article>
 
-      <article class="cap reveal">
-        <span class="cap__icon" aria-hidden="true">
+      <article class="ctl reveal">
+        <h3 class="ctl__name">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-               stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+               stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg>
+          Fraud &amp; AML Screen
+        </h3>
+        <div>
+          <p class="ctl__what">Describe a transaction or account behaviour and get back a risk tier,
+            who is exposed, the exact words that tripped each indicator, and the action required.
+            Twenty typologies, from structuring to money-mule accounts to elder financial abuse.</p>
+          <div class="ctl__nums tnum">
+            <span class="num">recall 94.4%</span>
+            <span class="num">tier accuracy 100%</span>
+            <span class="num">0 false positives on routine</span>
+            <span class="num">6 ms p50</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="ctl reveal">
+        <h3 class="ctl__name">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/>
             <path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>
-        </span>
-        <h3>Audit Ledger</h3>
-        <p>Every action writes a SHA-256 hash-chained record. Each entry links to the last, so altering
-          one invalidates everything after it and a single pass detects it. Counts and verdicts only —
-          the customer text is never written to disk.</p>
-        <span class="cap__metric">verified in one pass · contains no raw PII</span>
+          Audit Ledger
+        </h3>
+        <div>
+          <p class="ctl__what">Every action writes a SHA-256 hash-chained record. Each entry links to
+            the one before it, so altering a single entry invalidates everything after it and one
+            pass detects it. Counts and verdicts only. The customer text is never written to disk.</p>
+          <div class="ctl__nums tnum">
+            <span class="num">verified in one pass</span>
+            <span class="num">no raw PII on disk</span>
+            <span class="num">cross-process safe</span>
+          </div>
+        </div>
       </article>
     </div>
   </div>
 </section>
 
-<!-- ═══ 5 · SCOREBOARD ═══ -->
-<section class="score" id="scoreboard">
+<!-- ═══ APPROACH ═══ -->
+<section id="approach">
   <div class="wrap">
     <div class="sec__head reveal">
-      <span class="eyebrow">Measured, not claimed</span>
-      <h2 class="sec">Every number is regenerated from committed code.</h2>
-      <p class="sec__lede">CI re-runs the evaluation on every push — twice, once with the model
-        weights present and once with none installed at all. If a published figure moved, the build
-        goes red.</p>
+      <h2 class="sec">How we built it, and what went wrong on the way.</h2>
+      <p class="sec__lede">Every decision below was forced by a problem we hit, not by a preference
+        we picked in advance.</p>
     </div>
 
-    <div class="score__grid">
-      <div class="score__cell reveal"><span class="score__val">18</span>
-        <span class="score__lab strip__lab">PH entity types</span>
-        <span class="score__sub">detected · validated · redacted</span></div>
-      <div class="score__cell reveal"><span class="score__val">3</span>
-        <span class="score__lab strip__lab">Verification passes</span>
-        <span class="score__sub">the detector re-runs over its own output</span></div>
-      <div class="score__cell reveal"><span class="score__val">241</span>
-        <span class="score__lab strip__lab">Citable chunks</span>
-        <span class="score__sub">from 7 verified instruments</span></div>
-      <div class="score__cell reveal"><span class="score__val">80%</span>
-        <span class="score__lab strip__lab">Source attribution</span>
-        <span class="score__sub">our weakest published metric</span></div>
-    </div>
+    <div class="approach reveal">
+      <div class="how">
+        <h3>We fetch the law, we do not paraphrase it</h3>
+        <p>Every instrument is downloaded from its official source and stored with a SHA-256. A
+          fetch that comes back without the provisions it should contain fails the build. That is
+          how we discovered the public copy of RA 9160 is abridged: the reporting clauses are simply
+          missing, so the product cannot quote a reporting deadline and says so.</p>
+      </div>
 
-    <div class="score__note reveal"><strong>Where it still falls short.</strong> One question in five
-      attributes its answer to the wrong instrument — NPC Circular 2022-04 should answer the AI
-      registration question, and the bundled corpus does not contain the phrase
-      &#8220;credit scoring&#8221; that triggers it. The citation returned is still real and the section is
-      still real; what is missing is corpus breadth. We did not tune BM25 until this case flipped,
-      because that is fitting to the evaluation. Two instruments we wanted could not be retrieved
-      from any public source at all.</div>
-  </div>
-</section>
+      <div class="how">
+        <h3>Answers quote, they never generate</h3>
+        <p>The copilot is extractive. It returns verbatim spans from retrieved chunks and attaches
+          the section each one came from. When the retrieval is thin it refuses. The worst possible
+          outcome is an irrelevant chunk, never an invented section number.</p>
+      </div>
 
-<!-- ═══ 6 · JUDGING CRITERIA ═══ -->
-<section class="judge" id="judging">
-  <div class="wrap">
-    <div class="sec__head reveal">
-      <span class="eyebrow">Against the rubric</span>
-      <h2 class="sec">Where we believe we score, and where we do not.</h2>
-      <p class="sec__lede">Judged honestly, including the two places a strict reading would push
-        back. Both are documented in full in the repository rather than left for a reviewer to
-        discover.</p>
-    </div>
+      <div class="how">
+        <h3>The redactor is checked by the redactor</h3>
+        <p>After redaction the detector runs again over Isla AI's own output, with the tokens masked
+          so it cannot rediscover them. Any survivor escalates instead of shipping. This is why
+          residual leakage measures 0.00% rather than merely being low.</p>
+      </div>
 
-    <div class="judge__list">
-      <article class="judge__row reveal">
-        <span class="judge__w">25%</span>
-        <div><h3>Problem &amp; Usefulness</h3>
-          <p>A named, narrow, real obligation: a Philippine bank&#8217;s data-privacy officer has NPC
-            advisories, circulars and BSP memos to satisfy, and no tooling that produces evidence
-            without leaking the evidence. Every published number comes from running this repository.
-            The strict reading of &#8220;would the general public benefit&#8221; is weaker — the buyer is
-            a regulated institution, not a consumer.</p>
-          <span class="judge__tag judge__tag--caveat">strong, with one caveat</span></div>
-      </article>
+      <div class="how">
+        <h3>We score before we claim</h3>
+        <p>Every published number comes from a committed dataset re-run in CI, twice: once with
+          model weights present, once with none installed. That harness caught the mean-pooling bug
+          in the embedding model and five dead regexes in the fraud rules that no code review had
+          flagged.</p>
+      </div>
 
-      <article class="judge__row reveal">
-        <span class="judge__w">25%</span>
-        <div><h3>Local AI Implementation</h3>
-          <p>A multilingual encoder runs locally in the retrieval path, PII detection runs locally with
-            zero third-party dependencies, and no cloud AI API is installed or reachable. Measured
-            rather than asserted: the ablation shows the published metrics are <em>unchanged</em> with
-            the embedding model removed, because 241 chunks is small enough for lexical retrieval to
-            cope. What genuinely disappears without local inference is the ability to do the work at
-            all without disclosure.</p>
-          <span class="judge__tag judge__tag--caveat">measured, honestly caveated</span></div>
-      </article>
+      <div class="how">
+        <h3>We fix the cause, never the threshold</h3>
+        <p>When recall came in at 72.2% the answer was not to move the gate. It was to find out
+          why five typologies never fired. They were word-boundary bugs: <code>\bpretend\b</code>
+          cannot match "pretending". The patterns were fixed and the before/after is published.</p>
+      </div>
 
-      <article class="judge__row reveal">
-        <span class="judge__w">20%</span>
-        <div><h3>Technical Execution</h3>
-          <p>458 tests green, type-clean, zero npm vulnerabilities, CSP hash asserted on every push,
-            evaluation reproducible from committed datasets in a clean environment with no model
-            weights. Three CI jobs prove three separate degradation claims rather than one.</p>
-          <span class="judge__tag">demonstrable</span></div>
-      </article>
-
-      <article class="judge__row reveal">
-        <span class="judge__w">15%</span>
-        <div><h3>Innovation</h3>
-          <p>The differentiator is refusing to be confidently wrong: a verification pass that re-runs
-            the detector over Isla AI&#8217;s own redaction and escalates on any survivor, and correct
-            refusal treated as a first-class success rather than a fallback. The ledger stores counts
-            and verdicts but never customer text — provable, not promised.</p>
-          <span class="judge__tag">meaningfully different</span></div>
-      </article>
-
-      <article class="judge__row reveal">
-        <span class="judge__w">15%</span>
-        <div><h3>Product &amp; Demo Quality</h3>
-          <p>A chat console wired to the live API with no mock data and no decorative controls,
-            verified for console errors, overflow and external requests on four surfaces. The written
-            demo script covers the four hard questions a judge is likely to ask.</p>
-          <span class="judge__tag">ready to run</span></div>
-      </article>
+      <div class="how">
+        <h3>What we could not get, we name</h3>
+        <p>BSP and SEC refuse this machine and have no usable archive copy. Rather than summarise
+          circulars from memory, every answer that touches them reports the gap in the interface. A
+          control that is visibly incomplete is worth something. One that is confidently wrong is
+          worth less than nothing.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ 7 · TEAM ═══ -->
-<section class="team" id="team">
+<!-- ═══ STACK ═══ -->
+<section id="stack">
   <div class="wrap">
     <div class="sec__head reveal">
-      <span class="eyebrow">The team</span>
+      <h2 class="sec">What it is built on.</h2>
+      <p class="sec__lede">Named, open, and running on your own hardware. The inference stack is
+        local, so the weights never leave the building either.</p>
+    </div>
+
+    <div class="stack reveal">
+      <div class="tool">
+        <svg class="tool__mark" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
+          <path d="M15.1 2c-3 0-5.4 2.3-5.4 5.2v3.1H7.6c-1 0-1.8.8-1.8 1.8v5.4c0 1 .8 1.8 1.8 1.8h2.1v3.1c0 2.9 2.4 5.2 5.4 5.2h.3V16.8h-2.6c-.9 0-1.7-.8-1.7-1.7V9.5c0-.9.8-1.7 1.7-1.7h5.2c.9 0 1.7.8 1.7 1.7v2.6H24V7.2c0-2.9-2.4-5.2-5.4-5.2h-3.5z"/>
+          <path d="M16.9 30c3 0 5.4-2.3 5.4-5.2v-3.1h2.1c1 0 1.8-.8 1.8-1.8v-5.4c0-1-.8-1.8-1.8-1.8h-2.1v-3.1c0-2.9-2.4-5.2-5.4-5.2h-.3v11.8h2.6c.9 0 1.7.8 1.7 1.7v5.6c0 .9-.8 1.7-1.7 1.7h-5.2c-.9 0-1.7-.8-1.7-1.7v-2.6H8v6.6c0 2.9 2.4 5.2 5.4 5.2h3.5z"/>
+        </svg>
+        <div class="tool__name">Python 3.12</div>
+        <div class="tool__use">The whole service and the PII hot path</div>
+      </div>
+
+      <div class="tool">
+        <svg class="tool__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M16 3 3 10.5 16 18l13-7.5L16 3Z"/><path d="M3 16l13 7.5L29 16"/>
+          <path d="M3 21.5 16 29l13-7.5"/>
+        </svg>
+        <div class="tool__name">FastAPI + Uvicorn</div>
+        <div class="tool__use">The API that serves the console</div>
+      </div>
+
+      <div class="tool">
+        <svg class="tool__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M11 7 4 16l7 9"/><path d="M21 7l7 9-7 9"/>
+          <path d="M18 11l-4 10" stroke-dasharray="2.5 3"/>
+        </svg>
+        <div class="tool__name">Pydantic</div>
+        <div class="tool__use">Validates every request that reaches the API</div>
+      </div>
+
+      <div class="tool">
+        <svg class="tool__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="16" cy="6" r="3.2"/><circle cx="6" cy="24" r="3.2"/><circle cx="26" cy="24" r="3.2"/>
+          <circle cx="16" cy="16" r="2.4"/>
+          <path d="M16 9.2v4.4M13.6 17.6 8.8 22M18.4 17.6 23.2 22"/>
+        </svg>
+        <div class="tool__name">ONNX Runtime</div>
+        <div class="tool__use">Runs the encoder on CPU, no GPU needed</div>
+      </div>
+
+      <div class="tool">
+        <svg class="tool__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M16 3c1.5 4.6 4.6 7.7 9.2 9.2-4.6 1.5-7.7 4.6-9.2 9.2-1.5-4.6-4.6-7.7-9.2-9.2C11.4 10.7 14.5 7.6 16 3Z"
+                fill="currentColor" stroke="none"/>
+          <path d="M23.5 20c.8 2.4 2.4 4 4.8 4.8-2.4.8-4 2.4-4.8 4.8-.8-2.4-2.4-4-4.8-4.8 2.4-.8 4-2.4 4.8-4.8Z"
+                fill="currentColor" stroke="none"/>
+        </svg>
+        <div class="tool__name">PyTorch (CPU)</div>
+        <div class="tool__use">Quantises the encoder to int8</div>
+      </div>
+
+      <div class="tool">
+        <svg class="tool__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 10h20M6 16h20M6 22h20"/>
+          <circle cx="11" cy="10" r="2.4" fill="currentColor" stroke="none"/>
+          <circle cx="20" cy="16" r="2.4" fill="currentColor" stroke="none"/>
+          <circle cx="14" cy="22" r="2.4" fill="currentColor" stroke="none"/>
+        </svg>
+        <div class="tool__name">Transformers + Optimum</div>
+        <div class="tool__use">multilingual-e5-small, int8</div>
+      </div>
+
+      <div class="tool">
+        <svg class="tool__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="9" width="13" height="7" rx="2"/>
+          <rect x="16" y="9" width="13" height="7" rx="2" stroke-dasharray="3 2.5"/>
+          <path d="M7 22h6M19 22h6"/>
+        </svg>
+        <div class="tool__name">GLiNER</div>
+        <div class="tool__use">Local NER behind the entity detectors</div>
+      </div>
+
+      <div class="tool">
+        <svg class="tool__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="4" y="4" width="11" height="11" rx="2"/><rect x="17" y="4" width="11" height="11" rx="2"/>
+          <rect x="4" y="17" width="11" height="11" rx="2"/><rect x="17" y="17" width="11" height="11" rx="2"/>
+        </svg>
+        <div class="tool__name">NumPy</div>
+        <div class="tool__use">Vector maths for the dense retrieval leg</div>
+      </div>
+
+      <div class="tool">
+        <svg class="tool__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="9" cy="9" r="4"/><path d="M12 12l11 11"/><path d="M20 4v5M17.5 6.5h5"/>
+        </svg>
+        <div class="tool__name">rank-bm25</div>
+        <div class="tool__use">The lexical leg that survives without weights</div>
+      </div>
+
+      <div class="tool">
+        <svg class="tool__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M7 4h13l5 5v19a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/>
+          <path d="M20 4v5h5"/><path d="M11 16h10M11 21h10M11 26h6"/>
+        </svg>
+        <div class="tool__name">PyMuPDF</div>
+        <div class="tool__use">Parses the official PDFs into the corpus</div>
+      </div>
+
+      <div class="tool">
+        <svg class="tool__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <ellipse cx="16" cy="16" rx="14" ry="5.5"/><ellipse cx="16" cy="16" rx="14" ry="5.5"
+                   transform="rotate(60 16 16)"/><ellipse cx="16" cy="16" rx="14" ry="5.5"
+                   transform="rotate(120 16 16)"/><circle cx="16" cy="16" r="2.8" fill="currentColor" stroke="none"/>
+        </svg>
+        <div class="tool__name">React 18</div>
+        <div class="tool__use">The console at <code style="font-family:var(--font-mono)">/app</code></div>
+      </div>
+
+      <div class="tool">
+        <svg class="tool__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M17.5 3 6 18h8l-1.5 11L24 14h-8l1.5-11Z" fill="currentColor" stroke="none"/>
+        </svg>
+        <div class="tool__name">Vite</div>
+        <div class="tool__use">Builds the console in about a second</div>
+      </div>
+
+      <div class="tool">
+        <svg class="tool__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="3" width="26" height="26" rx="4"/>
+          <path d="M9 16h8M13 12v8"/><path d="M20.5 12.5c1.4 0 2.2.7 2.2 1.8s-.8 1.7-2.2 2.2c1.4.5 2.2 1.2 2.2 2.3s-.8 1.8-2.2 1.8"/>
+        </svg>
+        <div class="tool__name">TypeScript</div>
+        <div class="tool__use">Type-checked on every push</div>
+      </div>
+
+      <div class="tool">
+        <svg class="tool__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 13c3.5-5 7-5 10.5 0s7 5 10.5 0"/>
+          <path d="M4 21c3.5-5 7-5 10.5 0s7 5 10.5 0"/>
+        </svg>
+        <div class="tool__name">Tailwind CSS 4</div>
+        <div class="tool__use">Design tokens shared with the brand</div>
+      </div>
+
+      <div class="tool">
+        <svg class="tool__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M16 4v24M6 10l20 12M26 10 6 22"/>
+        </svg>
+        <div class="tool__name">Radix UI</div>
+        <div class="tool__use">Accessible dialog and scroll primitives</div>
+      </div>
+
+      <div class="tool">
+        <svg class="tool__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="16" cy="16" r="12"/><path d="M13 11.5v9l7.5-4.5-7.5-4.5Z" fill="currentColor" stroke="none"/>
+        </svg>
+        <div class="tool__name">Vitest + Playwright</div>
+        <div class="tool__use">108 UI tests, checked in a real browser</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ EVIDENCE ═══ -->
+<section id="evidence">
+  <div class="wrap">
+    <div class="sec__head reveal">
+      <h2 class="sec">Every number here is regenerated from the repository.</h2>
+      <p class="sec__lede">CI re-runs both evaluations on every push, once with model weights and
+        once without. If a published figure moved, the build goes red. You can reproduce all of it
+        yourself.</p>
+    </div>
+
+    <div class="ev__wrap reveal">
+      <table class="ev">
+        <thead>
+          <tr><th scope="col">Measure</th><th scope="col">Result</th><th scope="col">Gate</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">PII detection macro-F1</th><td class="tnum">1.0000</td><td class="ev__ok">pass</td></tr>
+          <tr><th scope="row">High-risk recall / precision</th><td class="tnum">1.0000 / 1.0000</td><td class="ev__ok">pass</td></tr>
+          <tr><th scope="row">Residual leakage after redaction</th><td class="tnum">0.00%</td><td class="ev__ok">pass</td></tr>
+          <tr><th scope="row">Citation accuracy</th><td class="tnum">100%</td><td class="ev__ok">pass</td></tr>
+          <tr><th scope="row">Correct refusal rate</th><td class="tnum">100%</td><td class="ev__ok">pass</td></tr>
+          <tr><th scope="row">Fraud indicator recall</th><td class="tnum">94.4%</td><td class="ev__ok">pass</td></tr>
+          <tr><th scope="row">Risk tier accuracy</th><td class="tnum">100%</td><td class="ev__ok">pass</td></tr>
+          <tr><th scope="row">False positives on routine banking</th><td class="tnum">0 of 3</td><td class="ev__ok">pass</td></tr>
+          <tr><th scope="row">Latency p50, scan / answer / screen</th><td class="tnum">0.2 / 13 / 6 ms</td><td class="ev__ok">pass</td></tr>
+          <tr><th scope="row">Test suite</th><td class="tnum">463 passing</td><td class="ev__ok">pass</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="sec__lede reveal" style="margin-top:26px;max-width:70ch">Two limits worth stating
+      plainly. Fraud precision reads 85.0% because the labelled scenarios only score the dominant
+      typology, so co-firing indicators count against it. And BSP, SEC and AMLC reporting are not
+      in the corpus because those sites refuse this machine, so the product names that gap rather
+      than quoting a circular it cannot verify.</p>
+  </div>
+</section>
+
+<!-- ═══ TEAM ═══ -->
+<section id="team">
+  <div class="wrap">
+    <div class="sec__head reveal">
       <h2 class="sec">Built by Boundless IT Solutions.</h2>
     </div>
-    <div class="team__grid">
+    <div class="team">
       <article class="person reveal">
         <span class="person__av" aria-hidden="true">MC</span>
-        <div><h3>Malcolm Joaquin Cuady</h3>
-          <p class="role">Developer · Author</p>
-          <p>Built the PII engine, the hybrid retrieval stack, the citation enforcement and the
-            console. Owns the evaluation harness and the claims it makes.</p></div>
+        <h3>Malcolm Joaquin Cuady</h3>
+        <p class="role">Developer · Author</p>
+        <p>Built the PII engine, the retrieval stack, the citation enforcement and the console. Owns
+          the evaluation harness and every claim it makes.</p>
       </article>
       <article class="person reveal">
         <span class="person__av" aria-hidden="true">MQ</span>
-        <div><h3>Mark Quiazon</h3>
-          <p class="role">Project Manager</p>
-          <p>Owns scope, the regulatory problem framing and the submission. Keeps the roadmap honest
-            about what is measured versus what is aspirational.</p></div>
+        <h3>Mark Quiazon</h3>
+        <p class="role">Project Manager</p>
+        <p>Owns scope, the regulatory framing and the submission. Keeps the roadmap honest about
+          what is measured versus what is aspirational.</p>
       </article>
       <article class="person reveal">
         <span class="person__av" aria-hidden="true">BI</span>
-        <div><h3>Boundless IT Solutions</h3>
-          <p class="role">Organisation · BITS</p>
-          <p>The team behind the build. Everything here was written for this project on top of named
-            open-source models — nothing was scaffolded from an existing app.</p></div>
+        <h3>Boundless IT Solutions</h3>
+        <p class="role">Organisation</p>
+        <p>The team behind the build. Everything was written for this project on top of named
+          open-source models, not scaffolded from an existing app.</p>
       </article>
     </div>
   </div>
 </section>
 
-<!-- ═══ 8 · CLOSING CTA ═══ -->
+<!-- ═══ CTA ═══ -->
 <section class="cta">
   <div class="wrap">
-    <h2 class="reveal">Pull the cable. Ask a question. Watch it work.</h2>
-    <p class="cta__lede reveal">Everything here runs on one machine, on one port, with the network
-      disconnected. Clone it, build it, and check the claim yourself.</p>
+    <h2 class="reveal">Pull the cable. Ask a question. Watch it still work.</h2>
+    <p class="cta__lede reveal">It runs on one machine with the network disconnected. Clone it,
+      build it, and check every claim on this page yourself.</p>
     <div class="cta__row reveal">
       <a class="btn btn--primary" href="/app">Open the console</a>
       <a class="btn btn--ghost" href="https://github.com/jcuady/ISLA-AI">Read the source</a>
     </div>
-    <p class="cta__note reveal">Runs on 127.0.0.1 · no account, no telemetry, no customer data leaving the machine</p>
+    <p class="cta__note reveal">No account. No telemetry. Nothing leaves the machine.</p>
   </div>
 </section>
 
@@ -690,34 +856,35 @@ footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:
 
 <footer>
   <div class="wrap">
-    <div class="foot__grid">
-      <div class="foot__brand">
-        <img src="/isla-mark.svg" alt="Isla AI" width="40" height="40">
-        <span>ISLA AI<small>In-Situ Local AI</small></span>
+    <div class="foot">
+      <div>
+        <div class="foot__brand">
+          <img src="/isla-mark.svg" alt="" width="36" height="36">
+          <span>ISLA AI<small>In-Situ Local AI</small></span>
+        </div>
+        <p style="margin-top:14px;max-width:34ch;color:var(--text-2);font-size:.9rem;line-height:1.6">
+          A compliance copilot for Philippine banks that runs inside the bank.</p>
       </div>
-      <div class="foot__col">
+      <div>
         <h4>Product</h4>
-        <a href="#capabilities">Egress Guard</a>
-        <a href="#capabilities">DPA Copilot</a>
-        <a href="#capabilities">Audit Ledger</a>
-        <a href="/app">Open console</a>
+        <ul>
+          <li><a href="#controls">Egress Guard</a></li>
+          <li><a href="#controls">DPA Copilot</a></li>
+          <li><a href="#controls">Fraud &amp; AML Screen</a></li>
+          <li><a href="#controls">Audit Ledger</a></li>
+          <li><a href="/app">Open console</a></li>
+        </ul>
       </div>
-      <div class="foot__col">
-        <h4>Evidence</h4>
-        <a href="#scoreboard">Scoreboard</a>
-        <a href="#judging">Judging criteria</a>
-        <p>Regenerated by CI on every push.</p>
-      </div>
-      <div class="foot__col">
-        <h4>Team</h4>
-        <p>Malcolm Joaquin Cuady — Developer</p>
-        <p>Mark Quiazon — Project Manager</p>
-        <p>Boundless IT Solutions (BITS)</p>
+      <div>
+        <h4>More</h4>
+        <ul>
+          <li><a href="#approach">How it was built</a></li>
+          <li><a href="#evidence">Evidence</a></li>
+          <li><a href="https://github.com/jcuady/ISLA-AI">Source code</a></li>
+          <li><a href="#team">Team</a></li>
+        </ul>
       </div>
     </div>
-  </div>
-  <div class="foot__word" aria-hidden="true">ISLA</div>
-  <div class="wrap">
     <div class="foot__legal">
       <span>AppBuilders PH 2026 · Local AI track · Finance</span>
       <span>Not legal advice. Verify every citation before relying on it.</span>
@@ -727,32 +894,32 @@ footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:
 
 <script>
 // Scroll reveal. Inline and dependency-free because this page must reach the
-  // network for nothing: fonts and the hero photograph are served from this
-  // origin, and IntersectionObserver is native, so no polyfill is needed.
-  //
-  // The `js` class is what actually enables hiding. Without it the page is
-  // already visible, so a blocked script degrades to readable, not blank.
-  (function () {
-    var root = document.documentElement;
-    root.classList.remove('no-js');
-    root.classList.add('js');
+// network for nothing: fonts and the hero photograph are served from this
+// origin, and IntersectionObserver is native, so no polyfill is needed.
+//
+// The `js` class is what actually enables hiding. Without it the page is
+// already visible, so a blocked script degrades to readable, not blank.
+(function () {
+  var root = document.documentElement;
+  root.classList.remove('no-js');
+  root.classList.add('js');
 
-    var items = document.querySelectorAll('.reveal');
-    if (!('IntersectionObserver' in window)) {
-      items.forEach(function (el) { el.classList.add('in'); });
-      return;
-    }
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e, i) {
-        if (!e.isIntersecting) return;
-        var el = e.target;
-        el.style.animationDelay = (i * 70) + 'ms';
-        el.classList.add('in');
-        io.unobserve(el);
-      });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
-    items.forEach(function (el) { io.observe(el); });
-  })();
+  var items = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) {
+    items.forEach(function (el) { el.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e, i) {
+      if (!e.isIntersecting) return;
+      var el = e.target;
+      el.style.animationDelay = (i * 70) + 'ms';
+      el.classList.add('in');
+      io.unobserve(el);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  items.forEach(function (el) { io.observe(el); });
+})();
 </script>
 </body>
 </html>
