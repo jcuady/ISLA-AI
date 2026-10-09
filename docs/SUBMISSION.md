@@ -96,7 +96,7 @@ In short:
 
 | Item | State |
 |---|---|
-| Working product, landing page + 3-screen console | <http://127.0.0.1:8765> → console at `/app` |
+| Working product, landing page + 4-screen console | <http://127.0.0.1:8765> → console at `/app` |
 | Egress Guard (P1) | macro-F1 **1.0000**, residual **0.00%** |
 | DPA Copilot (P2) | citation accuracy **100%**, correct-refusal **100%** |
 | Local AI, no cloud fallback | probed, not asserted |
