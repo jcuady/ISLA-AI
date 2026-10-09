@@ -60,6 +60,18 @@ SECTION_PATTERNS = [
 
 NOISE_LINE_RE = re.compile(r"^\s*(?:page\s+\d+|-\s*\d+\s*-|©|\|.*\|)\s*$", re.IGNORECASE)
 
+# Trailing administrative clauses: they state when or by whom an instrument was
+# approved, never what it requires. When a source document's text extraction
+# emits pages out of order, one of these can end up labelling real body text -
+# which is how the flagship breach answer came to cite
+# "NPC-CIRC-16-03 SECTION 25. Effectivity" for a 72-hour notification duty.
+# Not citable authority, so the chunker must not emit it.
+BOILERPLATE_SECTION_RE = re.compile(
+    r"\b(?:effectivity|effect\s+of\s+this|approval|approved|date\s+of\s+approval|"
+    r"date\s+of\s+effectivity|signature|signatures|issuance)\b",
+    re.IGNORECASE,
+)
+
 
 def clean_text(raw: str) -> str:
     text = raw.replace("\r\n", "\n").replace("\xa0", " ")
@@ -94,16 +106,22 @@ def read_source(path: Path) -> str:
 
 
 def find_headers(lines: list[str]) -> list[tuple[int, str]]:
-    """Return (line_index, section_label) for every legal header we can cite."""
+    """Return (line_index, section_label) for every legal header we can cite.
+
+    Administrative trailing clauses are skipped: they are not authority for
+    anything, and when a source's text order is scrambled they would otherwise
+    label the body text that follows them. See BOILERPLATE_SECTION_RE.
+    """
     found: list[tuple[int, str]] = []
     for i, line in enumerate(lines):
         stripped = line.strip()
         if not stripped or len(stripped) > 200:
             continue
+        if BOILERPLATE_SECTION_RE.search(stripped):
+            continue
         for pat in SECTION_PATTERNS:
             m = pat.match(stripped)
             if m:
-                label = f"Section {m.group(1)}" if m.re.pattern.startswith(r"^\s*(?:SECTION") else stripped
                 found.append((i, stripped[:120]))
                 break
     return found
