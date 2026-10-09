@@ -37,6 +37,20 @@ from services.core.app import app  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 
+# apps/web/dist is a build artifact and is git-ignored, so a fresh CI checkout
+# does not have it. These tests were written and passed against a built tree,
+# then failed 11/27 on a clean `git archive HEAD` checkout in the Python-only
+# CI job. Delivery assertions therefore declare their dependency instead of
+# assuming a build happened; the security assertions below are unconditional
+# precisely because they must hold whether or not the UI was built.
+DIST_BUILT = (ROOT / "apps" / "web" / "dist" / "index.html").is_file()
+
+requires_build = pytest.mark.skipif(
+    not DIST_BUILT,
+    reason="apps/web/dist is a git-ignored build artifact; delivery is covered by "
+           "the web-build CI job and by scripts/preflight.py against a live server",
+)
+
 
 @pytest.fixture(scope="module")
 def client() -> TestClient:
@@ -88,6 +102,7 @@ def test_unknown_path_is_a_404(client: TestClient, path: str):
     assert r.status_code == 404, f"{path!r} returned {r.status_code}, expected 404"
 
 
+@requires_build
 def test_dot_segments_normalise_rather_than_escape(client: TestClient):
     """`..` is collapsed by the router before the handler runs, so
     `/app/../landing.html` is simply `/landing.html` - a legitimate public
@@ -114,6 +129,7 @@ def test_no_source_or_secret_is_reachable_through_the_catch_all(client: TestClie
 # ── the routes that must keep working ───────────────────────────────────────
 
 @pytest.mark.parametrize("path", ["/app", "/console", "/"])
+@requires_build
 def test_real_pages_still_serve(client: TestClient, path: str):
     r = client.get(path)
     assert r.status_code == 200, f"{path} returned {r.status_code}"
@@ -125,6 +141,7 @@ def test_real_pages_still_serve(client: TestClient, path: str):
     ["isla-mark.svg", "favicon.svg", "hero-island.jpg",
      "fonts/outfit.woff2", "fonts/plus-jakarta-sans.woff2", "fonts/jetbrains-mono.woff2"],
 )
+@requires_build
 def test_real_assets_are_still_served(client: TestClient, asset: str):
     """The 404 must not swallow the demo. Assets live in dist and must resolve."""
     r = client.get(f"/{asset}")
@@ -132,6 +149,7 @@ def test_real_assets_are_still_served(client: TestClient, asset: str):
     assert len(r.content) > 0
 
 
+@requires_build
 def test_asset_content_type_is_still_correct(client: TestClient):
     """The woff2 regression this module's sibling file guards, re-checked
     through the route rather than through mimetypes directly."""
