@@ -115,10 +115,66 @@ that it runs air-gapped:
 
 ---
 
-## The eighth document: ISLA-GUIDE-CS
+## Fraud, AML and transaction-risk instruments
 
-Seven of the eight documents in the corpus are Philippine legal instruments fetched from public
-mirrors. The eighth, `corpus/raw/ISLA-GUIDE-CS.md`, is **authored by Isla AI** and is not a legal
+Four Philippine statutes were added for transaction-risk work. All four were
+retrieved from lawphil.net on 2026-10-10 and content-validated before being
+indexed.
+
+| Document | What it carries | Retrieved |
+|---|---|---|
+| **RA 9160** | Anti-Money Laundering Act. Definitions, money laundering offence, AMLC powers, customer identification and record keeping, the **tipping-off prohibition**, freezing, forfeiture, penal provisions | 33,527 chars, 27 chunks |
+| **RA 10927** | CASEM 2017 amendments to AMLA | 6,186 chars, 6 chunks |
+| **RA 8792** | E-Commerce Act. Electronic transaction validity, evidentiary weight, and the liability of intermediaries and service providers | 46,856 chars, 40 chunks |
+| **RA 11967** | Internet Transactions Act 2023. Online merchant duties (58 mentions), consumer protection and remedies (63 mentions), e-commerce fraud | 41,875 chars, 34 chunks |
+
+### Two measured gaps. Neither is filled with invented text.
+
+**1. BSP and SEC are unreachable from this machine.** Probed directly and through
+the Wayback Machine on 2026-10-10:
+
+| Regulator | Direct | Wayback | Result |
+|---|---|---|---|
+| `bsp.gov.ph` | refused | no usable capture | unreachable |
+| `sec.gov.ph` | refused | no usable capture | unreachable |
+| `amlc.gov.ph` | homepage only | — | law repository unreachable |
+| `officialgazette.gov.ph` | refused | refused | unreachable |
+
+This is why the corpus holds **no BSP or SEC document at all**, and why
+`tests/test_fraud_corpus.py` fails if any chunk ever claims BSP or SEC as its
+issuer. The operative obligations for a bank — MORB, the BSP circulars on
+suspicious transaction reporting, consumer protection circulars, and the SEC
+advisories on investment and UITAP fraud — are therefore **outside what this
+product can verify**. Questions that turn on them get a stated gap and an
+escalation, never a citation.
+
+**2. The RA 9160 capture is abridged.** The lawphil text is the 2001 enactment
+and it does **not** contain the covered-transaction / suspicious-transaction
+reporting provisions; the string "suspicious transaction" appears nowhere in
+the indexed text (verified). Definitions, the laundering offence, AMLC powers,
+customer identification, tipping-off, freezing, forfeiture and penalties are all
+present and quotable. The reporting deadlines are not.
+
+**3. RA 8792 predates its own consumer-protection amendment.** The capture is the
+2000 enactment and ends at Section 42. The word "consumer" appears once and
+"merchant" not at all, so its consumer-remedy section is **not** in this text.
+What it does carry is real and useful for fraud work: validity and integrity of
+electronic transactions, evidentiary weight in proceedings, and the allocation
+of liability across originators, addressees, intermediaries and service
+providers. For online-merchant duties and consumer remedies against an online
+seller, **RA 11967** is the instrument that actually answers, and it is present.
+
+Consequence, stated plainly: this product can tell a compliance officer that a
+scenario engages the AMLA and name the provisions it holds, but it **cannot**
+quote a suspicious-transaction-reporting deadline, and it says so rather than
+producing one. `tests/test_fraud_corpus.py` asserts the absence is still true,
+so if a later fetch supplies the real text the test fails and the notice gets
+removed deliberately rather than quietly.
+
+---
+
+Eleven of the twelve documents in the corpus are Philippine legal instruments fetched from public
+mirrors. The twelfth, `corpus/raw/ISLA-GUIDE-CS.md`, is **authored by Isla AI** and is not a legal
 source. It exists because the corpus had no answer to the most common question a bank front-line
 officer asks — "can I ask the customer for the CVV?" — and because the Act's own vocabulary
 ("adequate and not excessive", "strict confidentiality") does not appear in the question.
@@ -133,6 +189,7 @@ It is kept honest by construction:
 | URL is `isla-ai://corpus/ISLA-GUIDE-CS`, never a `privacy.gov.ph` link | `fetch_corpus.py` |
 | Every rule it states is split into "DPA basis" (citable, indexed) and "Binding rule" (PCI DSS / BSP, **not** indexed) | the document itself |
 | It declines to name BSP circular numbers rather than guess at them | `tests/test_frontline_copilot.py` |
+| It is counted as "twelve documents" in every figure, never as a legal instrument | `tests/test_fraud_corpus.py` |
 
 The operational go/no-go that decides whether staff may solicit a card secret lives in PCI DSS and
 Bangko Sentral regulations, neither of which is indexed. When a front-line question depends on it,

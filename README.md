@@ -113,7 +113,7 @@ worst case is a wrong chunk rather than an invented statute. That trade is docum
 embedding model actually buys by removing it:
 [`eval/RESULTS_ABLATION.md`](eval/RESULTS_ABLATION.md). Published retrieval metrics are
 **unchanged** — paraphrase MRR 0.671 with the neural leg, 0.654 without; eval questions 0.733 vs
-0.767. On this 241-chunk corpus the dense leg is roughly *tied* with BM25 plus section matching
+0.767. On this 348-chunk corpus the dense leg is roughly *tied* with BM25 plus section matching
 on the curated set and clearly ahead on paraphrased questions (recall@3 88% vs 75%). It is not
 carrying the product.
 
@@ -215,6 +215,31 @@ because the phrase *"credit scoring"* appears nowhere in the seven bundled instr
 corpus coverage gap, not a reasoning failure. [`docs/DISCLOSURES.md`](docs/DISCLOSURES.md) §7
 itemises every change that moved this metric, including the fact that the denominator grew from 4
 to 5 when a previously-unscored question was scored against verified ground truth.
+
+### What the corpus does NOT cover, measured
+
+Two regulators were asked for and **could not be retrieved from this machine**.
+Probed directly and through the Wayback Machine on 2026-10-10:
+
+| Regulator | Result |
+|---|---|
+| `bsp.gov.ph` — MORB, circulars, memorandum circulars | refused; no usable Wayback capture |
+| `sec.gov.ph` — circulars and advisories | refused; no usable Wayback capture |
+| `amlc.gov.ph` — law repository and issuances | homepage only |
+
+The corpus therefore contains **no BSP and no SEC document**, and
+`tests/test_fraud_corpus.py` fails if any chunk ever claims either as its issuer. A question that
+turns on a BSP or SEC obligation gets a stated gap and an escalation, never a citation.
+
+Separately, the retrievable **RA 9160** capture is **abridged**: the lawphil text is the 2001
+enactment and omits the covered/suspicious transaction *reporting* provisions — the string
+"suspicious transaction" appears nowhere in the indexed text. The laundering offence, AMLC powers,
+customer identification, the tipping-off prohibition, freezing, forfeiture and penalties are all
+present and quotable. The reporting deadlines are not, and the copilot says so instead of
+producing one.
+
+What the corpus does hold for fraud work, all fetched and content-validated:
+**RA 9160**, **RA 10927**, **RA 8792** (E-Commerce Act), **RA 11967** (Internet Transactions Act).
 
 ### Test suite
 
@@ -331,8 +356,9 @@ isla-ai/
 ├─ services/
 │  ├─ pii/           recognizers.py · engine.py · ner.py        Egress Guard
 │  ├─ copilot/       retrieval.py · embeddings.py · copilot.py  DPA Copilot
+│  ├─ risk/          indicators.py · assess.py                     Transaction Risk Engine
 │  └─ core/          app.py · airgap.py · ledger.py · llm.py     API + proof
-├─ corpus/           fetch_corpus.py · chunk_corpus.py           7 instruments + 1 guide → 241 chunks
+├─ corpus/           fetch_corpus.py · chunk_corpus.py           11 instruments + 1 guide → 348 chunks
 ├─ eval/             run_eval.py · datasets/ · RESULTS.md        the scoreboard
 ├─ tests/            173 Python + 99 UI tests
 ├─ models/           download_models.py · registry.yaml

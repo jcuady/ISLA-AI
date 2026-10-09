@@ -46,6 +46,18 @@ NETWORK_TOKENS = {
 }
 
 
+def _read_source(path: Path) -> str:
+    """Read a Python file tolerating a UTF-8 BOM.
+
+    `ast.parse` rejects U+FEFF outright, so a single file saved by a Windows
+    editor that defaults to "UTF-8 with BOM" would make this test raise instead
+    of asserting - turning the air-gap guard into a test that passes by
+    erroring in a way nobody reads. utf-8-sig strips the mark when present and
+    is identical to utf-8 when it is not.
+    """
+    return path.read_text(encoding="utf-8-sig")
+
+
 def _relative(path: Path) -> Path:
     return path.relative_to(REPO)
 
@@ -54,7 +66,7 @@ def _offending_modules() -> set[Path]:
     """Runtime modules that import or call a network primitive."""
     found: set[Path] = set()
     for path in SERVICES.rglob("*.py"):
-        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        tree = ast.parse(_read_source(path), filename=str(path))
         for node in ast.walk(tree):
             names: list[str] = []
             if isinstance(node, ast.Import):
@@ -95,7 +107,7 @@ def test_the_llm_client_defaults_to_loopback():
     # Any host literal in the source must be loopback or a template variable.
     # Walking the AST would break f-strings apart into meaningless fragments,
     # so the raw text is the honest thing to check here.
-    source = (SERVICES / "core" / "llm.py").read_text(encoding="utf-8")
+    source = _read_source(SERVICES / "core" / "llm.py")
     for match in re.finditer(r"https?://([A-Za-z0-9_.:{}-]+)", source):
         host = match.group(1).split(":")[0]
         assert host.startswith("{") or host in {"127.0.0.1", "localhost"}, (
@@ -138,7 +150,7 @@ def test_no_cloud_ai_sdk_is_installed():
 
 def test_the_verdict_note_does_not_claim_what_the_probe_itself_disproves():
     """Regression guard on user-facing copy that contradicted the probe."""
-    source = (SERVICES / "core" / "airgap.py").read_text(encoding="utf-8")
+    source = _read_source(SERVICES / "core" / "airgap.py")
     assert "Isla AI never opens an outbound socket" not in source
 
 

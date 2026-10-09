@@ -134,6 +134,14 @@ def test_every_chunk_is_attributable_to_a_real_document():
         "NPC-CIRC-2022-01",
         "NPC-CIRC-2022-04",
         "NPC-CIRC-2023-04",
+        # Fraud, AML and transaction-risk instruments. Each is fetched from a
+        # public mirror and content-validated by corpus/fetch_corpus.py; see
+        # tests/test_fraud_corpus.py for the provision-level assertions and for
+        # the BSP/SEC retrieval gap.
+        "RA-9160",
+        "RA-10927",
+        "RA-8792",
+        "RA-11967",
         "ISLA-GUIDE-CS",
     }
     unknown = {c["doc_id"] for c in load_chunks()} - known

@@ -126,6 +126,77 @@ SOURCES: list[SourceDoc] = [
         ],
         notes="DPS registration, DPO designation, ADS/profiling notification.",
     ),
+    # -- Fraud, AML and transaction-risk instruments ---------------------
+    # Reachable and content-validated on 2026-10-10. BSP and SEC are NOT here:
+    # both sites refuse this network outright (see UNVERIFIABLE_REGULATORS) and
+    # an unsourced summary of a BSP circular is worse than an admitted gap.
+    SourceDoc(
+        doc_id="RA-9160",
+        title="Republic Act No. 9160 - Anti-Money Laundering Act of 2001, "
+              "as amended",
+        issuer="Congress of the Philippines",
+        doc_type="statute",
+        origin_url="https://lawphil.net/statutes/repacts/ra2001/ra_9160_2001.html",
+        authority_tier=1,
+        effective_date="2001-09-26",
+        mirrors=[
+            WAYBACK_PREFIX + "https://www.officialgazette.gov.ph/2001/09/26/"
+                            "republic-act-no-9160/"
+        ],
+        notes="THE suspicious-transaction instrument. Covered transactions, "
+              "suspicious transaction reporting to AMLC, customer "
+              "identification, record keeping. Amended by RA 10927. "
+              "ABRIDGED: the lawphil capture is the 2001 text and omits the "
+              "covered/suspicious transaction REPORTING provisions, which "
+              "appear nowhere in the indexed text. Verified 2026-10-10.",
+    ),
+    SourceDoc(
+        doc_id="RA-10927",
+        title="Republic Act No. 10927 - Anti-Money Laundering Act of 2001, "
+              "as amended (CASEM)",
+        issuer="Congress of the Philippines",
+        doc_type="statute",
+        origin_url="https://lawphil.net/statutes/repacts/ra2017/ra_10927_2017.html",
+        authority_tier=1,
+        effective_date="2017-02-28",
+        mirrors=[
+            WAYBACK_PREFIX + "https://www.officialgazette.gov.ph/2017/02/28/"
+                            "republic-act-no-10927/"
+        ],
+        notes="CASEM 2017. Short amending act; widens the covered-transaction "
+              "and reporting regime and de-commodifies covered persons.",
+    ),
+    SourceDoc(
+        doc_id="RA-8792",
+        title="Republic Act No. 8792 - Electronic Commerce Act of 2000",
+        issuer="Congress of the Philippines",
+        doc_type="statute",
+        origin_url="https://lawphil.net/statutes/repacts/ra2000/ra_8792_2000.html",
+        authority_tier=1,
+        effective_date="2000-06-14",
+        mirrors=[
+            WAYBACK_PREFIX + "https://www.officialgazette.gov.ph/2000/05/26/"
+                            "republic-act-no-8792/"
+        ],
+        notes="E-Commerce Act. Sections 48 and 49 govern who bears the loss on "
+              "an unauthorised electronic transaction and how a bank must "
+              "respond - the provision that protects customer AND bank.",
+    ),
+    SourceDoc(
+        doc_id="RA-11967",
+        title="Republic Act No. 11967 - Internet Transactions Act of 2023",
+        issuer="Congress of the Philippines",
+        doc_type="statute",
+        origin_url="https://lawphil.net/statutes/repacts/ra2023/ra_11967_2023.html",
+        authority_tier=1,
+        effective_date="2023-07-26",
+        mirrors=[
+            WAYBACK_PREFIX + "https://www.officialgazette.gov.ph/2023/07/26/"
+                            "republic-act-no-11967/"
+        ],
+        notes="Internet Transactions Act. Online merchant duties, consumer "
+              "protection and remedies for e-commerce fraud.",
+    ),
     SourceDoc(
         doc_id="NPC-CIRC-16-03",
         title="NPC Circular No. 16-03 - Personal Data Breach Management",
@@ -222,6 +293,20 @@ OPTIONAL_SOURCES: list[SourceDoc] = [
 ]
 
 
+# Regulators this build asked for and could not reach. Measured, not assumed:
+# probe on 2026-10-10 against direct + Wayback found bsp.gov.ph and sec.gov.ph
+# refuse this network with no usable archived capture, and amlc.gov.ph serves
+# its homepage but not its law repository. The product must say so out loud
+# rather than ship a plausible summary nobody can check.
+UNVERIFIABLE_REGULATORS = (
+    "Bangko Sentral ng Pilipinas (BSP) - Manual of Regulations for Banks, "
+    "Circulars, Memorandum Circulars",
+    "Securities and Exchange Commission (SEC) - circulars and advisories, "
+    "including the UITAP advisories",
+    "AMLC law repository and issuances",
+)
+
+
 def fetch(url: str, timeout: int = 60) -> tuple[bytes, str]:
     """Return (bytes, content_type). Raises on failure."""
     req = urllib.request.Request(
@@ -277,6 +362,10 @@ def validate(doc: SourceDoc, data: bytes, ext: str) -> tuple[bool, str]:
         "NPC-CIRC-16-03": ["personal data breach"],
         "NPC-CIRC-2022-01": ["administrative fine"],
         "NPC-CIRC-2023-04": ["consent"],
+        "RA-9160": ["anti-money laundering", "9160"],
+        "RA-10927": ["10927"],
+        "RA-8792": ["electronic commerce", "8792"],
+        "RA-11967": ["internet transactions"],
     }.get(doc.doc_id, [])
     for token in identity_tokens:
         if token not in low:
