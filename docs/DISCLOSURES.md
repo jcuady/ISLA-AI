@@ -82,6 +82,37 @@ listed openly in the README's build table — among them a corpus fetcher that s
 while reporting HTTP 200, a chunker that mislabelled every citation by one section, and a landing
 page that would have rendered blank had its CSP hash gone stale.
 
+### The audit ledger's tamper-evidence claim was false for a day
+
+Pre-flight caught it at **746 entries**: `ledger chain valid — FAIL`. The hash chain no longer
+verified, so the project's central cryptographic claim was untrue, and nothing had raised.
+
+**Cause.** `AuditLedger.append()` held a `threading.Lock`, which is invisible to a second
+*process*. Adding the transaction-risk endpoint meant the API tests began entering the app lifespan,
+and each one appended a real `session_start` entry to `data/audit_ledger.jsonl` — the same file the
+live server held open. Two writers, one chain, interleaved appends, and the entries stopped
+chaining. The test suite was silently writing to production data.
+
+**Fix, three parts.**
+
+1. `LEDGER_PATH` is now overridable via `ISLA_LEDGER_PATH`, and `tests/conftest.py` points the
+   suite at a temp directory. Tests can no longer touch the production chain.
+2. The lock is cross-process: an OS-level exclusive lock (`msvcrt` on Windows, `fcntl` on POSIX)
+   held on a **sidecar** `.lock` file. A sidecar is required on Windows because a byte-range lock
+   blocks other opens of that region, so locking the ledger itself would make reading it inside the
+   critical section fail — and because `msvcrt` cannot lock a zero-length range, which would force
+   a sentinel byte into the first line of the chain.
+3. `append()` now re-reads the file under that lock instead of trusting an in-memory head. Without
+   it, a second writer would still get a duplicate `seq` and a stale `prev_hash`.
+
+`tests/test_audit_ledger.py` spawns a real second process against the same file and asserts the
+chain still verifies — the exact scenario that broke it. The corrupted chain was preserved rather
+than deleted (`data/` is git-ignored, so it never entered the repository).
+
+The general lesson, and the reason it is written down: a chain that stops verifying produces no
+exception, no log line and no failed assertion. Only a pre-flight check that asks the question
+outright found it.
+
 ## 6. What runs locally but is *optional*
 
 Isla AI degrades safely and is honest about it in `/api/health`:

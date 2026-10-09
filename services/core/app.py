@@ -53,7 +53,14 @@ from services.risk.indicators import catalogue_summary  # noqa: E402
 BIND_HOST = os.environ.get("ISLA_HOST", "127.0.0.1")
 BIND_PORT = int(os.environ.get("ISLA_PORT", "8765"))
 DATA_DIR = REPO_ROOT / "data"
-LEDGER_PATH = DATA_DIR / "audit_ledger.jsonl"
+# Overridable so the test suite never writes to the real audit ledger.
+#
+# This is not tidiness. The ledger is the product's tamper-evidence claim, and
+# a pytest run that entered the app lifespan appended `session_start` and
+# `risk_assessment` entries to data/audit_ledger.jsonl while the live server
+# held the same file. Two writers, one chain, and the hashes stopped verifying
+# - the headline cryptographic claim went false with no error anywhere.
+LEDGER_PATH = Path(os.environ.get("ISLA_LEDGER_PATH", DATA_DIR / "audit_ledger.jsonl"))
 WEB_DIST = REPO_ROOT / "apps" / "web" / "dist"
 
 assert_loopback(BIND_HOST)
