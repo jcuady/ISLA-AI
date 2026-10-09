@@ -18,8 +18,8 @@ track, not a prediction of the result.
 |---|---|---|---|---|
 | 25% | Problem & Usefulness | **Strong, with one real exposure** | Narrow, named, regulation-backed user | "Would the general public benefit?" — they would not, and we cannot pretend otherwise |
 | 25% | Local AI Implementation | **Vulnerable** | Local inference is *architecturally* necessary | Our own ablation says the local AI is roughly tied with a lexical baseline |
-| 20% | Technical Execution | **Strong** | 272 tests, honest claims, bugs published | Corpus is 8 documents; small-sample metrics |
-| 15% | Innovation | **Strong** | Refusing to be wrong; correct-refusal as a feature | Verifying your own redactor is good practice, not a novel idea |
+| 20% | Technical Execution | **Strong** | 350 Python + 108 UI tests, honest claims, bugs published | Corpus is 12 documents but BSP and SEC are unreachable; small-sample metrics |
+| 15% | Innovation | **Strong** | Refusing to be wrong; correct-refusal and named coverage gaps as a feature | Verifying your own redactor is good practice, not a novel idea |
 | 15% | Product & Demo Quality | **Medium-strong** | Real console, zero fake buttons | Demo video still pending — that is 15% with a hole in it |
 
 **The single biggest risk in this submission is the Local AI criterion, and it is
@@ -157,9 +157,13 @@ wrote them down. That is the whole argument.
 
 **Strongest objection.** Scale and rigour of evaluation:
 
-- The corpus is **8 documents / 241 chunks.** Seven are Philippine legal
-  instruments; the eighth is Isla AI's own compiled front-line guide, which is
-  labelled tier 3 and ranked below every statute. Macro-F1 1.0000 on a dataset we
+- The corpus is **12 documents / 348 chunks.** Eleven are Philippine legal
+  instruments; the twelfth is Isla AI's own compiled front-line guide, which is
+  labelled tier 3 and ranked below every statute. **BSP and SEC are absent
+  entirely**: both sites refuse this network and neither has a usable Wayback
+  capture, and the retrievable RA 9160 is an abridged 2001 text that omits the
+  covered/suspicious transaction reporting provisions. The product names those
+  gaps on every risk assessment rather than filling them. Macro-F1 1.0000 on a dataset we
   wrote ourselves looks, to a careful judge, more like a ceiling than a result.
   The PII test set is synthetic. We have not measured recall against
   independently labelled real banking data, and that is the single largest
@@ -231,7 +235,7 @@ asserts 39 claims against a live server.
   15% of the score with something missing. Nothing we write in a Markdown file
   fixes that.
 - **The social/X/LinkedIn URL is pending.**
-- 241 chunks is a small corpus for a live Q&A demo. A judge asking an
+- 348 chunks is a small corpus for a live Q&A demo. A judge asking an
   out-of-scope question gets a refusal — which is the designed behaviour and is
   *presented as correct*, but a judge who does not know that is seeing a product
   that doesn't know anything.

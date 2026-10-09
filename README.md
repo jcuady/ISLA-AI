@@ -8,7 +8,7 @@
 *Walang datos na lumalabas.*
 
 [![Local AI](https://img.shields.io/badge/inference-100%25%20local-107080?style=flat-square)](https://github.com/jcuady/ISLA-AI)
-[![Tests](https://img.shields.io/badge/tests-272%20passed-2fbf87?style=flat-square)](https://github.com/jcuady/ISLA-AI)
+[![Tests](https://img.shields.io/badge/tests-458%20passed-2fbf87?style=flat-square)](https://github.com/jcuady/ISLA-AI)
 [![No cloud calls](https://img.shields.io/badge/cloud%20API%20calls-0-a78bfa?style=flat-square)](https://github.com/jcuady/ISLA-AI)
 
 **AppBuilders PH Hackathon 2026 · Local AI track · Finance vertical**
@@ -155,8 +155,8 @@ passes so the verifier cannot rediscover its own output.
 ### DPA Copilot
 
 Hybrid retrieval — dense (`multilingual-e5-small` int8 ONNX) + BM25 + section-ID matching,
-weighted `0.60 / 0.25 / 0.15` and renormalised when the dense leg is absent — over **223 citable
-chunks from 7 real instruments**. Answers are constrained to quoted spans, every claim carries its
+weighted `0.60 / 0.25 / 0.15` and renormalised when the dense leg is absent — over **348 citable
+chunks from 11 real instruments**. Answers are constrained to quoted spans, every claim carries its
 section, and a strict lexical domain gate refuses out-of-domain questions.
 
 It speaks Taglish because that is the working language of a Philippine branch:
@@ -172,6 +172,34 @@ It speaks Taglish because that is the working language of a Philippine branch:
 > *"Who won the 2025 FIFA World Cup?"*
 > → *Hindi ito tanong tungkol sa Data Privacy Act o mga patakaran ng NPC, kaya wala akong
 > maibibigay na batayan sa loob ng corpus na 'to.* — **and it cites nothing.**
+
+### Fraud & AML
+
+A fourth control screens a described transaction or account behaviour against
+**20 named fraud and AML typologies** — structuring, money-mule accounts, rapid
+pass-through, account takeover, credential solicitation, tipping-off, elder
+financial abuse, business-email-compromise payment redirection and the rest.
+
+It returns a risk tier, **who is exposed** (customer, bank, or both), the exact
+words that tripped each indicator, the action required, and the provisions it can
+quote. Measured on a 20-scenario labelled set
+([`eval/RESULTS_RISK.md`](eval/RESULTS_RISK.md)):
+
+| Metric | Measured |
+|---|---|
+| Indicator recall | **94.4%** |
+| Indicator precision (conservative floor) | **85.0%** |
+| Tier accuracy | **100%** |
+| False positives on routine banking | **0 of 3** |
+| Latency p50 | **6 ms** |
+
+The engine is a **rule table, not a model call**. A compliance officer has to
+reproduce the reason months later, so every indicator carries a stable id, the
+evidence span that fired it, and a legal hook — and a test walks every hook and
+fails the build if its anchor phrase is not actually present in the corpus text
+it cites. Where the governing rule sits with BSP, SEC, the AMLC or the PCI SSC,
+the hook is `GAP`, it names the regulator that refused us, and it is **never
+rendered as a citation**.
 
 ### Audit Ledger
 
@@ -282,13 +310,16 @@ Open <http://127.0.0.1:8765> for the landing page, or go straight to the console
 ### Verify it yourself
 
 ```powershell
-# 272 tests: 173 Python + 99 UI
+# 458 tests: 350 Python + 108 UI
 .venv\Scripts\python.exe -m pytest tests/ -q
 npm --prefix apps\web test
 npm --prefix apps\web run typecheck
 
 # Regenerate the scoreboard from the committed datasets
 .venv\Scripts\python.exe eval\run_eval.py
+
+# Fraud & AML indicator recall, precision, tier accuracy and routine false-positive rate
+.venv\Scripts\python.exe eval\risk_eval.py
 
 # What the local neural leg actually contributes (needs the ONNX weights).
 # This is the measurement behind the "is local AI fundamental?" answer, and it
@@ -299,7 +330,7 @@ npm --prefix apps\web run typecheck
 pip install -r requirements-verify.txt
 python eval\run_eval.py --sparse-only
 
-# 39 assertions covering every claim the demo makes
+# 49 assertions covering every claim the demo makes
 .venv\Scripts\python.exe scripts\preflight.py
 
 # Both web surfaces: console errors, external requests, overflow, CSP hash
@@ -360,7 +391,7 @@ isla-ai/
 │  └─ core/          app.py · airgap.py · ledger.py · llm.py     API + proof
 ├─ corpus/           fetch_corpus.py · chunk_corpus.py           11 instruments + 1 guide → 348 chunks
 ├─ eval/             run_eval.py · datasets/ · RESULTS.md        the scoreboard
-├─ tests/            173 Python + 99 UI tests
+├─ tests/            350 Python + 108 UI tests
 ├─ models/           download_models.py · registry.yaml
 ├─ apps/web/         React console + landing page + verify-ui.mjs
 ├─ branding/         isla-mark.svg · isla-ai-logo.png · brand.md
@@ -452,6 +483,8 @@ Full transparency, because the failures are the most useful part of this project
 | **`?view=egress` was a dead link** | Navigation lived only in React state, so a shared URL always reopened the Copilot and Back did nothing | The active control now lives in the URL, with an unknown value falling back to the Copilot instead of rendering a blank screen. |
 | **We were mean-pooling an e5 model** | `intfloat/multilingual-e5-small` requires **CLS pooling** per its model card. With BERT-style mean pooling the dense leg scored *below* a lexical-only baseline — it was actively hurting retrieval, and no headline metric noticed | Added `eval/retrieval_ablation.py`, which ranks the correct instrument per question with and without the model. It failed first: paraphrase MRR 0.552 vs 0.572. Fixed to CLS pooling, re-encoded, re-measured. Published metrics were unchanged throughout — which is exactly why the ablation was needed. Re-measured again at 241 chunks after the front-line guide was added: paraphrase MRR 0.671 vs 0.654 in favour of the neural leg, eval questions 0.733 vs 0.767 against it. |
 | **We claimed we open no socket at all** | `/api/airgap` opens a real TCP connection to fixed public resolvers on every probe, because a judge must be able to falsify the badge by pulling the cable | Restated the claim accurately in seven documents and enforced it: `tests/test_airgap_claims.py` fails if any runtime module outside the probe gains a network primitive. |
+| **Our own test suite broke our tamper-evidence claim** | `AuditLedger.append()` used a `threading.Lock`, which is invisible to a second *process*. Once the API tests entered the app lifespan they appended real entries to the same `data/audit_ledger.jsonl` the live server held, and at 746 entries the hash chain stopped verifying — with no exception and no failed test | `LEDGER_PATH` is now overridable and the suite uses a temp file; appends take a cross-process lock on a sidecar `.lock` and re-read the file under it. `tests/test_audit_ledger.py` spawns a genuine second process and asserts the chain still verifies. Found by pre-flight, not by a test. |
+| **Five fraud indicators silently never fired** | `\bpretend\b` cannot match "pretending" and `third part\b` cannot match "third party" — word-boundary bugs that cost recall on ordinary phrasing and were invisible until scored against a labelled set | Fixed the patterns, not the thresholds: recall 72.2% → 94.4%, tier accuracy 76.5% → 100%. The before/after is published in `eval/RESULTS_RISK.md`. |
 
 **Judgement calls we made against our own convenience:** we did not tune BM25 until the one failing
 evaluation case went green. It is a corpus coverage gap, and we would rather publish a red number

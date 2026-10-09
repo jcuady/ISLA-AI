@@ -48,24 +48,24 @@ Latency p50 **0.2 ms**, p95 **0.5 ms**
 | Citation accuracy | >= 0.95 | 100.00% | PASS |
 | Correct source document | >= 0.80 | 100.00% | PASS |
 | Correct-refusal rate | >= 0.90 | 100.00% | PASS |
-| Copilot latency p50 | < 4000 ms | 11 ms | PASS |
+| Copilot latency p50 | < 4000 ms | 13 ms | PASS |
 
 ### Per-question detail
 
 | Question | Refused | Cited | Source correct | Conf | ms |
 |---|---|---|---|---|---|
-| Ilang oras dapat ko i-report ang data breach? | no | yes | yes | 0.78 | 14 |
-| Pwede ba ipasa ang CDR ng customer ko sa vendo | no | yes | yes | 0.78 | 11 |
-| Can our call center use AI to score our agents | no | yes | yes | 0.69 | 11 |
-| Ano ang fine kapag hindi na-notify ang NPC? | no | yes | yes | 0.77 | 8 |
-| Kailangan ba mag-register ng AI credit scoring | no | yes | yes | 0.74 | 11 |
+| Ilang oras dapat ko i-report ang data breach? | no | yes | yes | 0.78 | 15 |
+| Pwede ba ipasa ang CDR ng customer ko sa vendo | no | yes | yes | 0.78 | 13 |
+| Can our call center use AI to score our agents | no | yes | yes | 0.70 | 12 |
+| Ano ang fine kapag hindi na-notify ang NPC? | no | yes | yes | 0.77 | 9 |
+| Kailangan ba mag-register ng AI credit scoring | no | yes | yes | 0.74 | 14 |
 
 ### Refusal behaviour (out of domain)
 
 | Question | Refused | Confidence |
 |---|---|---|
-| Ano ang stock price ng BDO ngayong araw? | yes | 0.52 |
+| Ano ang stock price ng BDO ngayong araw? | yes | 0.77 |
 | Who won the 2025 FIFA World Cup? | yes | 0.84 |
 | What is the capital of Kenya? | yes | 0.78 |
-| How do I cook adobo? | yes | 0.71 |
+| How do I cook adobo? | yes | 0.77 |
 | Magkano ang Porsche 911? | yes | 0.53 |

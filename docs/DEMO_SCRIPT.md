@@ -7,7 +7,7 @@ screen. Rehearse three times; time each run.
 
 - [ ] Run the pre-flight self-check. It asserts every claim the demo makes — corpus loaded, dense
       retrieval up, redaction verified clean, the 72-hour answer citable, out-of-domain refusal
-      working, ledger chain intact, 272 tests green (173 Python + 99 UI). **Do not present until it prints
+      working, ledger chain intact, 458 tests green (350 Python + 108 UI). **Do not present until it prints
       `PRE-FLIGHT PASSED`.**
 
   ```powershell
@@ -155,7 +155,46 @@ plausibly wrong."
 
 ## [3:00–3:45] THE ARTEFACT THEY'LL PAY FOR
 
-**Do:** Audit Ledger tab.
+**Do:** Click **Fraud & AML** in the sidebar. The scenario is pre-loaded. Click
+**Screen scenario**.
+
+**Expected:** `CRITICAL risk`, three indicators, both parties exposed, required
+actions listed, and a panel headed **"Not covered by this build"**.
+
+> "A student account funded in cash by three different people, wired abroad the
+> same day. That's the classic retail money-mule pattern, and Isla AI names it
+> in six milliseconds — offline — and tells me the evidence: the words
+> 'student account received 480,000 in cash'."
+
+> "Twenty typologies, and every one of them is a rule, not a model call. Because
+> in a bank you have to be able to reproduce *why* six months later in front of
+> an examiner. It shows me the exact sentence that tripped each flag, and the
+> provision it comes from."
+
+**Do — the differentiator, and the best beat in the demo.** Scroll to the red
+panel at the bottom.
+
+> "And here's the part I want to be judged on. That panel says what this system
+> *cannot* do. Bangko Sentral refused this machine — the Manual of Regulations
+> for Banks, the circulars on suspicious transaction reporting, none of it. Same
+> for the SEC. So the cross-border flag says 'governing rule: BSP — not in
+> corpus, not quoted, not cited' and hands it to a human."
+
+> "We could have written a plausible summary of the BSP rules and nobody would
+> have caught it. Then a judge asks about one and we quote something that isn't
+> real. A copilot that's visibly incomplete is worth something; one that's
+> confidently wrong is worse than nothing."
+
+**Do — the honest floor.** Paste an ordinary transaction: *"Customer withdrew
+PHP 5,000 from an ATM."*
+
+**Expected:** no red flags.
+
+> "Clean. But notice it doesn't say 'safe' — it says no indicator matched,
+> which is not the same claim. Zero false positives across the routine-banking
+> set is what decides whether a branch officer keeps a tool switched on."
+
+**Then:** click **Audit Ledger**.
 
 > "Every one of those actions wrote a hash-chained record. SHA-256, each entry linked to the last.
 > Alter one entry and the whole chain after it breaks — anyone can verify it in one pass."
