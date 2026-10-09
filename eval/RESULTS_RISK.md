@@ -15,7 +15,7 @@ Expected indicators and tiers were written from the typology definitions before 
 | Indicator precision >= 0.80 | | 85.00% | PASS |
 | Routine banking false-positive rate <= 0.05 | | 0.00% | PASS |
 | Tier accuracy >= 0.85 | | 100.00% | PASS |
-| Latency p50 < 400 ms | | 5 ms | PASS |
+| Latency p50 < 400 ms | | 4 ms | PASS |
 
 Exposure attribution correct on **100.00%** of risky scenarios. Routine banking left clean on **3/3**.
 

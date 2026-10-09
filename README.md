@@ -529,7 +529,7 @@ Stated plainly, because a compliance tool that overstates itself is worse than n
 | [`docs/AIRGAP_VERIFICATION.md`](docs/AIRGAP_VERIFICATION.md) | How the air-gap claim is enforced and tested |
 | [`docs/LICENSING.md`](docs/LICENSING.md) | Third-party licences and the PyMuPDF AGPL flag |
 | [`docs/CORPUS_SOURCES.md`](docs/CORPUS_SOURCES.md) | Every legal document, its URL, retrieval date and SHA-256 |
-| [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) | The 5-minute demo, with prepared answers for the four hard questions |
+| [`docs/DEMO_SCRIPT.md · docs/DEMO_60S.md`](docs/DEMO_SCRIPT.md) | The 5-minute demo, with prepared answers for the four hard questions |
 | [`docs/HACKATHON_RULES.md`](docs/HACKATHON_RULES.md) | Host rules transcribed verbatim, with a compliance matrix and the honest gaps |
 | [`docs/SUBMISSION.md`](docs/SUBMISSION.md) | Submission checklist status |
 | [`eval/RESULTS.md`](eval/RESULTS.md) | The generated scoreboard |

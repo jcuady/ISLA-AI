@@ -1,5 +1,9 @@
 # Isla AI — 5-minute demo script
 
+> **Short slot?** Use [`DEMO_60S.md`](DEMO_60S.md), the 60-second cut-down. It is a
+> different script, not a compressed one: three clicks, no typing, and the beats that
+> survive when there is no room to explain anything.
+
 **Total: 5 minutes.** The demo must end with the network unplugged and every claim verified on
 screen. Rehearse three times; time each run.
 
