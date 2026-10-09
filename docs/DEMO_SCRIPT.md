@@ -7,7 +7,7 @@ screen. Rehearse three times; time each run.
 
 - [ ] Run the pre-flight self-check. It asserts every claim the demo makes — corpus loaded, dense
       retrieval up, redaction verified clean, the 72-hour answer citable, out-of-domain refusal
-      working, ledger chain intact, 207 tests green (108 Python + 99 UI). **Do not present until it prints
+      working, ledger chain intact, 213 tests green (114 Python + 99 UI). **Do not present until it prints
       `PRE-FLIGHT PASSED`.**
 
   ```powershell
@@ -183,10 +183,10 @@ denominator grew from four to five.
 > collections. Almost none can prove compliance for their own AI.
 >
 > We built the copilot that can. And it never leaves your building — not by policy, not by promise,
-> but because it legally cannot. The data stays inside the shield, because the shield *is* the
+> but because it legally cannot. The data stays on the island, because the island *is* the
 > control.
 >
-> Isla AI. Walang datos na lumalabas."
+> Isla AI. In-Situ Local AI. Walang datos na lumalabas."
 
 ---
 

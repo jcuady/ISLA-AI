@@ -64,7 +64,7 @@ Isla AI was built with AI-assisted development tooling. This is disclosed per th
 | Tool | Role |
 |---|---|
 | **MiniMax Code** (`mavis` agent) | Primary development assistant. Architecture, implementation, debugging, test authoring, the evaluation harness, the UI, and this documentation. Ran the build end to end. |
-| AI image generation (`connector__matrix__generate_image`) | Generated the 4K shield mark. Rekeyed and recoloured by `scripts/process_logo.py`; the vector master is hand-authored. |
+| AI image generation (`connector__matrix__generate_image`) | Generated the 4K island mark and the hero photograph. Rekeyed, resized and palette-reduced by `scripts/process_isla_logo.py`; the vector reduction is emitted by that same script from the geometry constants, not drawn by hand. |
 | Archify | Produced `docs/architecture/isla-architecture.html`. |
 
 Supporting automation, not AI: **Playwright** (visual, console-error, external-request and CSP

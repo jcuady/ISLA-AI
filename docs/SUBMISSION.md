@@ -20,8 +20,8 @@ It prints `PRE-FLIGHT PASSED — 39/39 checks` or the demo should not start.
 
 | Item | Status |
 |---|---|
-| **Project name** | **Isla AI** — *Walang datos na lumalabas.* |
-| **Short description** | On-device AI privacy-compliance copilot for Philippine banks. Detects and redacts PH banking PII before staff paste it into external AI, and answers Data Privacy Act questions offline with citations. |
+| **Project name** | **Isla AI** — *In-Situ Local AI.* *Walang datos na lumalabas.* |
+| **Short description** | In-situ AI privacy-compliance copilot for Philippine banks. Detects and redacts PH banking PII before staff paste it into external AI, and answers Data Privacy Act questions offline with citations. |
 | **Team members** | Malcolm Joaquin Cuady — Developer · Author. Mark Quiazon — Project Manager. Boundless IT Solutions (BITS). |
 | **Public GitHub repository** | <https://github.com/jcuady/ISLA-AI> |
 
@@ -31,7 +31,7 @@ It prints `PRE-FLIGHT PASSED — 39/39 checks` or the demo should not start.
 |---|---|
 | **Demo video** | Pending — recorded against `docs/DEMO_SCRIPT.md` after pre-flight passes |
 | **X / LinkedIn video URL** | Pending |
-| **What runs locally** | Egress Guard · DPA Copilot · audit ledger · HMAC pseudonyms · air-gap socket probe · both web surfaces · 207-test suite (108 Python + 99 UI) · the whole evaluation harness. Every published number was produced locally. |
+| **What runs locally** | Egress Guard · DPA Copilot · audit ledger · HMAC pseudonyms · air-gap socket probe · both web surfaces · 213-test suite (114 Python + 99 UI) · the whole evaluation harness. Every published number was produced locally. |
 | **What requires internet** | **Build time only**: model weight download (Qwen2.5-3B GGUF, multilingual-e5 ONNX, optional GLiNER) and corpus fetch from public NPC / lawphil mirrors. **Runtime: nothing.** No customer data leaves the machine and no cloud service is called; the only outbound traffic is the air-gap probe's own empty TCP handshake. Both web surfaces ship `default-src 'none'`. |
 
 ## The disclosures

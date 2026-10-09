@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Isla AI — Your bank's data never leaves the island</title>
-<meta name="description" content="Isla AI is an on-device AI privacy-compliance copilot for Philippine banks. It redacts PII, cites the Data Privacy Act and writes hash-chained audit proof — entirely on one machine, with no cloud AI API anywhere.">
+<title>Isla AI — In-Situ Local AI for Philippine bank privacy compliance</title>
+<meta name="description" content="Isla AI is an In-Situ Local AI privacy-compliance copilot for Philippine banks. It redacts PII, cites the Data Privacy Act and writes hash-chained audit proof on the machine the data already lives on.">
 <meta name="color-scheme" content="dark">
 
 <!-- Two policies apply and the browser enforces the intersection, so both must
@@ -21,8 +21,8 @@
   form-action 'none';
   base-uri 'none'">
 
-<meta property="og:title" content="Isla AI — Your bank's data never leaves the island">
-<meta property="og:description" content="On-device AI privacy compliance for Philippine banks. Redaction, citation and audit proof that never leaves the machine.">
+<meta property="og:title" content="Isla AI — In-Situ Local AI for Philippine bank privacy compliance">
+<meta property="og:description" content="Redaction, citation and audit proof that runs where the data already is. A cloud model cannot check a secret without being sent it.">
 <meta property="og:type" content="website">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/isla-mark-180.png">
@@ -59,7 +59,10 @@
   /* -- ink ------------------------------------------------------------- */
   --card:rgba(255,255,255,.035); --card-hover:rgba(255,255,255,.06);
   --line:rgba(255,255,255,.11); --line-strong:rgba(255,255,255,.22); --line-faint:rgba(255,255,255,.05);
-  --text:#fff; --text-2:#9FB6BC; --text-3:#6B838A; --text-inv:#04242B;
+  --text:#fff; --text-2:#9FB6BC; --text-3:#7C979F; --text-inv:#04242B;
+  /* text-3 was #6B838A at 4.47:1 on abyss-950 - just under AA. Lightened to
+     5.4:1. It carries the proof strip, eyebrows and the footer legal line, all
+     of which are small text. */
 
   --font-display:"Outfit","Segoe UI Variable Display","Segoe UI",-apple-system,sans-serif;
   --font-ui:"Plus Jakarta Sans","Segoe UI Variable Text","Segoe UI",-apple-system,sans-serif;
@@ -90,8 +93,9 @@ p{margin:0}
 img{max-width:100%;display:block}
 :focus-visible{outline:2px solid var(--lagoon-400);outline-offset:3px;border-radius:6px}
 .wrap{width:100%;max-width:1200px;margin-inline:auto;padding-inline:28px}
-.skip{position:absolute;left:-9999px;top:0;z-index:200;background:var(--lagoon-500);
-  color:#fff;padding:12px 22px;border-radius:0 0 10px 0}
+/* See .nav__cta for why the ink is abyss rather than white. */
+.skip{position:absolute;left:-9999px;top:0;z-index:200;background:var(--lagoon-400);
+  color:var(--abyss-950);padding:12px 22px;border-radius:0 0 10px 0}
 .skip:focus{left:0}
 .mono{font-family:var(--font-mono)}
 
@@ -136,11 +140,23 @@ img{max-width:100%;display:block}
 .hero__lede{margin-top:26px;max-width:60ch;font-size:clamp(1.02rem,1.5vw,1.2rem);
   line-height:1.65;color:var(--text-2)}
 .hero__cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:38px}
+/* The acronym is the brand's thesis in four letters, so it sits between the
+   lede and the CTA rather than hiding in the footer - and it carries the gloss
+   with it, so it reads as content rather than as a badge. */
+.hero__acronym{margin-top:30px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;
+  padding-top:20px;border-top:1px solid var(--line);max-width:62ch}
+.hero__acronym b{font-family:var(--font-display);font-weight:800;font-size:1.5rem;
+  letter-spacing:.16em;color:var(--lagoon-300)}
+.hero__acronym span{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--text-3)}
+.hero__acronym .hero__acronym-why{flex-basis:100%;font-family:var(--font-sans);
+  font-size:.88rem;letter-spacing:0;text-transform:none;color:var(--text-2);
+  line-height:1.6;max-width:52ch}
 .btn{display:inline-flex;align-items:center;gap:10px;padding:15px 28px;border-radius:999px;
   font-family:var(--font-display);font-weight:600;font-size:.98rem;border:1px solid transparent;
   transition:transform .2s var(--ease),background .2s var(--ease),border-color .2s var(--ease)}
 .btn--primary{background:var(--coral-500);color:#2A0B03;
-  box-shadow:0 14px 34px -12px rgba(255,95,61,.7)}
+  box-shadow:0 10px 26px -16px rgba(0,0,0,.9)}
 .btn--primary:hover{background:var(--coral-400);transform:translateY(-2px)}
 .btn--ghost{border-color:var(--line-strong);color:var(--text);background:rgba(2,26,32,.45);
   backdrop-filter:blur(8px)}
@@ -160,13 +176,16 @@ header{position:fixed;top:0;left:0;width:100%;z-index:50;padding:20px 16px 0}
 .brand img{width:34px;height:34px;flex-shrink:0}
 .brand span{font-family:var(--font-display);font-weight:800;font-size:1.02rem;
   letter-spacing:.03em;white-space:nowrap}
-.brand small{display:block;font-size:.6rem;font-weight:500;letter-spacing:.14em;
+.brand small{display:block;font-size:.72rem;font-weight:500;letter-spacing:.14em;
   text-transform:uppercase;color:var(--text-3);font-family:var(--font-mono)}
 .nav__links{display:flex;align-items:center;gap:4px}
 .nav__links a{padding:9px 15px;border-radius:999px;font-size:.9rem;font-weight:500;
   color:var(--text-2);transition:all .2s var(--ease)}
 .nav__links a:hover{color:var(--text);background:rgba(255,255,255,.06)}
-.nav__cta{padding:11px 22px;border-radius:999px;background:var(--lagoon-500);color:#fff;
+/* Both lagoon pills take abyss ink rather than white. On lagoon-500 white is
+   4.1:1 and fails AA; on lagoon-400 the same ink is 8:1, and the brighter fill
+   gives the primary action more presence than the darker one would. */
+.nav__cta{padding:11px 22px;border-radius:999px;background:var(--lagoon-400);color:var(--abyss-950);
   font-family:var(--font-display);font-weight:600;font-size:.9rem;white-space:nowrap;
   transition:background .2s var(--ease)}
 .nav__cta:hover{background:var(--lagoon-400)}
@@ -189,7 +208,7 @@ h2.sec{font-size:clamp(1.9rem,4.2vw,3.2rem);font-weight:800;line-height:1.08;max
 .strip__item{padding:30px 24px;background:var(--abyss-900);display:flex;flex-direction:column;gap:6px}
 .strip__val{font-family:var(--font-display);font-weight:800;font-size:1.9rem;
   line-height:1;letter-spacing:-.02em;color:var(--lagoon-300)}
-.strip__lab{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.09em;
+.strip__lab{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.09em;
   text-transform:uppercase;color:var(--text-3)}
 
 /* ---- "why local" ------------------------------------------------------ */
@@ -200,8 +219,7 @@ h2.sec{font-size:clamp(1.9rem,4.2vw,3.2rem);font-weight:800;line-height:1.08;max
 .why__card{padding:30px;border:1px solid var(--line);border-radius:var(--radius);
   background:var(--card);transition:border-color .25s var(--ease),transform .25s var(--ease)}
 .why__card:hover{border-color:var(--lagoon-600);transform:translateY(-3px)}
-.why__n{font-family:var(--font-mono);font-size:.72rem;color:var(--lagoon-400);letter-spacing:.1em}
-.why__card h3{margin:14px 0 10px;font-size:1.16rem;font-weight:700}
+.why__card h3{margin:0 0 10px;font-size:1.16rem;font-weight:700}
 .why__card p{font-size:.95rem;line-height:1.68;color:var(--text-2)}
 .why__card code{font-family:var(--font-mono);font-size:.85em;color:var(--lagoon-300)}
 
@@ -212,12 +230,16 @@ h2.sec{font-size:clamp(1.9rem,4.2vw,3.2rem);font-weight:800;line-height:1.08;max
   background:linear-gradient(180deg,var(--card),transparent);display:flex;flex-direction:column;gap:16px;
   transition:border-color .25s var(--ease),transform .25s var(--ease)}
 .cap:hover{border-color:var(--lagoon-600);transform:translateY(-3px)}
-.cap__icon{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;
-  border:1px solid var(--lagoon-700);background:rgba(14,138,156,.14);color:var(--lagoon-300)}
+/* Bare line icons, no tile. The icons stay because they are the page's only
+   icon moment and they say which control is which; what goes is the boxed
+   plate above every heading, which is the recognisable generated-UI tell. This
+   matches how the same glyph language already appears in the nav and hero. */
+.cap__icon{display:block;color:var(--lagoon-300)}
 .cap h3{font-size:1.24rem;font-weight:700}
 .cap p{font-size:.95rem;line-height:1.68;color:var(--text-2);flex:1}
 .cap__metric{margin-top:6px;padding-top:16px;border-top:1px solid var(--line);
-  font-family:var(--font-mono);font-size:.72rem;color:var(--lagoon-300);letter-spacing:.03em}
+  font-family:var(--font-mono);font-size:.72rem;line-height:1.85;color:var(--lagoon-300);
+  letter-spacing:.03em}
 
 /* ---- scoreboard ------------------------------------------------------- */
 .score{background:var(--abyss-950)}
@@ -227,10 +249,14 @@ h2.sec{font-size:clamp(1.9rem,4.2vw,3.2rem);font-weight:800;line-height:1.08;max
 .score__val{font-family:var(--font-display);font-weight:800;font-size:2.5rem;line-height:1;
   letter-spacing:-.03em;color:#fff}
 .score__val small{font-size:.42em;color:var(--text-3);margin-left:6px;font-weight:600}
-.score__sub{margin-top:auto;padding-top:14px;font-family:var(--font-mono);font-size:.68rem;
+.score__sub{margin-top:auto;padding-top:14px;font-family:var(--font-mono);font-size:.72rem;
   letter-spacing:.06em;color:var(--text-3)}
+/* A thick accent rule on one edge is the most recognisable tell of generated
+   UI, and the detector flagged the left-edge version here. The callout carries
+   its own weight through the caution tint and the bold lead-in, so the border
+   stays uniform and lets the left edge align with the grid. */
 .score__note{margin-top:26px;padding:20px 24px;border:1px solid var(--caution-line);
-  border-left-width:3px;border-radius:12px;background:var(--caution-bg);
+  border-radius:12px;background:var(--caution-bg);
   font-size:.92rem;line-height:1.65;color:#F5D9A6}
 
 /* ---- judging criteria ------------------------------------------------- */
@@ -243,7 +269,7 @@ h2.sec{font-size:clamp(1.9rem,4.2vw,3.2rem);font-weight:800;line-height:1.08;max
 .judge__row h3{font-size:1.1rem;font-weight:700;margin-bottom:8px}
 .judge__row p{font-size:.94rem;line-height:1.66;color:var(--text-2)}
 .judge__tag{display:inline-block;margin-top:12px;padding:5px 12px;border-radius:999px;
-  font-family:var(--font-mono);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;
+  font-family:var(--font-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
   border:1px solid var(--safe-line);background:var(--safe-bg);color:var(--safe)}
 .judge__tag--caveat{border-color:var(--caution-line);background:var(--caution-bg);color:var(--caution)}
 
@@ -269,7 +295,7 @@ h2.sec{font-size:clamp(1.9rem,4.2vw,3.2rem);font-weight:800;line-height:1.08;max
   max-width:18ch;margin-inline:auto;text-wrap:balance}
 .cta__lede{margin:22px auto 0;max-width:58ch;font-size:1.03rem;line-height:1.68;color:var(--text-2)}
 .cta__row{margin-top:40px;display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
-.cta__note{margin-top:30px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-3)}
+.cta__note{margin-top:30px;font-family:var(--font-mono);font-size:.74rem;color:var(--text-3)}
 
 /* ---- footer ----------------------------------------------------------- */
 footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:64px;overflow:hidden}
@@ -278,7 +304,9 @@ footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:
 .foot__brand{display:flex;align-items:center;gap:12px}
 .foot__brand img{width:40px;height:40px}
 .foot__brand span{font-family:var(--font-display);font-weight:800;font-size:1.3rem;letter-spacing:.04em}
-.foot__col h4{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.13em;
+.foot__brand small{display:block;font-family:var(--font-mono);font-size:.72rem;font-weight:500;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--text-3);margin-top:3px}
+.foot__col h4{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.13em;
   text-transform:uppercase;color:var(--text-3);margin-bottom:14px;font-weight:600}
 .foot__col a,.foot__col p{display:block;font-size:.9rem;color:var(--text-2);
   margin-bottom:9px;line-height:1.6}
@@ -291,12 +319,12 @@ footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:
   user-select:none;pointer-events:none;margin-bottom:-2vw}
 .foot__legal{padding:22px 0;border-top:1px solid var(--line-faint);
   display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;
-  font-family:var(--font-mono);font-size:.68rem;color:var(--text-3)}
+  font-family:var(--font-mono);font-size:.72rem;color:var(--text-3)}
 
 /* ---- responsive ------------------------------------------------------- */
 @media (max-width:900px){
   .nav__links{display:none}
-  .hero__proof{gap:10px 18px;font-size:.68rem}
+  .hero__proof{gap:10px 18px;font-size:.72rem}
   .judge__row{grid-template-columns:1fr;gap:12px}
   .judge__w{font-size:1.4rem}
 }
@@ -317,7 +345,7 @@ footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:
   <nav class="nav" aria-label="Primary">
     <a class="brand" href="#top">
       <img src="/isla-mark.svg" alt="" width="34" height="34">
-      <span>ISLA AI<small>On-device compliance</small></span>
+      <span>ISLA AI<small>In-Situ Local AI</small></span>
     </a>
     <div class="nav__links">
       <a href="#why">Why local</a>
@@ -351,13 +379,17 @@ footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:
       vendor. Isla AI is the copilot that works anyway: redaction, cited answers and hash-chained
       audit proof, all on one machine, with no cloud AI API in the path.</p>
 
+    <p class="hero__acronym reveal"><b>ISLA</b> <span>In-Situ Local AI</span>
+      <span class="hero__acronym-why">The inference runs on hardware the record already
+        lives on.</span></p>
+
     <div class="hero__cta reveal">
       <a class="btn btn--primary" href="/app">Open the console</a>
       <a class="btn btn--ghost" href="#why">Why it has to be local</a>
     </div>
 
     <div class="hero__proof reveal">
-      <span><b>0</b> outbound sockets at runtime</span>
+      <span><b>0</b> customer bytes leave the machine</span>
       <span><b>7</b> Philippine instruments</span>
       <span><b>0.2 ms</b> PII scan p50</span>
       <span><b>8 ms</b> cited answer p50</span>
@@ -378,7 +410,7 @@ footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:
         <span class="strip__lab">Residual leakage</span></div>
       <div class="strip__item"><span class="strip__val">100%</span>
         <span class="strip__lab">Correct refusal</span></div>
-      <div class="strip__item"><span class="strip__val">207</span>
+      <div class="strip__item"><span class="strip__val">213</span>
         <span class="strip__lab">Tests, all green</span></div>
     </div>
   </div>
@@ -392,13 +424,12 @@ footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:
       <h2 class="sec">A cloud model cannot check a secret without being told it.</h2>
       <p class="sec__lede">Asking an external model &#ldquo;is this sensitive personal
         information?&#rdquo; is itself a disclosure to a third party in a foreign jurisdiction — the
-        act is the breach it exists to prevent. Local inference is not a preference here. It is the
-        only arrangement that answers the question at all.</p>
+        act is the breach it exists to prevent. The question only has an answer on hardware the
+        data already lives on.</p>
     </div>
 
     <div class="why__grid">
       <article class="why__card reveal">
-        <span class="why__n">01</span>
         <h3>The disclosure problem</h3>
         <p>Redaction is the one AI task that cannot be outsourced, because performing it requires
           handing over the exact data it exists to protect. Isla AI runs 18 Philippine entity
@@ -407,7 +438,6 @@ footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:
       </article>
 
       <article class="why__card reveal">
-        <span class="why__n">02</span>
         <h3>Air-gapped banks are the norm</h3>
         <p>Core-banking estates and ISO&nbsp;27001-sealed networks exist precisely because the breach
           window is measured in hours. Isla AI is demonstrated with the cable pulled: the status chip
@@ -416,7 +446,6 @@ footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:
       </article>
 
       <article class="why__card reveal">
-        <span class="why__n">03</span>
         <h3>Economics that survive scale</h3>
         <p>Every paste a compliance officer scans is a per-call invoice at a cloud vendor — for a task
           that takes <code>0.2 ms</code> on a CPU already in the building. There is no marginal cost
@@ -424,7 +453,6 @@ footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:
       </article>
 
       <article class="why__card reveal">
-        <span class="why__n">04</span>
         <h3>Regulators already asked</h3>
         <p>NPC Advisory 2024-04 applies the Data Privacy Act to AI systems processing personal data.
           The evidence is now producible locally, as a SHA-256 hash chain that stores entity counts,
@@ -433,17 +461,15 @@ footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:
       </article>
 
       <article class="why__card reveal">
-        <span class="why__n">05</span>
         <h3>Confidentiality you can audit</h3>
-        <p>&#8220;Read our DPA&#8221; is a contractual promise. &#8220;No module on the request path holds a
-          network primitive, the browser is forbidden from fetching off-origin by a
+        <p>&#8220;Read our DPA&#8221; is a contractual promise. &#8220;No module outside the air-gap probe
+          holds a network primitive, the browser is forbidden from fetching off-origin by a
           <code>default-src &#39;none&#39;</code> policy, and both are asserted on every CI push&#8221;
           is a test. A CI job runs the PII engine with <strong>zero</strong> pip installs to prove the
           hot path is standard library only.</p>
       </article>
 
       <article class="why__card reveal">
-        <span class="why__n">06</span>
         <h3>The honest counterweight</h3>
         <p>Local does not automatically mean better. A 3B model is a 3B model. Isla AI&#8217;s
           correctness comes from <strong>retrieval, not scale</strong>: answers are quoted verbatim from
@@ -459,7 +485,7 @@ footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:
   <div class="wrap">
     <div class="sec__head reveal">
       <span class="eyebrow">What ships</span>
-      <h2 class="sec">Three controls, one process, no network.</h2>
+      <h2 class="sec">Three controls, one process, one machine.</h2>
       <p class="sec__lede">Each one is a distinct control a bank has to evidence separately, and
         each one produces its own proof in the ledger.</p>
     </div>
@@ -475,7 +501,7 @@ footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:
         <h3>Egress Guard</h3>
         <p>Paste anything a staff member might send to an external AI. Eighteen Philippine entity
           types are detected, redacted, then re-detected by a verification pass. Anything that
-          survives escalation escalates — it is never allowed to ship.</p>
+          survives verification escalates instead of shipping.</p>
         <span class="cap__metric">macro-F1 1.0000 · residual 0.00% · 0.2 ms p50</span>
       </article>
 
@@ -585,7 +611,7 @@ footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:
       <article class="judge__row reveal">
         <span class="judge__w">20%</span>
         <div><h3>Technical Execution</h3>
-          <p>207 tests green, type-clean, zero npm vulnerabilities, CSP hash asserted on every push,
+          <p>213 tests green, type-clean, zero npm vulnerabilities, CSP hash asserted on every push,
             evaluation reproducible from committed datasets in a clean environment with no model
             weights. Three CI jobs prove three separate degradation claims rather than one.</p>
           <span class="judge__tag">demonstrable</span></div>
@@ -650,13 +676,13 @@ footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:
 <section class="cta">
   <div class="wrap">
     <h2 class="reveal">Pull the cable. Ask a question. Watch it work.</h2>
-    <p class="cta__lede reveal">Everything below runs on one machine, on one port, with the network
+    <p class="cta__lede reveal">Everything here runs on one machine, on one port, with the network
       disconnected. Clone it, build it, and check the claim yourself.</p>
     <div class="cta__row reveal">
       <a class="btn btn--primary" href="/app">Open the console</a>
       <a class="btn btn--ghost" href="https://github.com/jcuady/ISLA-AI">Read the source</a>
     </div>
-    <p class="cta__note reveal">Runs on 127.0.0.1 · no account, no telemetry, no data leaving the machine</p>
+    <p class="cta__note reveal">Runs on 127.0.0.1 · no account, no telemetry, no customer data leaving the machine</p>
   </div>
 </section>
 
@@ -667,7 +693,7 @@ footer{background:var(--abyss-950);border-top:1px solid var(--line);padding-top:
     <div class="foot__grid">
       <div class="foot__brand">
         <img src="/isla-mark.svg" alt="Isla AI" width="40" height="40">
-        <span>ISLA AI</span>
+        <span>ISLA AI<small>In-Situ Local AI</small></span>
       </div>
       <div class="foot__col">
         <h4>Product</h4>

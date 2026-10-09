@@ -94,7 +94,7 @@ export function AppSidebar({
         <IslaMark size={26} />
         <div className="min-w-0 flex-1">
           <p className="font-display text-[15px] font-extrabold tracking-[0.14em]">ISLA AI</p>
-          <p className="truncate text-[11px] text-white/40">Walang datos na lumalabas.</p>
+          <p className="truncate text-[11px] text-white/55">Walang datos na lumalabas.</p>
         </div>
       </div>
 

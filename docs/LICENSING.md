@@ -97,5 +97,8 @@ repository.**
 
 ## Isla AI code and brand
 
-The Isla AI source code, the shield logo, and the brand identity are original works created for this
-project. The logo derives from *kalasag* (shield) and was designed specifically for this submission.
+The Isla AI source code, the island logo, and the brand identity are original works created for this
+project. The logo depicts a single island enclosed by a ring of open water — land defined by what
+surrounds it rather than by a perimeter — and was designed specifically for this submission. The
+typefaces are the only third-party assets in the identity: Outfit, Plus Jakarta Sans and JetBrains
+Mono, all under the SIL Open Font License 1.1 (`branding/fonts/OFL.txt`).

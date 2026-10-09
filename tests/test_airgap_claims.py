@@ -150,7 +150,13 @@ def test_the_verdict_note_does_not_claim_what_the_probe_itself_disproves():
         "docs/THREAT_MODEL.md",
         "docs/DISCLOSURES.md",
         "docs/SUBMISSION.md",
+        "docs/ARCHITECTURE.md",
+        "docs/HACKATHON_RULES.md",
+        "docs/JUDGING_AUDIT.md",
         "apps/web/public/landing.html",
+        "branding/brand.md",
+        "docs/architecture/isla-architecture.json",
+        "docs/architecture/isla-architecture.html",
     ],
 )
 def test_no_document_repeats_the_false_absolute_claim(doc: str):
@@ -158,7 +164,21 @@ def test_no_document_repeats_the_false_absolute_claim(doc: str):
     # `/api/airgap` disproves every one of these. The accurate claim is that no
     # customer data leaves and no cloud service is called - not that the process
     # never opens a socket.
-    for phrase in ("no outbound socket", "zero outbound socket", "outbound socket, ever"):
+    #
+    # The digit forms matter as much as the word forms. The landing page once
+    # read "0 outbound sockets at runtime" and passed this test, because the
+    # list only knew the word "zero" and the singular "socket". Spelling out
+    # both is what makes the guard worth having.
+    for phrase in (
+        "no outbound socket",
+        "no outbound sockets",
+        "zero outbound socket",
+        "zero outbound sockets",
+        "0 outbound socket",
+        "0 outbound sockets",
+        "outbound socket, ever",
+        "never opens a socket",
+    ):
         assert phrase not in text, (
             f"{doc} still claims '{phrase}'. /api/airgap opens a real TCP "
             "connection on purpose; say what is actually true instead."

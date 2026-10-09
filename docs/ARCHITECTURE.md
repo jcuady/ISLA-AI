@@ -1,7 +1,7 @@
 # Architecture
 
-Isla AI is one process, three engines, and no network. This document explains how those parts fit
-together and why.
+Isla AI is one process and three engines, bound to loopback. No customer data leaves the machine and no
+cloud service is called. This document explains how those parts fit together and why.
 
 ---
 

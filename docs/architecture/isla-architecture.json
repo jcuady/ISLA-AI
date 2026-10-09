@@ -46,7 +46,7 @@
   "boundaries": [
     {
       "kind": "security-group",
-      "label": "Trusted core — no outbound socket",
+      "label": "Trusted core — no customer data leaves",
       "wraps": ["core", "egress", "recognizers", "ner", "verify", "copilot", "retrieval", "llm", "probe"]
     },
     {

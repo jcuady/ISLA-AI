@@ -193,6 +193,7 @@ def health() -> dict:
     return {
         "status": "ok",
         "product": "Isla AI",
+        "stands_for": "In-Situ Local AI",
         "tagline": "Walang datos na lumalabas.",
         "bind": {"host": BIND_HOST, "port": BIND_PORT, "loopback_only": True},
         "corpus": index_stats,

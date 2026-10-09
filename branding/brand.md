@@ -261,3 +261,49 @@ And the metaphor is falsifiable. An island is isolated by geography, not by
 policy — which is exactly why the product ships an air-gap probe, a ledger, and
 a Content-Security-Policy that forbids off-origin requests. The name makes a
 promise the code is built to let a judge break.
+
+---
+
+## What ISLA stands for
+
+**ISLA — In-Situ Local AI.**
+
+Always deployed with the expansion visible at least once nearby. A backronym that
+has to be guessed teaches a judge nothing.
+
+### Why not "Information Security Local AI"
+
+That was the first candidate and it is a weaker expansion for three reasons worth
+recording, because the reasons generalise:
+
+1. **It miscategorises the product.** Information security is vulnerability
+   management, identity, incident response and network defence. Isla AI does none
+   of those. In a bank these sit with different people — the CISO rather than the
+   data privacy officer — and the NPC obligations this product answers to sit with
+   the DPO. An acronym that names the wrong department is a small credibility tax.
+2. **It overclaims breadth.** "Information Security" is a category thousands of
+   products claim. It carries no information.
+3. **It undersells the mechanism.** What is actually distinctive is *where the
+   computation happens*, not the subject domain.
+
+### Why "In-Situ Local AI" instead
+
+*In situ* is the term of art for data being in its place of origin, and it is
+literally the product's argument: the inference runs on hardware where the record
+already exists. It also bridges the two halves of the brand, which is what made it
+worth choosing.
+
+> The island is the metaphor. *In situ* is the engineering term for the same thing.
+
+A judge who asks "would this lose functionality without local AI?" has the answer
+in the four letters before they ask it.
+
+**Deployment rule.** Wordmark always reads `ISLA AI`. The expansion appears once
+in the first viewport, once in the footer, and once in the README header. It is
+never set in place of the wordmark, because `ISLA` alone is the brand and
+`In-Situ Local AI` is the explanation.
+
+**Swapping it is a five-minute change.** The string appears in
+`branding/brand.md`, `apps/web/public/landing.html` (three places),
+`apps/web/index.html`, `README.md`, `docs/SUBMISSION.md`, and the `/api/health`
+payload. No code depends on it.

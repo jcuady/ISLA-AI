@@ -81,6 +81,8 @@ export interface CopilotAnswer {
 export interface Health {
   status: string;
   product: string;
+  /** What the acronym expands to: "In-Situ Local AI". */
+  stands_for?: string;
   tagline: string;
   bind: { host: string; port: number; loopback_only: boolean };
   corpus: { chunks: number; documents: number; dense_ready: boolean; total_chars: number } | null;

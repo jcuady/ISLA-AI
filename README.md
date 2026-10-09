@@ -4,11 +4,11 @@
 
 # Isla AI
 
-**On-device AI privacy-compliance copilot for Philippine banks.**
+**In-Situ Local AI — on-device AI privacy-compliance copilot for Philippine banks.**
 *Walang datos na lumalabas.*
 
 [![Local AI](https://img.shields.io/badge/inference-100%25%20local-107080?style=flat-square)](https://github.com/jcuady/ISLA-AI)
-[![Tests](https://img.shields.io/badge/tests-207%20passed-2fbf87?style=flat-square)](https://github.com/jcuady/ISLA-AI)
+[![Tests](https://img.shields.io/badge/tests-213%20passed-2fbf87?style=flat-square)](https://github.com/jcuady/ISLA-AI)
 [![No cloud calls](https://img.shields.io/badge/cloud%20API%20calls-0-a78bfa?style=flat-square)](https://github.com/jcuady/ISLA-AI)
 
 **AppBuilders PH Hackathon 2026 · Local AI track · Finance vertical**
@@ -256,7 +256,7 @@ Open <http://127.0.0.1:8765> for the landing page, or go straight to the console
 ### Verify it yourself
 
 ```powershell
-# 207 tests: 108 Python + 99 UI
+# 213 tests: 114 Python + 99 UI
 .venv\Scripts\python.exe -m pytest tests/ -q
 npm --prefix apps\web test
 npm --prefix apps\web run typecheck
@@ -333,7 +333,7 @@ isla-ai/
 │  └─ core/          app.py · airgap.py · ledger.py · llm.py     API + proof
 ├─ corpus/           fetch_corpus.py · chunk_corpus.py           7 instruments → 227 chunks
 ├─ eval/             run_eval.py · datasets/ · RESULTS.md        the scoreboard
-├─ tests/            108 Python + 99 UI tests
+├─ tests/            114 Python + 99 UI tests
 ├─ models/           download_models.py · registry.yaml
 ├─ apps/web/         React console + landing page + verify-ui.mjs
 ├─ branding/         isla-mark.svg · isla-ai-logo.png · brand.md
@@ -398,7 +398,7 @@ No telemetry of any kind. The application has no analytics, no error reporting a
 | Tool | Role |
 |---|---|
 | **MiniMax Code** (`mavis` agent) | Primary development assistant — architecture, implementation, testing, documentation, UI. Ran the build end to end. |
-| AI image generation (`connector__matrix__generate_image`) | Generated the 4K shield mark. Rekeyed and recoloured by `scripts/process_logo.py`; the vector master is hand-authored. |
+| AI image generation (`connector__matrix__generate_image`) | Generated the 4K island mark and the hero photograph. Rekeyed, resized and palette-reduced by `scripts/process_isla_logo.py`; the vector reduction is emitted by that same script from the geometry constants, not drawn by hand. |
 | Playwright | Automated visual, console-error, external-request and overflow verification |
 
 No generated code was committed without being read, run and verified. Every number in this README
