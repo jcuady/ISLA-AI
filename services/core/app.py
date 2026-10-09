@@ -437,11 +437,36 @@ if WEB_DIST.exists():
 
     @app.get("/{full_path:path}")
     def spa(full_path: str) -> FileResponse:
-        # SPA fallback; never serve outside the built UI directory.
-        candidate = (WEB_DIST / full_path).resolve()
-        if full_path and candidate.is_file() and WEB_DIST.resolve() in candidate.parents:
-            return FileResponse(candidate)
-        return FileResponse(WEB_DIST / "index.html")
+        # Serve real files from the built UI directory, and nothing else.
+        #
+        # Two defects this replaces, both found by scripts/qa_probe.py:
+        #
+        #   - A null byte in the path made pathlib raise ValueError from stat()
+        #     and escaped as an unhandled 500. A hostile path must not be able
+        #     to produce a server error; it is just not a file.
+        #   - Every unknown path answered 200 with the SPA shell, API paths
+        #     included. A client that fat-fingered /api/pii/scrn received HTML
+        #     and a success code instead of a 404, which hides the mistake from
+        #     the caller and from any monitoring watching for 4xx.
+        #
+        # The SPA needs no such fallback: /app and /console are served by their
+        # own routes, and client-side navigation uses ?view= on /console, so
+        # there is no deep path that has to resolve to the shell.
+        #
+        # Containment is unchanged and still explicit: the resolved candidate
+        # must sit strictly inside WEB_DIST, so ../ cannot escape it.
+        if not full_path:
+            raise HTTPException(status_code=404, detail="Not Found")
+        try:
+            candidate = (WEB_DIST / full_path).resolve()
+            if candidate.is_file() and WEB_DIST.resolve() in candidate.parents:
+                return FileResponse(candidate)
+        except (ValueError, OSError):
+            # Embedded null bytes, undecodable names and similar malformed
+            # paths are indistinguishable from "no such file" as far as a
+            # client is concerned, and are handled as such.
+            pass
+        raise HTTPException(status_code=404, detail="Not Found")
 else:
 
     @app.get("/")
