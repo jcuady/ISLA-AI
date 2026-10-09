@@ -36,7 +36,7 @@ Overall precision **100.00%**, recall **100.00%**, F1 **1.0000**
 | REMITTANCE_REF | 2 | 100.00% | 100.00% | 1.0000 |
 | SALARY | 3 | 100.00% | 100.00% | 1.0000 |
 
-Latency p50 **0.2 ms**, p95 **0.5 ms**
+Latency p50 **0.2 ms**, p95 **0.6 ms**
 
 ## DPA Copilot (retrieval + citation enforcement)
 
@@ -48,17 +48,17 @@ Latency p50 **0.2 ms**, p95 **0.5 ms**
 | Citation accuracy | >= 0.95 | 100.00% | PASS |
 | Correct source document | >= 0.80 | 100.00% | PASS |
 | Correct-refusal rate | >= 0.90 | 100.00% | PASS |
-| Copilot latency p50 | < 4000 ms | 13 ms | PASS |
+| Copilot latency p50 | < 4000 ms | 12 ms | PASS |
 
 ### Per-question detail
 
 | Question | Refused | Cited | Source correct | Conf | ms |
 |---|---|---|---|---|---|
-| Ilang oras dapat ko i-report ang data breach? | no | yes | yes | 0.78 | 15 |
-| Pwede ba ipasa ang CDR ng customer ko sa vendo | no | yes | yes | 0.78 | 13 |
-| Can our call center use AI to score our agents | no | yes | yes | 0.70 | 12 |
-| Ano ang fine kapag hindi na-notify ang NPC? | no | yes | yes | 0.77 | 9 |
-| Kailangan ba mag-register ng AI credit scoring | no | yes | yes | 0.74 | 14 |
+| Ilang oras dapat ko i-report ang data breach? | no | yes | yes | 0.78 | 14 |
+| Pwede ba ipasa ang CDR ng customer ko sa vendo | no | yes | yes | 0.78 | 12 |
+| Can our call center use AI to score our agents | no | yes | yes | 0.70 | 11 |
+| Ano ang fine kapag hindi na-notify ang NPC? | no | yes | yes | 0.77 | 8 |
+| Kailangan ba mag-register ng AI credit scoring | no | yes | yes | 0.74 | 16 |
 
 ### Refusal behaviour (out of domain)
 

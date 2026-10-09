@@ -8,7 +8,7 @@
 *Walang datos na lumalabas.*
 
 [![Local AI](https://img.shields.io/badge/inference-100%25%20local-107080?style=flat-square)](https://github.com/jcuady/ISLA-AI)
-[![Tests](https://img.shields.io/badge/tests-458%20passed-2fbf87?style=flat-square)](https://github.com/jcuady/ISLA-AI)
+[![Tests](https://img.shields.io/badge/tests-463%20passed-2fbf87?style=flat-square)](https://github.com/jcuady/ISLA-AI)
 [![No cloud calls](https://img.shields.io/badge/cloud%20API%20calls-0-a78bfa?style=flat-square)](https://github.com/jcuady/ISLA-AI)
 
 **AppBuilders PH Hackathon 2026 · Local AI track · Finance vertical**
@@ -310,7 +310,7 @@ Open <http://127.0.0.1:8765> for the landing page, or go straight to the console
 ### Verify it yourself
 
 ```powershell
-# 458 tests: 350 Python + 108 UI
+# 463 tests: 355 Python + 108 UI
 .venv\Scripts\python.exe -m pytest tests/ -q
 npm --prefix apps\web test
 npm --prefix apps\web run typecheck
@@ -391,7 +391,7 @@ isla-ai/
 │  └─ core/          app.py · airgap.py · ledger.py · llm.py     API + proof
 ├─ corpus/           fetch_corpus.py · chunk_corpus.py           11 instruments + 1 guide → 348 chunks
 ├─ eval/             run_eval.py · datasets/ · RESULTS.md        the scoreboard
-├─ tests/            350 Python + 108 UI tests
+├─ tests/            355 Python + 108 UI tests
 ├─ models/           download_models.py · registry.yaml
 ├─ apps/web/         React console + landing page + verify-ui.mjs
 ├─ branding/         isla-mark.svg · isla-ai-logo.png · brand.md

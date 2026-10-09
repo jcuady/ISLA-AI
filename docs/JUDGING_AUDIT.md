@@ -18,7 +18,7 @@ track, not a prediction of the result.
 |---|---|---|---|---|
 | 25% | Problem & Usefulness | **Strong, with one real exposure** | Narrow, named, regulation-backed user | "Would the general public benefit?" — they would not, and we cannot pretend otherwise |
 | 25% | Local AI Implementation | **Vulnerable** | Local inference is *architecturally* necessary | Our own ablation says the local AI is roughly tied with a lexical baseline |
-| 20% | Technical Execution | **Strong** | 350 Python + 108 UI tests, honest claims, bugs published | Corpus is 12 documents but BSP and SEC are unreachable; small-sample metrics |
+| 20% | Technical Execution | **Strong** | 355 Python + 108 UI tests, honest claims, bugs published | Corpus is 12 documents but BSP and SEC are unreachable; small-sample metrics |
 | 15% | Innovation | **Strong** | Refusing to be wrong; correct-refusal and named coverage gaps as a feature | Verifying your own redactor is good practice, not a novel idea |
 | 15% | Product & Demo Quality | **Medium-strong** | Real console, zero fake buttons | Demo video still pending — that is 15% with a hole in it |
 
