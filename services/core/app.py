@@ -5,6 +5,8 @@ Binds 127.0.0.1 ONLY. Serves the React UI and the four API surfaces:
     POST /api/pii/scan      detect entities, no redaction
     POST /api/pii/redact    redact + verify + verdict
     POST /api/copilot/ask   grounded Taglish legal Q&A with citations
+    POST /api/risk/assess   fraud / AML red-flag screening of a scenario
+    GET  /api/risk/indicators  the indicator catalogue, served not invented
     GET  /api/airgap        live outbound socket probe
     GET  /api/audit         hash-chained ledger
     GET  /api/health        model + corpus readiness
@@ -45,6 +47,8 @@ from services.core.ledger import AuditLedger  # noqa: E402
 from services.copilot.copilot import DPACopilot  # noqa: E402
 from services.copilot.retrieval import HybridIndex  # noqa: E402
 from services.pii.engine import EgressGuard  # noqa: E402
+from services.risk.assess import COVERAGE_GAP, assess  # noqa: E402
+from services.risk.indicators import catalogue_summary  # noqa: E402
 
 BIND_HOST = os.environ.get("ISLA_HOST", "127.0.0.1")
 BIND_PORT = int(os.environ.get("ISLA_PORT", "8765"))
@@ -322,6 +326,45 @@ def copilot_ask(req: TextRequest) -> dict:
             },
         )
     return answer.to_dict()
+
+
+@app.post("/api/risk/assess")
+def risk_assess(req: TextRequest) -> dict:
+    """Screen a described transaction or scenario for fraud and AML red flags.
+
+    Runs entirely on deterministic rules; retrieval only attaches the statutory
+    text to the hooks the rules name. A degraded retrieval path still returns a
+    verdict, with `degraded: true` and unresolved hooks left uncited.
+    """
+    if not req.text.strip():
+        raise HTTPException(422, "text is required")
+    result = assess(req.text, index=state.index)
+    payload = result.to_dict()
+    if state.ledger:
+        state.ledger.append(
+            "risk_assessment",
+            {
+                "tier": result.tier,
+                "red_flags": [f["id"] for f in result.red_flags],
+                "exposed": sorted(result.exposed),
+                "citations": result.citation_count,
+                "degraded": result.degraded,
+                "latency_ms": round(result.latency_ms, 1),
+                "scenario_sha256_prefix": _text_hash(req.text)[:16],
+            },
+        )
+    return payload
+
+
+@app.get("/api/risk/indicators")
+def risk_indicators() -> dict:
+    """The full indicator catalogue, so the UI never invents a red flag."""
+    items = catalogue_summary()
+    return {
+        "count": len(items),
+        "indicators": items,
+        "coverage_gap": list(COVERAGE_GAP),
+    }
 
 
 @app.get("/api/audit")
