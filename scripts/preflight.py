@@ -166,6 +166,41 @@ r3 = post("/api/copilot/ask", {"text": "Who won the 2025 FIFA World Cup?"})
 check("out-of-domain refuses", r3["refused"] is True)
 check("no invented citations", len(r3["citations"]) == 0)
 
+# --- transaction risk --------------------------------------------------------
+# The demo shows this screen, and the claim it makes is unusual for a product
+# of this kind: it names what it cannot verify. If that panel ever disappears
+# the demo's best moment silently becomes the product's worst.
+print("\n[transaction risk]")
+t0 = time.perf_counter()
+risky = post("/api/risk/assess", {
+    "text": (
+        "A student account received 480,000 in cash deposits from three "
+        "different people over two days, and sent most of it by wire to a "
+        "beneficiary abroad the same day."
+    )
+})
+ms = (time.perf_counter() - t0) * 1000
+check("mule scenario raises critical", risky["tier"] in ("high", "critical"), risky["tier"])
+check("names who is exposed", set(risky["exposed"]) >= {"customer", "bank"},
+      ", ".join(risky["exposed"]))
+check("every red flag shows evidence", all(f["evidence"] for f in risky["red_flags"]),
+      f"{len(risky['red_flags'])} flags")
+check("required actions returned", len(risky["required_actions"]) > 0)
+check("states the coverage gap", len(risky["coverage_gap"]) > 0,
+      f"{len(risky['coverage_gap'])} items")
+check("names BSP as missing", any("BSP" in g for g in risky["coverage_gap"]))
+check("no hook cites an absent instrument",
+      all(f["legal_hook"]["doc_id"] not in ("BSP", "SEC") for f in risky["red_flags"]))
+check("fast enough (<2000 ms)", ms < 2000, f"{ms:.0f} ms")
+
+benign = post("/api/risk/assess", {
+    "text": "Customer withdrew PHP 5,000 from an ATM with a debit card."
+})
+check("routine banking raises nothing", not benign["red_flags"], benign["tier"])
+
+cat = get("/api/risk/indicators")
+check("indicator catalogue served", cat["count"] >= 12, f"{cat['count']} indicators")
+
 # --- air-gap + ledger -------------------------------------------------------
 print("\n[proof]")
 probe = get("/api/airgap")

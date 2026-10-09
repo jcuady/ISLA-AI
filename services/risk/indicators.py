@@ -273,7 +273,7 @@ INDICATORS: tuple[Indicator, ...] = (
         legal_hook=RA9160_CUST_ID,
         patterns=(
             r"\b(?:payment|deposit|funds?|remittance)\b[^.]{0,50}"
-            r"\b(?:from )?(?:a |an )?(?:third part|unknown|unrelated|friend|relative|employer)\b",
+            r"\b(?:from )?(?:a |an )?(?:third part(?:y|ies)|unknown|unrelated|friend|relative|employer)\b",
             r"\bthird[- ]party (?:deposit|payment|funding|transfer)\b",
             r"\bsource of funds\b[^.]{0,40}\b(?:unclear|unexplained|does not match|inconsistent)\b",
             r"\bdoes not match\b[^.]{0,40}\b(?:profile|declared|income|business)\b",
@@ -302,7 +302,7 @@ INDICATORS: tuple[Indicator, ...] = (
             r"\b(?:abroad|overseas|international|offshore|foreign)\b",
             r"\b(?:abroad|overseas|foreign|offshore)\b[^.]{0,50}"
             r"\b(?:wire\w*|transfer\w*|remittance|beneficiary)\b",
-            r"\bunrelated beneficiary\b",
+            r"\bunrelated (?:beneficiary|payee|recipient)\b",
             r"\bbeneficiary\b[^.]{0,40}\bno (?:stated |known )?relationship\b",
         ),
         regulator="BSP / AMLC",
@@ -351,12 +351,17 @@ INDICATORS: tuple[Indicator, ...] = (
         ),
         legal_hook=RA11967_FRAUD,
         patterns=(
-            r"\b(?:pretend|imposter|impersonat\w+|posing)\b[^.]{0,40}"
-            r"\b(?:bank|officer|employee|police|government)\b",
+            # Word-boundary bugs this caught, kept noted so they are not
+            # reintroduced: `\bpretend\b` cannot match "pretending" (the 'i'
+            # kills the boundary) and `third part\b` cannot match "third party".
+            # Both silently cost recall on perfectly ordinary phrasing.
+            r"\b(?:pretend\w*|imposter|impersonat\w+|posing)\b[^.]{0,40}"
+            r"\b(?:bank|officer|employee|police|government|bsp|company)\b",
             r"\bclaimed? to be (?:from )?(?:the )?(?:bank|bsp|rsp|pnb|bdti|bdo|bpi)\b",
             r"\bsos call\b|\bemergency\b[^.]{0,40}\bmoney\b",
-            r"\burgent\b[^.]{0,40}\b(?:transfer|send|release)\b",
+            r"\burgent\w*\b[^.]{0,40}\b(?:transfer|send|release|wire)\b",
             r"\bpraying for help\b[^.]{0,40}\b(?:money|funds)\b",
+            r"\basking for money\b|\basked for money\b",
         ),
         regulator="BSP / SEC",
     ),
@@ -480,8 +485,15 @@ INDICATORS: tuple[Indicator, ...] = (
             r"\b(?:elderly|old|vulnerable)\b[^.]{0,60}"
             r"\b(?:guided|directed|told|instructed|coached)\b",
             r"\bon behalf of\b[^.]{0,40}\b(?:customer|client)\b[^.]{0,40}\b(?:elderly|senior)\b",
-            r"\b(?:relative|son|daughter|neighbou?r|caregiver)\b[^.]{0,50}"
-            r"\b(?:instructing|directing|telling)\b[^.]{0,30}\b(?:customer|client)\b",
+            # Word order varies: often the relative is named first and the
+            # customer never appears after the verb ("their son, who was
+            # directing them from the branch"). Requiring "customer" after the
+            # verb dropped every case phrased that way.
+            r"\b(?:relative|son|daughter|grandchild|neighbou?r|caregiver)\b[^.]{0,60}"
+            r"\b(?:instructing|directing|telling|coaching|dictating|guiding)\b",
+            r"\b(?:elderly|senior|vulnerable)\b[^.]{0,60}"
+            r"\b(?:relative|son|daughter|caregiver|neighbou?r)\b[^.]{0,60}"
+            r"\b(?:instructing|directing|telling|coaching|controlling)\b",
         ),
         regulator="BSP / NPC",
     ),
@@ -504,6 +516,12 @@ INDICATORS: tuple[Indicator, ...] = (
         legal_hook=BSP_GAP,
         patterns=(
             r"\b(?:does ?n[o']t|never|no)\b[^.]{0,30}\brecognis\w+\b[^.]{0,30}\btransaction\b",
+            # The everyday phrasing is "I never made that transfer", not
+            # "unrecognised transaction". Matching only the formal register
+            # missed the single most common way a customer opens a dispute.
+            r"\bnever made\b[^.]{0,40}\b(?:transfer|payment|withdrawal|transaction|deposit)\b",
+            r"\b(?:did ?n[o']t|did not) make\b[^.]{0,30}\b(?:transfer|payment|withdrawal)\b",
+            r"\bwas ?n[o']t me\b",
             r"\bunauthori[sz]ed\b[^.]{0,40}\btransaction\b",
             r"\b(?:first[- ]party|app store fraud|account takeover)\b",
             r"\bdisput\w+\b[^.]{0,40}\b(?:made|authoris\w+|transacted)\b[^.]{0,20}\bby (?:them|him|her)\b",
