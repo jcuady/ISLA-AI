@@ -124,6 +124,11 @@ button{font:inherit;color:inherit}
 .topblur{position:fixed;top:0;left:0;right:0;height:120px;z-index:40;pointer-events:none;
   background:linear-gradient(to bottom,rgba(1,15,20,.92),transparent)}
 header{position:fixed;top:0;left:0;width:100%;z-index:50;padding:18px 16px 0}
+/* The header is fixed, so an anchor jump puts the section heading underneath
+   it. Measured at 1440px: the header is 83.2px tall, and without this the
+   heading lands at 81.4px - the nav sits on top of it. 96px clears it with
+   room to breathe. verify-ui.mjs asserts it by clicking every nav anchor. */
+section[id]{scroll-margin-top:96px}
 .nav{max-width:1080px;margin-inline:auto;display:flex;align-items:center;justify-content:space-between;
   gap:16px;background:rgba(2,26,32,.66);backdrop-filter:blur(20px);
   border:1px solid var(--line);border-radius:999px;padding:9px 10px 9px 18px}

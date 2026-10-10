@@ -122,6 +122,38 @@ for (const vp of VIEWPORTS) {
         .slice(0, 5)
     );
 
+    // The header is position:fixed. Without scroll-margin-top, every nav
+    // anchor lands its section heading underneath the nav, so the reader
+    // arrives at a heading they cannot see. Assert it by clicking each one
+    // rather than trusting the stylesheet.
+    const navOverlaps = [];
+    if (p.name === 'landing') {
+      const ids = await page.evaluate(() =>
+        [...document.querySelectorAll('.nav__links a[href^="#"]')].map((a) =>
+          a.getAttribute('href').slice(1)
+        )
+      );
+      for (const id of ids) {
+        await page.evaluate((i) => {
+          window.scrollTo(0, 0);
+          document.getElementById(i)?.scrollIntoView();
+        }, id);
+        await page.waitForTimeout(350);
+        const gap = await page.evaluate((i) => {
+          const sec = document.getElementById(i);
+          const head = sec?.querySelector('h2, h3');
+          if (!head) return null;
+          const nav = document.querySelector('.nav').getBoundingClientRect();
+          return { id: i, top: head.getBoundingClientRect().top, navBottom: nav.bottom };
+        }, id);
+        if (gap && gap.top < gap.navBottom) {
+          navOverlaps.push(`${gap.id} heading at ${gap.top.toFixed(1)}px under nav (${gap.navBottom.toFixed(1)}px)`);
+        }
+      }
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.waitForTimeout(250);
+    }
+
     const status = res?.status() ?? 0;
     const overflow = await page.evaluate(() => {
       const de = document.documentElement;
@@ -140,6 +172,7 @@ for (const vp of VIEWPORTS) {
     if (external.length) bad.push(`EXTERNAL REQUEST (breaks air-gap): ${external[0]}`);
     if (overflow > 1) bad.push(`horizontal overflow ${overflow}px`);
     if (stillHidden.length) bad.push(`${stillHidden.length} section(s) never revealed: ${stillHidden[0]}`);
+    if (navOverlaps.length) bad.push(`${navOverlaps.length} anchor(s) hidden under the nav: ${navOverlaps[0]}`);
 
     if (bad.length) {
       failures += 1;
