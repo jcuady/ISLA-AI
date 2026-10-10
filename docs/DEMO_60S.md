@@ -1,5 +1,9 @@
 # Isla AI — 60-second demo script
 
+> **On the day, read [`DEMO_1MIN_JUDGING.md`](DEMO_1MIN_JUDGING.md) instead.**
+> It is this same demo with each beat mapped to the weighted judging criteria,
+> trimmed to 171 spoken words. This file stays the longer operational reference.
+
 **Total: 60 seconds.** This is a cut-down of [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md), not a
 second version of it. The five-minute script spends 30 seconds on the air-gap unplug and
 another 30 on the problem statement. In 60 seconds both are dead weight: the unplug is the
