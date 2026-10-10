@@ -193,7 +193,7 @@ failure:
   [`HACKATHON_RULES.md`](HACKATHON_RULES.md) §5. The pre-fix band was 0.813–0.830.)*
 
 The citation returned is real and the section is real; nothing is invented. What is missing is
-breadth — the bundled corpus is seven Philippine instruments plus one
+breadth — the bundled corpus is eleven Philippine instruments plus one
 Isla AI-authored operational guide, and BSP Memorandum M-2024-019 and
 NPC Circular 2016-03 could not be retrieved from public sources (see
 [`CORPUS_SOURCES.md`](CORPUS_SOURCES.md)). The fix is more documents. Tuning BM25 until this one
