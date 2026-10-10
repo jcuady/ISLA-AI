@@ -187,6 +187,42 @@ class TestItCannotOverstateItsAuthority:
                     "anchor is present"
                 )
 
+    def test_a_quote_long_chunk_still_shows_the_provision_it_quotes(self) -> None:
+        """The anchor can sit past the 600-character quote budget.
+
+        RA-9160 Section 3 defines a dozen terms before it reaches "covered
+        transaction". Truncating from the top of the chunk publishes a quote
+        that omits the provision while still claiming `anchor_in_text`, which is
+        the same overstatement the assertion above catches - it just needs a
+        chunk long enough to trigger it, which real retrieval only produced
+        once the corpus text was repaired.
+        """
+        from services.risk.assess import _resolve_citation
+
+        filler = "definitions of unrelated terms. " * 40  # ~1,400 chars
+        chunk = {
+            "text": filler + 'Covered transaction means any single transaction over '
+            'the threshold amount.',
+            "doc_id": "RA-9160",
+            "doc_title": "Anti-Money Laundering Act",
+            "issuer": "Congress",
+            "section": "Section 3. Definitions",
+            "url": "https://example.test/ra9160",
+            "doc_type": "statute",
+        }
+
+        class _Hit:
+            def __init__(self, chunk): self.chunk, self.score, self.citation = chunk, 0.9, "RA 9160 s3"
+
+        class _Index:
+            def search(self, q, top_k=20): return [_Hit(chunk)]
+
+        citation = _resolve_citation(_Index(), "RA-9160", "covered transaction")
+        assert citation is not None
+        assert citation["anchor_in_text"] is True
+        assert "covered transaction" in " ".join(citation["text"].lower().split())
+        assert len(citation["text"]) <= 600
+
     def test_the_product_never_states_a_reporting_deadline(self) -> None:
         """The retrievable RA 9160 does not contain the reporting provisions.
 

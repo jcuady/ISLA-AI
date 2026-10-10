@@ -10,8 +10,11 @@ corpus/raw/*.pdf
 corpus/raw/*.html
 corpus/processed/embeddings.npy
 # Pooling-mode-scoped embedding caches (embeddings.cls.npy, ...). Regenerated
-# from the corpus whenever the encoder or pooling changes.
+# from the corpus whenever the encoder, pooling, or chunk text changes.
 corpus/processed/embeddings.*.npy
+# Sidecar recording which chunk text the cached matrix was encoded from, so a
+# text edit that leaves the row count alone still invalidates it.
+corpus/processed/embeddings.*.npy.fingerprint
 
 # --- runtime state ---
 data/

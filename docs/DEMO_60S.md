@@ -39,6 +39,65 @@ Zoom to 110%. Close every other window. Terminal open in the background, not for
 
 ---
 
+## The exact text — DPA Copilot and Egress Guard
+
+**You do not type anything during the demo.** Both screens arrive pre-filled, and this section is
+here so that if a tab is ever empty you know precisely what to restore. Every string below is
+copied from the running product, not written from memory.
+
+### Egress Guard — what is already in the box
+
+Loaded automatically on mount. Do not retype it. This is the exact text:
+
+```
+From: Collections Team <collections@usapalmabank.com.ph>
+Subject: Urgent - overdue notice for DELOS SANTOS, Maria Concepcion
+
+Magandang araw po,
+
+Nag-apply po ng overdue notice si Maria Concepcion de los Santos.
+SSS 12-345-6789, TIN 456-789-012.
+Registered mobile 0917 123 4567, GCash number +639171234568.
+Credit card ending 4539578763621486, CVV 123, exp 09/28.
+Account number: 0056-12345678. Monthly salary PHP 42,500.
+Remittance via Cebuana Lhuillier ref #CEB-88213-4455.
+
+Pakisuri na po bago mag-escalate. Salamat!
+```
+
+Three one-click alternatives sit underneath it, in this order. Each loads **and scans
+immediately**, so a single click is enough:
+
+| Button | Loads | Verdict it lands on |
+|---|---|---|
+| **Collections email** | the text above | `BLOCK & ESCALATE` |
+| **Payment note** | `Magbayad si Maria ng PHP 42,500 sa account 0056-12345678 sangguniang 2024-03-15. Reference INV-2024-00123456, batch 20240315.` | `REDACT, THEN SEND` — one account number replaced |
+| **Operations text** | `Please process invoice INV-2024-00123456 for batch 20240315. Kindly confirm receipt within five business days.` | `SAFE TO SEND` — no regulated PII at all |
+
+If the textarea is empty on stage, click **Collections email**. That is the recovery move — one
+click, no typing, and it restores the exact state the script describes.
+
+### DPA Copilot — what each chip asks
+
+Three suggestion chips, left to right. Each fills the composer with the exact question below and
+sends it. **Chip 1 is the one to demo**; chips 2 and 3 are backups.
+
+| Chip (as written on screen) | Exact question it sends |
+|---|---|
+| **Breach reporting clock** | `Ilang oras dapat ko i-report ang data breach?` |
+| **Outsourcing to a vendor** | `Pwede ba ipasa ang CDR ng customer ko sa vendor namin sa Singapore?` |
+| **Rules for automated decisions** | `Can our call center use AI to score our agents?` |
+
+If every chip is somehow unavailable, type this — it is the same question chip 1 sends:
+
+```
+Ilang oras dapat ko i-report ang data breach?
+```
+
+The answer is **72 hours**, cited to `NPC-CIRC-16-03 Section 23` and `IRR-RA10173 Section 41`.
+
+---
+
 ## [0:00–0:06] THE HOOK — do not touch the mouse
 
 Start on Tab 1, already on screen.
@@ -54,11 +113,14 @@ Start on Tab 1, already on screen.
 
 **Do:** click **Scan & redact**.
 
-> "A collections officer is about to paste this into ChatGPT. It holds an SSS number, a TIN, two
-> mobile numbers, a GCash number, a full card number, a CVV and a bank account. Isla AI finds all
-> ten, replaces them with keyed pseudonyms, and then runs its own detector over its own output."
+> "A collections officer is about to paste this into ChatGPT. Isla AI finds ten things in it: the
+> sender's email, an SSS number, a TIN, two mobile numbers, a full card number, a CVV, a bank
+> account, a salary figure and a remittance reference. It replaces every one with a keyed
+> pseudonym, and then runs its own detector over its own output."
 
-**The screen shows 10 entities, 2 passes, 0.00% residual, 4 ms. Point at the verdict:**
+**Read the four metrics off the screen — 10 entities, 2 passes, 0.00% residual, single-digit
+milliseconds. Do not recite them from memory: latency varies per run, and contradicting your own
+screen on stage costs you the credibility the number was there to buy.**
 
 > "It didn't just redact. Card number, CVV and account number in the same message is a complete
 > payment-credential compromise, so it refuses to send. Not a warning — a block."
@@ -97,7 +159,8 @@ scenario**.
 
 ## [0:42–0:55] THE COPILOT — proves it is a tool, not a stunt
 
-**Do:** switch to Tab 3. Click the chip **"Breach reporting clock"**.
+**Do:** switch to Tab 3. Click the chip **"Breach reporting clock"**. It sends
+`Ilang oras dapat ko i-report ang data breach?` — Taglish, the way a branch actually asks.
 
 > "Same question in Taglish, the way a branch actually asks it. Seventy-two hours — quoted
 > from the NPC's own circular, with the section attached."

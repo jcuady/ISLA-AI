@@ -18,7 +18,7 @@ track, not a prediction of the result.
 |---|---|---|---|---|
 | 25% | Problem & Usefulness | **Strong, with one real exposure** | Narrow, named, regulation-backed user | "Would the general public benefit?" — they would not, and we cannot pretend otherwise |
 | 25% | Local AI Implementation | **Vulnerable** | Local inference is *architecturally* necessary | Our own ablation says the local AI is roughly tied with a lexical baseline |
-| 20% | Technical Execution | **Strong** | 382 Python + 108 UI tests, honest claims, bugs published | Corpus is 12 documents but BSP and SEC are unreachable; small-sample metrics |
+| 20% | Technical Execution | **Strong** | 393 Python + 108 UI tests, honest claims, bugs published | Corpus is 12 documents but BSP and SEC are unreachable; small-sample metrics |
 | 15% | Innovation | **Strong** | Refusing to be wrong; correct-refusal and named coverage gaps as a feature | Verifying your own redactor is good practice, not a novel idea |
 | 15% | Product & Demo Quality | **Medium-strong** | Real console, zero fake buttons | Demo video still pending — that is 15% with a hole in it |
 
@@ -100,7 +100,7 @@ ablation. But disclosure is not the same as a good answer.
 | Claim | Holds? |
 |---|---|
 | "Local inference is architecturally necessary: a cloud model cannot answer *is this sensitive personal information?* without the PII being sent first." | **Yes — this is genuinely airtight.** It is not a performance claim, it is a logical one. |
-| "Local latency: 0.2 ms PII p50, 8 ms copilot p50." | **True but weak.** The judges' own rubric offers latency as one of several advantages; our numbers are good, not distinctive. |
+| "Local latency: 0.2 ms PII p50, 11 ms copilot p50." | **True but weak.** The judges' own rubric offers latency as one of several advantages; our numbers are good, not distinctive. |
 | "Local cost: no per-call fee." | **True, and the strongest economic argument** for a high-frequency, low-value-per-call workload like a paste scan. |
 | "Offline availability in air-gapped bank estates." | **True and decisive for this ICP.** |
 | "Hardware utilization: local ONNX on CPU." | **True.** |
@@ -140,7 +140,7 @@ we have earned it and it is the correct framing.
 technically sophisticated is the implementation? · Is it reliable enough for a
 live demonstration?*
 
-**Strongest case.** 382 Python tests + 108 UI tests, all passing. `tsc --noEmit`
+**Strongest case.** 393 Python tests + 108 UI tests, all passing. `tsc --noEmit`
 clean. Zero npm vulnerabilities. Every published metric regenerates from
 committed datasets by running committed code, in CI, on every push. Both web
 surfaces ship `default-src 'none'` and CI asserts zero external requests. The

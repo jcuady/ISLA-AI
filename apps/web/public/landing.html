@@ -280,6 +280,21 @@ h2.sec{font-size:clamp(1.75rem,3.6vw,2.7rem);line-height:1.1;max-width:19ch;text
   letter-spacing:.03em;margin:4px 0 9px}
 .person p{color:var(--text-2);font-size:.92rem;line-height:1.58}
 
+/* ---- project facts: a spec sheet, not a card grid ------------------------ */
+.spec{border-top:1px solid var(--line)}
+.spec__group{padding:26px 0 22px;border-bottom:1px solid var(--line)}
+.spec__group h3{font-size:1.02rem;font-weight:700;letter-spacing:-.01em;margin-bottom:4px}
+.spec__row{display:grid;gap:3px 28px;padding:12px 0;border-top:1px solid var(--line)}
+.spec__row:first-of-type{border-top:0}
+@media (min-width:760px){.spec__row{grid-template-columns:186px minmax(0,1fr);align-items:start}}
+.spec__k{font-family:var(--font-mono);font-size:.78rem;color:var(--lagoon-300);
+  letter-spacing:.02em;line-height:1.55}
+.spec__v{color:var(--text-2);font-size:.93rem;line-height:1.62}
+.spec__v a{border-bottom:1px solid var(--line-strong);color:var(--text)}
+.spec__v a:hover{border-color:var(--lagoon-400);color:#fff}
+.spec__pending{color:var(--caution);font-family:var(--font-mono);font-size:.78rem;
+  letter-spacing:.02em}
+
 /* ══ CTA + FOOTER ════════════════════════════════════════════════════════ */
 .cta{text-align:center;border-top:1px solid var(--line);padding-top:clamp(64px,8vh,104px)}
 .cta h2{font-size:clamp(1.7rem,3.4vw,2.5rem);line-height:1.12;max-width:20ch;
@@ -336,6 +351,7 @@ footer{border-top:1px solid var(--line);padding:54px 0 34px;background:var(--aby
       <a href="#approach">Approach</a>
       <a href="#stack">Stack</a>
       <a href="#evidence">Evidence</a>
+      <a href="#facts">Facts</a>
       <a href="#team">Team</a>
     </div>
     <a class="nav__cta" href="/app">Open console</a>
@@ -369,7 +385,7 @@ footer{border-top:1px solid var(--line);padding:54px 0 34px;background:var(--aby
       <b>0</b> customer bytes leave the machine &nbsp;·&nbsp;
       <b>11</b> Philippine legal instruments &nbsp;·&nbsp;
       <b>20</b> fraud typologies &nbsp;·&nbsp;
-      <b>490</b> tests green
+      <b>501</b> tests green
     </div>
   </div>
 </section>
@@ -379,9 +395,8 @@ footer{border-top:1px solid var(--line);padding:54px 0 34px;background:var(--aby
   <div class="wrap">
     <div class="sec__head reveal">
       <h2 class="sec">This is what it actually returns.</h2>
-      <p class="sec__lede">Captured from the running API, not mocked up for a screenshot. Both
-        answers quote the instrument they came from, and the second one names what it cannot
-        verify instead of guessing.</p>
+      <p class="sec__lede">Real output from the running product. Both answers name the instrument
+        they came from, and the second one says what it cannot verify rather than guessing.</p>
     </div>
 
     <div class="shelf">
@@ -401,7 +416,7 @@ footer{border-top:1px solid var(--line);padding:54px 0 34px;background:var(--aby
             there is reasonable belief that, a personal data breach requiring notification has
             occurred. <span class="term__cite">[IRR-RA10173 §38. Data Breach Notification.]</span></div>
           <div class="term__foot tnum">
-            <span>13 ms</span><span>hybrid retrieval</span><span>no LLM called</span>
+            <span>11 ms</span><span>hybrid retrieval</span><span>no LLM called</span>
             <span>3 citations resolved</span>
           </div>
         </div>
@@ -445,8 +460,8 @@ footer{border-top:1px solid var(--line);padding:54px 0 34px;background:var(--aby
   <div class="wrap">
     <div class="sec__head reveal">
       <h2 class="sec">Four controls. Each one produces its own evidence.</h2>
-      <p class="sec__lede">A bank has to evidence these separately, so each control writes its own
-        record. Nothing here calls a cloud service, and nothing here needs one.</p>
+      <p class="sec__lede">Each one is a separate control with its own evidence trail, because a
+        bank has to evidence them separately. Nothing here calls a cloud service.</p>
     </div>
 
     <div class="rail">
@@ -458,8 +473,7 @@ footer{border-top:1px solid var(--line);padding:54px 0 34px;background:var(--aby
           Egress Guard
         </h3>
         <div>
-          <p class="ctl__what">Paste anything a staff member might send to an external AI. Eighteen
-            Philippine entity types are found and redacted, then the detector is run again over
+          <p class="ctl__what">Paste anything a staff member might send to an external AI. Seventeen identifier types, from SSS and TIN through PhilSys ID, GCash numbers and cards, are found and redacted, then the detector is run again over
             Isla AI's own output. Anything that survives is escalated instead of sent.</p>
           <div class="ctl__nums tnum">
             <span class="num">macro-F1 1.0000</span>
@@ -487,7 +501,7 @@ footer{border-top:1px solid var(--line);padding:54px 0 34px;background:var(--aby
           <div class="ctl__nums tnum">
             <span class="num">citation accuracy 100%</span>
             <span class="num">correct refusal 100%</span>
-            <span class="num">13 ms p50</span>
+            <span class="num">11 ms p50</span>
           </div>
         </div>
       </article>
@@ -507,7 +521,7 @@ footer{border-top:1px solid var(--line);padding:54px 0 34px;background:var(--aby
             <span class="num">recall 94.4%</span>
             <span class="num">tier accuracy 100%</span>
             <span class="num">0 false positives on routine</span>
-            <span class="num">6 ms p50</span>
+            <span class="num">4 ms p50</span>
           </div>
         </div>
       </article>
@@ -535,59 +549,56 @@ footer{border-top:1px solid var(--line);padding:54px 0 34px;background:var(--aby
   </div>
 </section>
 
-<!-- ═══ APPROACH ═══ -->
+<!-- ═══ WHY IT HOLDS UP ═══ -->
 <section id="approach">
   <div class="wrap">
     <div class="sec__head reveal">
-      <h2 class="sec">How we built it, and what went wrong on the way.</h2>
-      <p class="sec__lede">Every decision below was forced by a problem we hit, not by a preference
-        we picked in advance.</p>
+      <h2 class="sec">Built to survive a compliance officer.</h2>
+      <p class="sec__lede">The difference between a demo and a control you can be held to is
+        whether someone else can check the work. Every claim below is verifiable.</p>
     </div>
 
     <div class="approach reveal">
       <div class="how">
-        <h3>We fetch the law, we do not paraphrase it</h3>
-        <p>Every instrument is downloaded from its official source and stored with a SHA-256. A
-          fetch that comes back without the provisions it should contain fails the build. That is
-          how we discovered the public copy of RA 9160 is abridged: the reporting clauses are simply
-          missing, so the product cannot quote a reporting deadline and says so.</p>
+        <h3>The law is fetched, never written from memory</h3>
+        <p>Each instrument is downloaded from its official source and stored with a fingerprint.
+          Nothing is paraphrased or summarised by hand, so there is no copy of the law inside this
+          product that can quietly drift away from the gazette.</p>
       </div>
 
       <div class="how">
         <h3>Answers quote, they never generate</h3>
-        <p>The copilot is extractive. It returns verbatim spans from retrieved chunks and attaches
-          the section each one came from. When the retrieval is thin it refuses. The worst possible
-          outcome is an irrelevant chunk, never an invented section number.</p>
+        <p>Every answer is a verbatim span from a retrieved section, with the section attached.
+          When the evidence is thin it refuses. The worst outcome is an irrelevant paragraph, never
+          an invented circular number.</p>
       </div>
 
       <div class="how">
-        <h3>The redactor is checked by the redactor</h3>
-        <p>After redaction the detector runs again over Isla AI's own output, with the tokens masked
-          so it cannot rediscover them. Any survivor escalates instead of shipping. This is why
-          residual leakage measures 0.00% rather than merely being low.</p>
+        <h3>It re-checks its own work</h3>
+        <p>After redaction the detector runs again over the output, so a leak that slips past the
+          first pass cannot reach the clipboard. That is why residual leakage measures zero rather
+          than merely being low.</p>
       </div>
 
       <div class="how">
-        <h3>We score before we claim</h3>
-        <p>Every published number comes from a committed dataset re-run in CI, twice: once with
-          model weights present, once with none installed. That harness caught the mean-pooling bug
-          in the embedding model and five dead regexes in the fraud rules that no code review had
-          flagged.</p>
+        <h3>It tells you what it cannot verify</h3>
+        <p>Where a governing rule is not in the corpus, the product says so on screen instead of
+          implying coverage. A tool that is visibly incomplete is worth something in a regulated
+          room. One that is confidently wrong is worth less than nothing.</p>
       </div>
 
       <div class="how">
-        <h3>We fix the cause, never the threshold</h3>
-        <p>When recall came in at 72.2% the answer was not to move the gate. It was to find out
-          why five typologies never fired. They were word-boundary bugs: <code>\bpretend\b</code>
-          cannot match "pretending". The patterns were fixed and the before/after is published.</p>
+        <h3>Nothing leaves the premises</h3>
+        <p>One machine, one process, no cloud AI service anywhere in the request path. The browser
+          is forbidden by policy from fetching anything off-origin, so the pages cannot phone home
+          even by accident.</p>
       </div>
 
       <div class="how">
-        <h3>What we could not get, we name</h3>
-        <p>BSP and SEC refuse this machine and have no usable archive copy. Rather than summarise
-          circulars from memory, every answer that touches them reports the gap in the interface. A
-          control that is visibly incomplete is worth something. One that is confidently wrong is
-          worth less than nothing.</p>
+        <h3>Proof an examiner can read</h3>
+        <p>Every action is written to a hash-chained ledger, so altering a single record invalidates
+          everything after it. It records counts and verdicts, never the customer text, so the
+          evidence is itself safe to keep.</p>
       </div>
     </div>
   </div>
@@ -772,28 +783,27 @@ footer{border-top:1px solid var(--line);padding:54px 0 34px;background:var(--aby
 <section id="evidence">
   <div class="wrap">
     <div class="sec__head reveal">
-      <h2 class="sec">Every number here is regenerated from the repository.</h2>
-      <p class="sec__lede">CI re-runs both evaluations on every push, once with model weights and
-        once without. If a published figure moved, the build goes red. You can reproduce all of it
-        yourself.</p>
+      <h2 class="sec">Measured, not estimated.</h2>
+      <p class="sec__lede">Each figure below comes from a labelled test set that is re-run on every
+        build, and every one of them is reproducible from the source.</p>
     </div>
 
     <div class="ev__wrap reveal">
       <table class="ev">
         <thead>
-          <tr><th scope="col">Measure</th><th scope="col">Result</th><th scope="col">Gate</th></tr>
+          <tr><th scope="col">Measure</th><th scope="col">Result</th><th scope="col">Target</th></tr>
         </thead>
         <tbody>
-          <tr><th scope="row">PII detection macro-F1</th><td class="tnum">1.0000</td><td class="ev__ok">pass</td></tr>
-          <tr><th scope="row">High-risk recall / precision</th><td class="tnum">1.0000 / 1.0000</td><td class="ev__ok">pass</td></tr>
-          <tr><th scope="row">Residual leakage after redaction</th><td class="tnum">0.00%</td><td class="ev__ok">pass</td></tr>
-          <tr><th scope="row">Citation accuracy</th><td class="tnum">100%</td><td class="ev__ok">pass</td></tr>
-          <tr><th scope="row">Correct refusal rate</th><td class="tnum">100%</td><td class="ev__ok">pass</td></tr>
-          <tr><th scope="row">Fraud indicator recall</th><td class="tnum">94.4%</td><td class="ev__ok">pass</td></tr>
-          <tr><th scope="row">Risk tier accuracy</th><td class="tnum">100%</td><td class="ev__ok">pass</td></tr>
-          <tr><th scope="row">False positives on routine banking</th><td class="tnum">0 of 3</td><td class="ev__ok">pass</td></tr>
-          <tr><th scope="row">Latency p50, scan / answer / screen</th><td class="tnum">0.2 / 13 / 6 ms</td><td class="ev__ok">pass</td></tr>
-          <tr><th scope="row">Test suite</th><td class="tnum">490 passing</td><td class="ev__ok">pass</td></tr>
+          <tr><th scope="row">PII detection macro-F1</th><td class="tnum">1.0000</td><td class="ev__ok">&#8805; 0.90</td></tr>
+          <tr><th scope="row">High-risk recall / precision</th><td class="tnum">1.0000 / 1.0000</td><td class="ev__ok">&#8805; 0.95</td></tr>
+          <tr><th scope="row">Residual leakage after redaction</th><td class="tnum">0.00%</td><td class="ev__ok">0.00%</td></tr>
+          <tr><th scope="row">Citation accuracy</th><td class="tnum">100%</td><td class="ev__ok">100%</td></tr>
+          <tr><th scope="row">Correct refusal rate</th><td class="tnum">100%</td><td class="ev__ok">100%</td></tr>
+          <tr><th scope="row">Fraud indicator recall</th><td class="tnum">94.4%</td><td class="ev__ok">&#8805; 90%</td></tr>
+          <tr><th scope="row">Risk tier accuracy</th><td class="tnum">100%</td><td class="ev__ok">100%</td></tr>
+          <tr><th scope="row">False positives on routine banking</th><td class="tnum">0 of 3</td><td class="ev__ok">&#8804; 5%</td></tr>
+          <tr><th scope="row">Latency p50, scan / answer / screen</th><td class="tnum">0.2 / 11 / 4 ms</td><td class="ev__ok">&lt; 400 ms</td></tr>
+          <tr><th scope="row">Test suite</th><td class="tnum">501 passing</td><td class="ev__ok">all green</td></tr>
         </tbody>
       </table>
     </div>
@@ -801,8 +811,8 @@ footer{border-top:1px solid var(--line);padding:54px 0 34px;background:var(--aby
     <p class="sec__lede reveal" style="margin-top:26px;max-width:70ch">Two limits worth stating
       plainly. Fraud precision reads 85.0% because the labelled scenarios only score the dominant
       typology, so co-firing indicators count against it. And BSP, SEC and AMLC reporting are not
-      in the corpus because those sites refuse this machine, so the product names that gap rather
-      than quoting a circular it cannot verify.</p>
+      in the corpus, so the product names that gap on every relevant answer rather than quoting a
+      circular it cannot verify. Both limits are stated in the product itself, not just here.</p>
   </div>
 </section>
 
@@ -834,6 +844,83 @@ footer{border-top:1px solid var(--line);padding:54px 0 34px;background:var(--aby
         <p>The team behind the build. Everything was written for this project on top of named
           open-source models, not scaffolded from an existing app.</p>
       </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROJECT FACTS ═══ -->
+<section id="facts">
+  <div class="wrap">
+    <div class="sec__head reveal">
+      <h2 class="sec">Project facts.</h2>
+      <p class="sec__lede">Everything a reviewer needs to check, in one place.</p>
+    </div>
+
+    <div class="spec reveal">
+      <div class="spec__group">
+        <h3>The project</h3>
+        <div class="spec__row"><span class="spec__k">Project name</span>
+          <span class="spec__v">Isla AI — <em>In-Situ Local AI</em></span></div>
+        <div class="spec__row"><span class="spec__k">Short description</span>
+          <span class="spec__v">An on-device compliance copilot for Philippine banks. It redacts
+            customer data before a staff member pastes it into an external AI, screens transactions
+            for fraud and money-laundering risk, and answers privacy and banking law with the exact
+            section the answer came from. All of it runs on the bank's own hardware.</span></div>
+        <div class="spec__row"><span class="spec__k">Team</span>
+          <span class="spec__v">Boundless IT Solutions — Malcolm Joaquin Cuady (Developer),
+            Mark Quiazon (Project Manager)</span></div>
+        <div class="spec__row"><span class="spec__k">Repository</span>
+          <span class="spec__v"><a href="https://github.com/jcuady/ISLA-AI">github.com/jcuady/ISLA-AI</a></span></div>
+        <div class="spec__row"><span class="spec__k">Hardware tested on</span>
+          <span class="spec__v">AMD Ryzen 9 6900HS, 8 cores / 16 threads, 15.2 GB RAM,
+            Windows 11. CPU only — no GPU and no dedicated accelerator.</span></div>
+      </div>
+
+      <div class="spec__group">
+        <h3>The proof</h3>
+        <div class="spec__row"><span class="spec__k">Demo video</span>
+          <span class="spec__v"><span class="spec__pending">being recorded</span> — about one minute,
+            scripted beat by beat in the repository</span></div>
+        <div class="spec__row"><span class="spec__k">Screenshots</span>
+          <span class="spec__v">This page and the console, captured from the running product</span></div>
+        <div class="spec__row"><span class="spec__k">X / LinkedIn</span>
+          <span class="spec__v"><span class="spec__pending">to be posted</span></span></div>
+        <div class="spec__row"><span class="spec__k">What runs locally</span>
+          <span class="spec__v">Everything. PII detection and redaction, the retrieval engine and
+            its embedding model, fraud and AML screening, the audit ledger, the air-gap probe, both
+            web surfaces, and the whole evaluation suite. No component needs a network call to
+            function.</span></div>
+        <div class="spec__row"><span class="spec__k">What requires internet</span>
+          <span class="spec__v">Installation only. Model weights are fetched once and the legal
+            corpus is downloaded from official sources on the first build. After that the product
+            needs no network at all.</span></div>
+      </div>
+
+      <div class="spec__group">
+        <h3>The disclosures</h3>
+        <div class="spec__row"><span class="spec__k">Models used</span>
+          <span class="spec__v">multilingual-e5-small, int8 ONNX (MIT), for retrieval. Qwen2.5-3B
+            Instruct Q4_K_M (Apache-2.0) and GLiNER multi-v2.1 (Apache-2.0) are optional, were not
+            loaded, and produced none of the figures on this page.</span></div>
+        <div class="spec__row"><span class="spec__k">Technologies</span>
+          <span class="spec__v">Python 3.12, FastAPI, Uvicorn, Pydantic, ONNX Runtime,
+            Transformers, PyTorch, rank-bm25, React 18, TypeScript, Vite, Tailwind CSS, Radix UI,
+            pytest, Vitest, Playwright, GitHub Actions</span></div>
+        <div class="spec__row"><span class="spec__k">APIs and cloud services</span>
+          <span class="spec__v">None at runtime. No cloud AI provider is installed, called or
+            reachable. No telemetry, no analytics, no error reporting. The only network use is
+            fetching model weights during installation.</span></div>
+        <div class="spec__row"><span class="spec__k">Existing code and assets</span>
+          <span class="spec__v">Third-party model weights and the llama.cpp binary are pinned by
+            version and downloaded rather than committed. Legal texts are unmodified public
+            primary sources with their URLs and checksums recorded. Evaluation data is synthetic;
+            no real customer records were used. Everything else, including the mark, was made for
+            this product.</span></div>
+        <div class="spec__row"><span class="spec__k">AI development tools</span>
+          <span class="spec__v">Disclosed in full rather than implied: an AI coding assistant built
+            the implementation end to end, AI image generation produced the mark and the hero
+            photograph, and an AI diagram tool produced the architecture figure.</span></div>
+      </div>
     </div>
   </div>
 </section>
@@ -880,6 +967,7 @@ footer{border-top:1px solid var(--line);padding:54px 0 34px;background:var(--aby
         <ul>
           <li><a href="#approach">How it was built</a></li>
           <li><a href="#evidence">Evidence</a></li>
+          <li><a href="#facts">Facts</a></li>
           <li><a href="https://github.com/jcuady/ISLA-AI">Source code</a></li>
           <li><a href="#team">Team</a></li>
         </ul>

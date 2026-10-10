@@ -8,7 +8,7 @@
 *Walang datos na lumalabas.*
 
 [![Local AI](https://img.shields.io/badge/inference-100%25%20local-107080?style=flat-square)](https://github.com/jcuady/ISLA-AI)
-[![Tests](https://img.shields.io/badge/tests-490%20passed-2fbf87?style=flat-square)](https://github.com/jcuady/ISLA-AI)
+[![Tests](https://img.shields.io/badge/tests-501%20passed-2fbf87?style=flat-square)](https://github.com/jcuady/ISLA-AI)
 [![No cloud calls](https://img.shields.io/badge/cloud%20API%20calls-0-a78bfa?style=flat-square)](https://github.com/jcuady/ISLA-AI)
 
 **AppBuilders PH Hackathon 2026 · Local AI track · Finance vertical**
@@ -234,7 +234,7 @@ Latency **0.2 ms p50**, **0.5 ms p95** — in-process, CPU-only, no GPU.
 | Citation accuracy | ≥ 0.95 | **100.00%** | PASS |
 | Correct-refusal rate (out of domain) | ≥ 0.90 | **100.00%** | PASS |
 | Correct source document | ≥ 0.80 | **80.00%** | PASS |
-| Answer latency p50 | < 4000 ms | **8 ms** | PASS |
+| Answer latency p50 | < 4000 ms | **11 ms** | PASS |
 
 **The weakest number, published rather than hidden:** source attribution is 4 of 5. The failing
 question asks whether a bank must register an AI credit scoring model. The citation returned is
@@ -310,7 +310,7 @@ Open <http://127.0.0.1:8765> for the landing page, or go straight to the console
 ### Verify it yourself
 
 ```powershell
-# 490 tests: 382 Python + 108 UI
+# 501 tests: 393 Python + 108 UI
 .venv\Scripts\python.exe -m pytest tests/ -q
 npm --prefix apps\web test
 npm --prefix apps\web run typecheck
@@ -371,7 +371,7 @@ the answer changes in front of you. It is not a hardcoded green badge.
 
 ```
                        127.0.0.1 only (asserted at import)
-  browser ──► FastAPI ──┬──► EgressGuard ──► recognizers (18 PH entity types, Luhn, Taglish normalisation)
+  browser ──► FastAPI ──┬──► EgressGuard ──► recognizers (17 identifier types, Luhn, Taglish normalisation)
         │               │                      └─► 3-pass verification (tokens masked between passes)
         │               ├──► DPACopilot  ──► HybridIndex ──► multilingual-e5-small (int8 ONNX)
         │               │                      │                + BM25 + section-ID, × authority weight
@@ -398,7 +398,7 @@ isla-ai/
 │  └─ core/          app.py · airgap.py · ledger.py · llm.py     API + proof
 ├─ corpus/           fetch_corpus.py · chunk_corpus.py           11 instruments + 1 guide → 348 chunks
 ├─ eval/             run_eval.py · risk_eval.py · datasets/ · RESULTS.md
-├─ tests/            382 Python + 108 UI tests
+├─ tests/            393 Python + 108 UI tests
 ├─ models/           download_models.py · registry.yaml
 ├─ apps/web/         React console + landing page + verify-ui.mjs + qa-frontend.mjs
 ├─ branding/         isla-mark.svg · isla-ai-logo.png · brand.md

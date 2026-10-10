@@ -25,6 +25,35 @@ await page.waitForTimeout(1500);
 const sample = await page.locator('textarea').first().inputValue();
 check('deep link ?view=egress works', sample.length > 40, `${sample.length} chars preloaded`);
 check('preloaded sample holds an SSS', /12-345-6789/.test(sample), '');
+
+// The script tells the presenter exactly what is already in the box and tells
+// them which button to press if it is ever empty. Pin both, so a drift in the
+// fixture cannot leave a wrong string sitting in a document people read on
+// stage. Compared against the block quoted in docs/DEMO_60S.md.
+const DOCUMENTED_SAMPLE = [
+  'From: Collections Team <collections@usapalmabank.com.ph>',
+  'Subject: Urgent - overdue notice for DELOS SANTOS, Maria Concepcion',
+  '',
+  'Magandang araw po,',
+  '',
+  'Nag-apply po ng overdue notice si Maria Concepcion de los Santos.',
+  'SSS 12-345-6789, TIN 456-789-012.',
+  'Registered mobile 0917 123 4567, GCash number +639171234568.',
+  'Credit card ending 4539578763621486, CVV 123, exp 09/28.',
+  'Account number: 0056-12345678. Monthly salary PHP 42,500.',
+  'Remittance via Cebuana Lhuillier ref #CEB-88213-4455.',
+  '',
+  'Pakisuri na po bago mag-escalate. Salamat!',
+  '',
+].join('\n');
+check('preloaded text is exactly what the script documents',
+  sample === DOCUMENTED_SAMPLE,
+  sample === DOCUMENTED_SAMPLE ? '' : 'DEMO_60S.md quotes a different sample');
+
+for (const label of ['Collections email', 'Payment note', 'Operations text']) {
+  check(`recovery button "${label}" exists`,
+    (await page.getByRole('button', { name: label, exact: true }).count()) === 1, '');
+}
 const scanBtn = page.getByRole('button', { name: /Scan & redact/i }).first();
 check('button is labelled "Scan & redact"', (await scanBtn.count()) === 1,
   (await scanBtn.count()) === 1 ? '' : 'label differs from the script');
@@ -39,6 +68,15 @@ check('verdict renders as BLOCK & ESCALATE', /BLOCK\s*&\s*ESCALATE/i.test(egText
 check('escalates for card PAN + CVV + account together',
   /payment-credential compromise/i.test(egText), '');
 check('shows the verification pass', /verif/i.test(egText), '');
+
+// The spoken line names the ten things found. If the fixture or the detector
+// changes, that sentence becomes a lie told on stage, so check the categories
+// the script actually says out loud against what is on screen.
+const KINDS = ['EMAIL', 'SSS', 'TIN', 'GCASH', 'PAN', 'CVV', 'ACCT', 'AMOUNT', 'REMIT'];
+const missing = KINDS.filter((k) => !new RegExp(`\\[${k}-[0-9A-F]{4}\\]`).test(egText));
+check('every kind named in the script is in the redacted output',
+  missing.length === 0, missing.length ? `missing ${missing.join(', ')}` : '');
+check('detected count is the ten the script claims', /Detected\s*\(\s*10\s*\)/i.test(egText), '');
 
 // ── TAB 2 · Fraud & AML (0:20-0:42) ───────────────────────────────────────
 console.log('\n[Tab 2] Fraud & AML');
@@ -74,10 +112,34 @@ const clockChip = page.getByRole('button', { name: /Breach reporting clock/i }).
 check('"Breach reporting clock" chip exists', (await clockChip.count()) === 1);
 await clockChip.click();
 await page.waitForTimeout(4000);
+
+// docs/DEMO_60S.md tells the presenter the exact question this chip sends, and
+// offers it as the thing to retype if the chips are unavailable. Pin it.
+const QUESTION = 'Ilang oras dapat ko i-report ang data breach?';
+check('chip sends exactly the question the script documents',
+  (await page.locator('main').innerText()).includes(QUESTION), QUESTION);
+
+// Read chip 1's answer now: the loop below navigates away to the backup chips,
+// so anything asserted after it would be reading the wrong answer.
 const cpText = await page.locator('main').innerText();
 check('answers 72 hours', /72|seventy-two/i.test(cpText), '');
 check('carries a citation chip',
   /NPC-CIRC|IRR-RA10173|RA-10173/.test(cpText), '');
+
+// The other two chips are named as backups, with their exact wording. Their
+// accessible name is the title AND the question - both are child spans - so
+// this must be a substring match, not `exact`.
+for (const [chip, q] of [
+  ['Outsourcing to a vendor', 'Pwede ba ipasa ang CDR ng customer ko sa vendor namin sa Singapore?'],
+  ['Rules for automated decisions', 'Can our call center use AI to score our agents?'],
+]) {
+  await page.goto(`${BASE}/app?view=copilot`, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(500);
+  await page.getByRole('button', { name: new RegExp(chip, 'i') }).first().click();
+  await page.waitForTimeout(4000);
+  check(`"${chip}" sends the documented question`,
+    (await page.locator('main').innerText()).includes(q), '');
+}
 check('no console errors across the whole run', errors.length === 0, errors[0] || '');
 
 await ctx.close();

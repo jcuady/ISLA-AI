@@ -18,6 +18,7 @@ fails to load before the demo.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import re
@@ -29,6 +30,27 @@ PROCESSED = REPO_ROOT / "corpus" / "processed"
 CHUNKS_PATH = PROCESSED / "chunks.jsonl"
 
 W_COSINE = 0.60
+
+
+def corpus_fingerprint(chunks: list[dict]) -> str:
+    """A content hash of the corpus the embedding matrix was built from.
+
+    The cache used to be validated on row count alone. That catches a corpus
+    that grew or shrank, but it cannot see an edit that leaves the count
+    untouched - and search() indexes cosines by chunk position, so a stale
+    matrix silently scores every query against vectors encoded from text that
+    is no longer in the corpus. Hashing the actual text closes that.
+
+    Row order is part of the fingerprint for the same reason: position is the
+    join key between a chunk and its vector.
+    """
+    h = hashlib.sha256()
+    for c in chunks:
+        h.update(c.get("chunk_id", "").encode("utf-8"))
+        h.update(b"\x00")
+        h.update(c.get("text", "").encode("utf-8"))
+        h.update(b"\x00")
+    return h.hexdigest()
 W_BM25 = 0.25
 W_SECTION = 0.15
 
@@ -454,6 +476,8 @@ class HybridIndex:
                 return False
 
             emb_path = PROCESSED / f"embeddings.{embeddings.POOLING}.npy"
+            fp_path = PROCESSED / f"embeddings.{embeddings.POOLING}.npy.fingerprint"
+            fingerprint = corpus_fingerprint(self.chunks)
             cached = None
             if emb_path.exists():
                 cached = np.load(emb_path)
@@ -467,6 +491,12 @@ class HybridIndex:
                     print(f"[index] cached embeddings {cached.shape[0]} rows != "
                           f"{len(self.chunks)} chunks; re-encoding")
                     cached = None
+                # Row count alone cannot see an edit that leaves the chunk
+                # count unchanged, so the content is hashed as well.
+                elif not fp_path.exists() or fp_path.read_text(encoding="utf-8").strip() != fingerprint:
+                    print("[index] cached embeddings predate the current chunk "
+                          "text; re-encoding")
+                    cached = None
 
             if cached is not None:
                 self._embeddings = cached
@@ -475,6 +505,7 @@ class HybridIndex:
                 print(f"[index] encoding corpus with e5-small ({embeddings.POOLING} pooling)...")
                 matrix = embedder.encode_chunks([c["text"] for c in self.chunks])
                 np.save(emb_path, matrix)
+                fp_path.write_text(fingerprint, encoding="utf-8")
                 self._embeddings = matrix
                 print(f"[index] cached embeddings {matrix.shape} -> {emb_path.name}")
 

@@ -73,8 +73,34 @@ BOILERPLATE_SECTION_RE = re.compile(
 )
 
 
+# PyMuPDF cannot decode some glyphs in the official gazette PDFs and emits
+# U+FFFD rather than failing. Across this corpus that happens in exactly two
+# positions, and both are recoverable from context:
+#
+#   * between two letters, it is the possessive apostrophe
+#     ("individual's", "Corporation's"); and
+#   * anywhere else, it is the em dash that separates a section heading from
+#     its body ("Short Title. -"). This is not a guess: the same PDFs emit a
+#     real em dash in that position elsewhere, so "Access - Except as may be
+#     allowed" is verbatim from the source with the dash rendered correctly.
+#
+# Both replacements are single characters, so this is length-preserving by
+# construction - which is what stops the repair from moving a chunk boundary
+# and invalidating the published chunk count. tests/test_corpus_text_integrity.py
+# asserts that property directly, and asserts the committed corpus is clean.
+_REPLACEMENT_JOINING_LETTERS = re.compile("(?<=[A-Za-z])\ufffd(?=[A-Za-z])")
+_ANY_REPLACEMENT = re.compile("\ufffd")
+
+
+def repair_glyphs(text: str) -> str:
+    """Replace U+FFFD with the character it stood in for. Same length, always."""
+    text = _REPLACEMENT_JOINING_LETTERS.sub("\u2019", text)
+    return _ANY_REPLACEMENT.sub("\u2014", text)
+
+
 def clean_text(raw: str) -> str:
     text = raw.replace("\r\n", "\n").replace("\xa0", " ")
+    text = repair_glyphs(text)
     lines = [ln.rstrip() for ln in text.split("\n")]
     kept = [ln for ln in lines if not NOISE_LINE_RE.match(ln)]
     # Collapse runs of 3+ blank lines.

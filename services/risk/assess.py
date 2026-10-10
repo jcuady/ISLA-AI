@@ -118,6 +118,15 @@ def _resolve_citation(index, doc_id: str, anchor: str) -> dict | None:
 
     def _shape(hit, approximate: bool) -> dict:
         text = " ".join(hit.chunk["text"].split())
+        # The published quote has to actually show the provision it is quoting.
+        # The anchor can sit past the 600-character budget in a long section -
+        # RA-9160 Section 3 defines a dozen terms before it reaches "covered
+        # transaction" - and claiming `anchor_in_text` over a quote that omits
+        # it is precisely the overstatement this function exists to prevent.
+        # Centre the quote on the anchor rather than truncating from the top.
+        needle = " ".join(anchor.lower().split())
+        if not approximate and needle not in " ".join(text[:600].lower().split()):
+            text = _window_around(text, anchor, pad=300)
         return {
             "doc_id": hit.chunk["doc_id"],
             "doc_title": hit.chunk["doc_title"],
