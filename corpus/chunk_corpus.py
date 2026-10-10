@@ -321,6 +321,23 @@ def main() -> int:
         total = sum(c.char_len for c in chunks)
         print(f"[ok  ] {doc['doc_id']:18} {len(chunks):>3} chunks  {total:>7,} chars")
 
+    # Refuse to destroy the committed corpus. This file is tracked in git
+    # precisely so the demo runs with no network, so a failed fetch must not
+    # silently replace 348 chunks with an empty file: the app would still
+    # start, serve zero documents, and answer every legal question as a
+    # refusal - which looks like a working product with an empty corpus.
+    if not all_chunks:
+        print(
+            "REFUSING TO WRITE: no source documents were read.\n"
+            "  corpus/raw holds the fetched PDFs/HTML and is git-ignored, so a\n"
+            "  failed fetch leaves it empty. corpus/processed/chunks.jsonl is\n"
+            "  committed and is all the app needs - restore it with\n"
+            "      git checkout -- corpus/processed/chunks.jsonl\n"
+            "  and only re-run the chunker once corpus/raw is actually populated.",
+            file=sys.stderr,
+        )
+        return 1
+
     with out_path.open("w", encoding="utf-8") as fh:
         for chunk in all_chunks:
             fh.write(json.dumps(asdict(chunk), ensure_ascii=False) + "\n")

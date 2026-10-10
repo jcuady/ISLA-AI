@@ -6,6 +6,7 @@ Used to verify the demo script still matches what the product actually does.
 from __future__ import annotations
 
 import json
+import sys
 import urllib.request
 
 B = "http://127.0.0.1:8765"
@@ -22,6 +23,28 @@ def post(path: str, body: dict):
     )
     with urllib.request.urlopen(req, timeout=60) as r:
         return json.loads(r.read())
+
+
+# Fail with an instruction, not a traceback. This script is the browser-less
+# demo path handed to another agent, so "the server is not running" is the one
+# message it must never hide behind a socket stack.
+try:
+    health = get("/api/health")
+except Exception as exc:  # noqa: BLE001
+    print(f"Cannot reach {B} ({type(exc).__name__}).")
+    print("Start the server first:")
+    print(r'  Start-Process -FilePath ".venv\Scripts\python.exe" -ArgumentList ' +
+          r'"-m","uvicorn","services.core.app:app","--host","127.0.0.1","--port","8765" '
+          r"-WorkingDirectory (Get-Location) -WindowStyle Hidden")
+    print("Then wait for /api/health to return 200 (6-20s first start, ~45s if the")
+    print("corpus changed and the embedding matrix must be rebuilt).")
+    sys.exit(1)
+
+print(f"--- health --- chunks={health['corpus']['chunks']} "
+      f"dense={health['corpus']['dense_ready']} "
+      f"embeddings={health['models']['embeddings']['available']}")
+if not health["corpus"]["dense_ready"]:
+    print("  WARNING dense retrieval is OFF - every published figure is invalid.")
 
 
 print("--- routes ---")

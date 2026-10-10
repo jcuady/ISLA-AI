@@ -530,6 +530,7 @@ Stated plainly, because a compliance tool that overstates itself is worse than n
 | [`docs/LICENSING.md`](docs/LICENSING.md) | Third-party licences and the PyMuPDF AGPL flag |
 | [`docs/CORPUS_SOURCES.md`](docs/CORPUS_SOURCES.md) | Every legal document, its URL, retrieval date and SHA-256 |
 | [`docs/DEMO_SCRIPT.md · docs/DEMO_60S.md`](docs/DEMO_SCRIPT.md) | The 5-minute demo, with prepared answers for the four hard questions |
+| [`docs/AGENT_RUNBOOK.md`](docs/AGENT_RUNBOOK.md) | **Start here if you are an agent picking this up cold** — how to run it, every gate with its expected output, the PowerShell traps, and what not to break |
 | [`docs/HACKATHON_RULES.md`](docs/HACKATHON_RULES.md) | Host rules transcribed verbatim, with a compliance matrix and the honest gaps |
 | [`docs/SUBMISSION.md`](docs/SUBMISSION.md) | Submission checklist status |
 | [`eval/RESULTS.md`](eval/RESULTS.md) | The generated scoreboard |
