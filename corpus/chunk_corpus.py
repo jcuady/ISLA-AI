@@ -338,6 +338,35 @@ def main() -> int:
         )
         return 1
 
+    # Guard: a rebuild may grow the corpus, but it must never silently shrink it.
+    #
+    # corpus/processed/chunks.jsonl is tracked in git precisely so the demo runs
+    # with no network at all, while corpus/raw/ is git-ignored. On a machine
+    # where the fetch failed - BSP and SEC are unreachable from some networks -
+    # most source documents are simply not there, and an unconditional write
+    # replaced 348 committed chunks with the handful still present on disk.
+    # The app still started, reported `chunks: 0`, and answered every legal
+    # question with a refusal, which reads as a working product rather than a
+    # broken build. Failing loudly and leaving the file alone is the only safe
+    # outcome. Asserted by tests/test_chunker_guard.py.
+    if out_path.exists():
+        try:
+            existing = sum(
+                1 for line in out_path.read_text(encoding="utf-8").splitlines() if line.strip()
+            )
+        except OSError:
+            existing = 0
+        if existing and len(all_chunks) < existing:
+            print(
+                f"REFUSING TO WRITE: this rebuild produced {len(all_chunks)} chunks, "
+                f"but {existing} are already committed. {out_path.name} left untouched.\n"
+                f"  Likely cause: corpus/raw/ is git-ignored and the source documents are\n"
+                f"  not on this machine. Run corpus/fetch_corpus.py (needs internet), or\n"
+                f"  restore them, before rebuilding the corpus.",
+                file=sys.stderr,
+            )
+            return 1
+
     with out_path.open("w", encoding="utf-8") as fh:
         for chunk in all_chunks:
             fh.write(json.dumps(asdict(chunk), ensure_ascii=False) + "\n")
