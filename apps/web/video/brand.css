@@ -1,0 +1,158 @@
+/* Isla AI — motion-graphic language for the demo film.
+   Palette, type and easing lifted from apps/web/public/landing.html so the
+   film and the product are visibly the same thing. */
+
+:root {
+  --lagoon-300: #2FBECC;
+  --lagoon-400: #16A3B8;
+  --lagoon-700: #0B5A68;
+  --abyss-900: #021A20;
+  --abyss-950: #010F14;
+  --coral-400: #FF7F5C;
+  --safe: #2fbf87;
+  --caution: #f0a92b;
+  --block: #ff3b4e;
+  --block-text: #ff6b7d;
+  --text: #fff;
+  --text-2: #9FB6BC;
+  --text-3: #7C979F;
+  --line: rgba(255, 255, 255, 0.11);
+  --line-strong: rgba(255, 255, 255, 0.2);
+  --font-display: "Outfit", "Segoe UI Variable Display", "Segoe UI", -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", "Cascadia Mono", Consolas, monospace;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%; overflow: hidden;
+  background: var(--abyss-950);
+  color: var(--text);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* A slow lagoon wash so flat colour never reads as "unfinished". */
+.stage { position: relative; width: 100%; height: 100%; display: grid; place-items: center; }
+
+.glow {
+  position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.5;
+  pointer-events: none;
+}
+.glow--a { width: 900px; height: 900px; background: #0E8A9C; top: -260px; left: -180px; }
+.glow--b { width: 700px; height: 700px; background: #107080; bottom: -300px; right: -140px; opacity: 0.4; }
+
+.grid {
+  position: absolute; inset: 0; opacity: 0.35; pointer-events: none;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse at center, #000 20%, transparent 72%);
+}
+
+/* ── kinetic type ─────────────────────────────────────────────────────── */
+
+.stack { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 26px; }
+.stack--left { align-items: flex-start; padding-left: 160px; }
+
+.eyebrow {
+  font-family: var(--font-mono); font-size: 22px; letter-spacing: 0.34em;
+  text-transform: uppercase; color: var(--lagoon-300); opacity: 0;
+  animation: rise 0.9s var(--ease) 0.25s forwards;
+}
+
+.h1 { font-size: 132px; font-weight: 800; letter-spacing: -0.045em; line-height: 0.94; }
+.h2 { font-size: 84px; font-weight: 800; letter-spacing: -0.035em; line-height: 1.02; }
+.h3 { font-size: 60px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+
+.accent { color: var(--lagoon-300); }
+.dim { color: var(--text-2); }
+.warn { color: var(--caution); }
+.stop { color: var(--block-text); }
+.good { color: var(--safe); }
+
+/* Per-word rise: the headline assembles instead of simply appearing. */
+.line { display: block; overflow: hidden; }
+.line > span { display: block; transform: translateY(110%); animation: lift 1s var(--ease) forwards; }
+.line:nth-child(2) > span { animation-delay: 0.12s; }
+.line:nth-child(3) > span { animation-delay: 0.24s; }
+
+.fade { opacity: 0; animation: fadeIn 1s var(--ease) forwards; }
+.fade--1 { animation-delay: 0.5s; }
+.fade--2 { animation-delay: 0.75s; }
+.fade--3 { animation-delay: 1s; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes lift { from { transform: translateY(110%); } to { transform: translateY(0); } }
+@keyframes wipe { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes pulseRing {
+  0% { transform: scale(0.72); opacity: 0.85; }
+  70% { transform: scale(1.18); opacity: 0; }
+  100% { transform: scale(1.18); opacity: 0; }
+}
+
+/* ── scene furniture ──────────────────────────────────────────────────── */
+
+.rule { height: 2px; width: 0; background: var(--lagoon-300); animation: wipe 1.1s var(--ease) 0.35s forwards; transform-origin: left; }
+
+.kicker {
+  font-family: var(--font-mono); font-size: 26px; letter-spacing: 0.18em;
+  color: var(--text-3); text-transform: uppercase;
+}
+
+/* ── the block mark: used the instant a send is refused ───────────────── */
+
+.blockmark { position: relative; display: grid; place-items: center; width: 240px; height: 240px; }
+.blockmark span {
+  position: absolute; inset: 0; border: 3px solid var(--block); border-radius: 50%;
+  animation: pulseRing 2.4s var(--ease) infinite;
+}
+.blockmark b {
+  position: relative; font-size: 92px; font-weight: 800; color: var(--block-text); letter-spacing: 0.04em;
+  opacity: 0; animation: fadeIn 0.5s var(--ease) 0.15s forwards;
+}
+
+/* ── metric tiles ─────────────────────────────────────────────────────── */
+
+.tiles { display: flex; gap: 28px; }
+.tile {
+  min-width: 300px; padding: 34px 38px; border: 1px solid var(--line-strong);
+  border-radius: 18px; background: rgba(255, 255, 255, 0.035); text-align: left;
+  opacity: 0; animation: rise 0.8s var(--ease) forwards;
+}
+.tile:nth-child(1) { animation-delay: 0.15s; }
+.tile:nth-child(2) { animation-delay: 0.32s; }
+.tile:nth-child(3) { animation-delay: 0.49s; }
+.tile:nth-child(4) { animation-delay: 0.66s; }
+.tile em { display: block; font-style: normal; font-family: var(--font-mono); font-size: 20px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-3); margin-bottom: 14px; }
+.tile strong { font-size: 68px; font-weight: 800; letter-spacing: -0.03em; }
+
+/* ── overlays drawn on top of real product footage ────────────────────── */
+
+.ovl { position: fixed; inset: 0; pointer-events: none; z-index: 2147483000; font-family: var(--font-display); }
+
+.ovl__bar {
+  position: absolute; top: 0; left: 0; height: 5px; width: 0;
+  background: linear-gradient(90deg, var(--lagoon-400), var(--lagoon-300));
+}
+
+.ovl__tag {
+  position: absolute; top: 54px; left: 64px;
+  font-family: var(--font-mono); font-size: 21px; letter-spacing: 0.3em;
+  text-transform: uppercase; color: var(--lagoon-300);
+  opacity: 0; transition: opacity 0.45s var(--ease);
+}
+
+.ovl__note {
+  position: absolute; bottom: 84px; left: 64px; right: 64px;
+  display: flex; align-items: baseline; gap: 22px;
+  opacity: 0; transform: translateY(26px);
+  transition: opacity 0.55s var(--ease), transform 0.55s var(--ease);
+}
+.ovl__note.on { opacity: 1; transform: none; }
+.ovl__note b { font-size: 54px; font-weight: 800; letter-spacing: -0.025em; text-shadow: 0 3px 26px rgba(1, 15, 20, 0.95); }
+.ovl__note span { font-size: 31px; font-weight: 600; color: var(--text); text-shadow: 0 3px 26px rgba(1, 15, 20, 0.95); }
+.ovl__note i { font-style: normal; font-family: var(--font-mono); font-size: 22px; letter-spacing: 0.16em; color: var(--text-3); text-transform: uppercase; }
